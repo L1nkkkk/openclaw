@@ -226,6 +226,18 @@ export const BUILTIN_THEMES: readonly ThemeDescriptor[] = (
       description:
         "Hot magenta and cyan on violet-black or pale lavender, with Space Grotesk. Bright neon energy and a synthwave character.",
     },
+    {
+      id: "maid",
+      name: "Maid Atelier",
+      mascot: "none",
+      brandName: "Maid",
+      brandIcon: "mark",
+      workingIndicator: "dots",
+      lobsterdex: false,
+      workingPhrases: ["Preparing", "Reviewing", "Noting", "Sorting"],
+      description:
+        "Soft charcoal surfaces, muted grey text, quiet blue links, and a sage success green. System type, a neutral mark named Maid, and no lobster. A calm atelier workspace.",
+    },
   ] satisfies Array<Omit<ThemeDescriptor, "source" | "modes">>
 ).map<ThemeDescriptor>((theme) =>
   Object.assign(theme, {

@@ -8,6 +8,7 @@ describe("resolveTheme", () => {
     ["claw", "dark", "light"],
     ["knot", "openknot", "openknot-light"],
     ["dash", "dash", "dash-light"],
+    ["maid", "maid", "maid-light"],
   ] satisfies [ThemeName, string, string][])(
     "resolves %s in both explicit modes",
     (theme, dark, light) => {

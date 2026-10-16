@@ -43,6 +43,7 @@ class ClawColorsTest {
         Triple(AppearanceThemeFamily.Manuscript, 0xFFF6F1E4L, 0xFF31549BL),
         Triple(AppearanceThemeFamily.Rose, 0xFFFAF4EDL, 0xFF9C4F66L),
         Triple(AppearanceThemeFamily.Miami, 0xFFF7F3F6L, 0xFFB0246FL),
+        Triple(AppearanceThemeFamily.Maid, 0xFFF3F4F2L, 0xFF1E5F96L),
       )
 
     for ((family, canvas, accent) in cases) {

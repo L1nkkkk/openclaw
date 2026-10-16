@@ -1,0 +1,166 @@
+/* Maid Atelier palette; selected by index.html and app/theme.ts. */
+
+:root[data-theme="maid"] {
+  /*
+   * Accent — quiet blue on soft charcoal, sage as the second chip.
+   *
+   * WCAG 2.1 AA audit (bg = #1c1d21, relative luminance ≈ 0.012):
+   *   --accent #7aa2d0  contrast ≈ 7.4:1  AA text ✓
+   *   --primary-foreground #12161c on #7aa2d0 button: 6.83:1 ✓
+   *   --primary-foreground #12161c on #98b8de hover: 8.85:1 ✓
+   *   --destructive-foreground #fafafa on #bc2a2a button: 5.74:1 ✓
+   *   worst text pairing --muted on --bg-muted: 5.14:1 ✓
+   *   --ok #6fbf8a on its 8% tint over --bg-muted: 5.23:1 ✓
+   */
+  --openclaw-corner-radius-scale: 0.75;
+  --ring: #7aa2d0;
+  --accent: #7aa2d0;
+  --accent-hover: #98b8de;
+  --accent-muted: #7aa2d0;
+  --accent-subtle: rgba(122, 162, 208, 0.12);
+  --accent-glow: rgba(122, 162, 208, 0.18);
+  --primary: #7aa2d0;
+  --primary-hover: #98b8de;
+  --primary-foreground: #12161c;
+  --accent-foreground: #12161c;
+
+  --destructive: #d32f2f;
+  --destructive-hover: #bc2a2a;
+
+  /* Sage success, softer than the default neon green. Keep the 8% / 75% pair. */
+  --ok: #6fbf8a;
+  --ok-muted: rgba(111, 191, 138, 0.75);
+  --ok-subtle: rgba(111, 191, 138, 0.08);
+
+  --focus: rgba(122, 162, 208, 0.2);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in srgb, var(--ring) 70%, transparent);
+  --focus-glow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring), 0 0 16px var(--accent-glow);
+
+  /* Surfaces — neutral charcoal, not blue-black and not pure black. */
+  --bg: #1c1d21;
+  --bg-accent: #202228;
+  --bg-elevated: #26282e;
+  --bg-hover: #2c2f36;
+  --bg-muted: #2c2f36;
+
+  --card: #22242a;
+  --card-foreground: #e8e9ed;
+  --card-highlight: rgba(220, 224, 230, 0.04);
+  --popover: #26282e;
+  --popover-foreground: #e8e9ed;
+
+  --panel: #1c1d21;
+  --panel-strong: #22242a;
+  --panel-hover: #2c2f36;
+  --chrome: rgba(28, 29, 33, 0.96);
+  --chrome-strong: rgba(28, 29, 33, 0.98);
+
+  --text: #c6c8ce;
+  --text-strong: #f3f4f6;
+  --chat-text: #c6c8ce;
+  --muted: #9aa1ab;
+  --muted-strong: #a8aeb8;
+  --muted-foreground: #9aa1ab;
+
+  --border: #32353d;
+  --border-strong: #4a505b;
+  --border-hover: #5c6370;
+  --input: #32353d;
+
+  --secondary: #22242a;
+  --secondary-foreground: #e8e9ed;
+  --accent-2: #7dba96;
+  --accent-2-muted: rgba(125, 186, 150, 0.7);
+  --accent-2-subtle: rgba(125, 186, 150, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(8, 9, 12, 0.4);
+  --shadow-md: 0 4px 16px rgba(8, 9, 12, 0.45);
+  --shadow-lg: 0 12px 32px rgba(8, 9, 12, 0.55);
+  --overlay-shadow: var(--shadow-md);
+
+  --grid-line: rgba(220, 224, 230, 0.035);
+  /* System stack so Latin and CJK use the device face. typography.ts loads no webfont. */
+  --font-body:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-display: var(--font-body);
+  --font-chat: var(--font-body);
+}
+
+:root[data-theme="maid-light"] {
+  /*
+   * Accent — deep blue on warm grey paper.
+   *
+   * WCAG 2.1 AA audit (bg = #f3f4f2, relative luminance ≈ 0.902):
+   *   --accent #1e5f96  contrast ≈ 6.4:1  AA text ✓
+   *   --primary-foreground #ffffff on #1e5f96 button: 6.70:1 ✓
+   *   --primary-foreground #ffffff on #174c78 hover: 8.97:1 ✓
+   *   worst text pairing --muted on --card: 4.84:1 ✓
+   */
+  --openclaw-corner-radius-scale: 0.75;
+  --ring: #1e5f96;
+  --accent: #1e5f96;
+  --accent-hover: #174c78;
+  --accent-muted: #1e5f96;
+  --accent-subtle: rgba(30, 95, 150, 0.1);
+  --accent-glow: rgba(30, 95, 150, 0.14);
+  --primary: #1e5f96;
+  --primary-hover: var(--accent-hover);
+  --primary-foreground: #ffffff;
+  --accent-foreground: #ffffff;
+
+  --bg: #f3f4f2;
+  --bg-accent: #eceeed;
+  --bg-elevated: #ffffff;
+  --bg-hover: #e4e6e4;
+  --bg-muted: #e4e6e4;
+  --bg-content: #eceeed;
+
+  --card: #ffffff;
+  --card-foreground: #1c1e22;
+  --card-highlight: rgba(28, 30, 34, 0.03);
+  --popover: #ffffff;
+  --popover-foreground: #1c1e22;
+  --session-hovercard-surface: var(--card);
+  --session-hovercard-progress-surface: color-mix(
+    in srgb,
+    var(--card) 54%,
+    var(--panel-strong) 46%
+  );
+
+  --panel: #f3f4f2;
+  --panel-strong: #eceeed;
+  --panel-hover: #e4e6e4;
+  --chrome: rgba(243, 244, 242, 0.96);
+  --chrome-strong: rgba(243, 244, 242, 0.98);
+
+  --text: #3c4046;
+  --text-strong: #1c1e22;
+  --chat-text: #3c4046;
+  --muted: #5c636c;
+  --muted-strong: #4a5159;
+  --muted-foreground: #5c636c;
+
+  --border: #d8dbdf;
+  --border-strong: #b7bec6;
+  --border-hover: #8e969f;
+  --input: #d8dbdf;
+
+  --secondary: #eceeed;
+  --secondary-foreground: #3c4046;
+  --accent-2: #2f6d4a;
+  --accent-2-muted: rgba(47, 109, 74, 0.75);
+  --accent-2-subtle: rgba(47, 109, 74, 0.1);
+
+  --shadow-sm: 0 1px 2px rgba(28, 30, 34, 0.05);
+  --shadow-md: 0 4px 12px rgba(28, 30, 34, 0.07);
+  --shadow-lg: 0 12px 28px rgba(28, 30, 34, 0.09);
+  --overlay-shadow: var(--shadow-md);
+
+  --grid-line: rgba(28, 30, 34, 0.04);
+  --font-body:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-display: var(--font-body);
+  --font-chat: var(--font-body);
+}
