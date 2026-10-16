@@ -47,6 +47,7 @@ import {
   type SidebarRecentSession,
   type SidebarToolActivity,
 } from "./app-sidebar-session-types.ts";
+import { MaidAtelierAgents } from "./maid-atelier-agents.tsx";
 import { SessionOrganizerController } from "./session-organizer-controller.ts";
 import { SidebarAgentRoster, renderSidebarPinnedSession } from "./sidebar-agent-roster.tsx";
 import { SidebarContextController } from "./sidebar-context-controller.ts";
@@ -494,6 +495,7 @@ export class AppSidebarOwner extends AppSidebarSessionNavigationElement implemen
     );
     return (
       <>
+        <MaidAtelierAgents host={host()} />
         <Show when={host().pendingSessionCreate()}>
           {(pending) => (
             <div class="sidebar-recent-session sidebar-recent-session--single-line sidebar-recent-session--active sidebar-recent-session--creating">

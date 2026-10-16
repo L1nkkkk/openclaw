@@ -27,9 +27,11 @@ It does not require a connected browser. Personal changes require a trusted
 participant profile.
 
 CRT and Phosphor use a neutral terminal mark, dot working indicators, and no
-Lobsterdex. They retain the OpenClaw name and help links. Other built-in themes,
-including Claw, keep their existing mascot and branding. Hiding Lobsterdex does
-not delete the browser's collection or saved favicon preference.
+Lobsterdex. They retain the OpenClaw name and help links. Maid Atelier uses the
+same neutral mark and hides Lobsterdex, and its display name is Maid. Other
+built-in themes, including Claw, keep their existing mascot and branding.
+Hiding Lobsterdex does not delete the browser's collection or saved favicon
+preference.
 
 ## Select a theme
 

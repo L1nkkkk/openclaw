@@ -89,6 +89,14 @@
   --app-background-image: url("../assets/themes/miami-light.webp?no-inline");
 }
 
+:root[data-theme="maid"] {
+  --app-background-image: url("../assets/themes/maid-dark.webp?no-inline");
+}
+
+:root[data-theme="maid-light"] {
+  --app-background-image: url("../assets/themes/maid-light.webp?no-inline");
+}
+
 :root[data-theme="custom"] {
   --app-background-image: url("../assets/themes/custom-dark.webp?no-inline");
 }

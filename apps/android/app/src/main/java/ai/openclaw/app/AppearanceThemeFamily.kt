@@ -19,6 +19,7 @@ enum class AppearanceThemeFamily(
   Manuscript("manuscript", "Manuscript", 0xFF8FA8E0, 0xFFCFA85E, 0xFF211E18),
   Rose("rose", "Ros\u00E9", 0xFFEBBCBA, 0xFFF6C177, 0xFF191724),
   Miami("miami", "Miami", 0xFFF472B6, 0xFF5FD7E8, 0xFF140F1E),
+  Maid("maid", "Maid Atelier", 0xFF7AA2D0, 0xFF7DBA96, 0xFF1C1D21),
   ;
 
   companion object {

@@ -1278,6 +1278,10 @@ const enSettings = {
         label: "Miami",
         description: "Magenta & cyan",
       },
+      maid: {
+        label: "Maid Atelier",
+        description: "Charcoal atelier",
+      },
     },
     textSizes: {
       small: "Small",

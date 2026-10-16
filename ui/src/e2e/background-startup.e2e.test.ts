@@ -103,7 +103,7 @@ suite.define(() => {
             const pathname = new URL(request.url()).pathname;
             if (
               pathname.includes("/__openclaw__/users/background/") ||
-              /(?:claw|knot|dash|absolutely|tide|beacon|phosphor|crt|manuscript|rose|miami|custom)-(?:dark|light).*\.webp$/u.test(
+              /(?:claw|knot|dash|absolutely|tide|beacon|phosphor|crt|manuscript|rose|miami|maid|custom)-(?:dark|light).*\.webp$/u.test(
                 pathname,
               )
             ) {

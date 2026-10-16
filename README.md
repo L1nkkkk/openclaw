@@ -326,6 +326,14 @@ yxjsxy
 zijiess
 clawtributors:hidden:end -->
 
+## Maid Atelier
+
+This fork adds a built-in Control UI theme, **Maid Atelier**. Its id is `maid`. The palette is soft charcoal with muted grey text, a quiet blue accent, and a sage success green. Panels use continuous corners and a soft inset. It uses the system typeface and a neutral mark named Maid instead of the lobster. With the theme selected, the sessions sidebar lists Gateway agents as Maids and Independent Maids.
+
+Open **Settings → Appearance**, choose **Maid Atelier**, and set color mode to **Dark**.
+
+To use it as the Gateway default before a profile has chosen a theme, set `ui.prefs.theme` to `maid` and `ui.prefs.themeMode` to `dark`. A profile selection overrides that default. An agent can apply it with the theme tool: `{ "action": "set", "id": "maid", "mode": "dark" }`.
+
 ## License
 
 [MIT](LICENSE) © OpenClaw Foundation. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for incorporated or adapted code.
