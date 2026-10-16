@@ -1,16 +1,17 @@
 import { truncateUtf16Safe } from "@openclaw/normalization-core/utf16-slice";
 import { dynamic } from "@solidjs/web";
 import { createMemo, createRenderEffect, onCleanup, Show, untrack } from "solid-js";
-import { Icon } from "../../../components/solid/icon.tsx";
+import { MaidAtelierProgress } from "../../../components/maid-atelier-progress.tsx";
 import "../../../styles/chat/composer-surface.css";
 import "../../../components/mcp-app-catalog.tsx";
 import "../../../components/solid/mcp-app-context-strip.tsx";
 import "../../../components/mcp-app-resources.tsx";
+import { Icon } from "../../../components/solid/icon.tsx";
 import { clearCompositionEnd } from "../../../lib/ime.ts";
 import { t } from "../../../lib/reactive/i18n.ts";
 import { detectTextDirection } from "../../../lib/text-direction.ts";
-import { insertComposerDictation } from "../composer-dictation.ts";
 import "../../../styles/chat/composer-context-strip.css";
+import { insertComposerDictation } from "../composer-dictation.ts";
 import { ChatAttachmentInputs } from "./chat-attachment-inputs.tsx";
 import { handleChatAttachmentPaste } from "./chat-attachments.ts";
 import { AttachmentPreview, AttachmentReadStatus } from "./chat-attachments.tsx";
@@ -37,7 +38,7 @@ import {
 import { SelectedHumanMentions } from "./chat-composer-selected-mentions.tsx";
 import { resetSkillMenuState, SkillMenu } from "./chat-composer-skill-menu.tsx";
 import { SlashMenu, resetSlashMenuState } from "./chat-composer-slash-menu.tsx";
-import { commitComposerDraft } from "./chat-composer-state.ts";
+import { commitComposerDraft, isChatRunWorking } from "./chat-composer-state.ts";
 import { renderFallbackIndicatorSolid } from "./chat-composer-status.tsx";
 import { isPastedTextAttachment } from "./chat-pasted-text.ts";
 import { ChatPermissionPicker } from "./chat-permission-picker.tsx";
@@ -512,6 +513,14 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                     <ChatPrimaryActions {...context.runControlsProps} />
                   </div>
                 </div>
+                <MaidAtelierProgress
+                  placement="strip"
+                  card={props.progressCard}
+                  session={
+                    props.selectedSession ?? (props.sessionKey ? { key: props.sessionKey } : null)
+                  }
+                  activeRun={isChatRunWorking(props)}
+                />
               </div>
             </div>
           </ComposerInputScope>

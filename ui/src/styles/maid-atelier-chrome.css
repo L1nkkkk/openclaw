@@ -1,0 +1,97 @@
+.maid-atelier-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.maid-atelier-progress--chip {
+  flex: 0 1 240px;
+  max-width: 100%;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+}
+
+.maid-atelier-progress--strip {
+  margin: 0 8px 8px;
+  padding: 5px 8px;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: var(--bg-muted);
+}
+
+.maid-atelier-progress--strip[data-tone="working"] {
+  background: var(--info-subtle);
+}
+
+.maid-atelier-progress--strip[data-tone="completed"] {
+  background: var(--ok-subtle);
+}
+
+.maid-atelier-progress--strip[data-tone="attention"] {
+  background: var(--warn-subtle);
+}
+
+.maid-atelier-progress__status {
+  flex: none;
+  color: var(--muted-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.maid-atelier-progress__target {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maid-atelier-progress__check {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--ok);
+}
+
+.maid-atelier-progress__check svg {
+  width: 14px;
+  height: 14px;
+}
+
+.maid-atelier-progress__sample {
+  flex: none;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-progress__fraction {
+  flex: none;
+  margin-left: auto;
+  color: var(--text-strong);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-theme-id="maid"] .chat-composer-model-control {
+  padding-inline: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+
+@supports (corner-shape: superellipse(1.5)) {
+  .maid-atelier-progress--chip,
+  .maid-atelier-progress--strip,
+  :root[data-theme-id="maid"] .chat-composer-model-control {
+    corner-shape: superellipse(1.5);
+  }
+}
