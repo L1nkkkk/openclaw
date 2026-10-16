@@ -12,7 +12,15 @@
    *   worst text pairing --muted on --bg-muted: 5.14:1 ✓
    *   --ok #6fbf8a on its 8% tint over --bg-muted: 5.23:1 ✓
    */
-  --openclaw-corner-radius-scale: 0.75;
+  /* Above the 1.25 continuous-corner signal so panels, rows, and inputs nest softly. */
+  --openclaw-corner-radius-scale: 1.4;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius: 14px;
+  --overlay-modal-radius: 1.35rem;
+  --shell-nav-expanded-width: 300px;
   --ring: #7aa2d0;
   --accent: #7aa2d0;
   --accent-hover: #98b8de;
@@ -97,7 +105,14 @@
    *   --primary-foreground #ffffff on #174c78 hover: 8.97:1 ✓
    *   worst text pairing --muted on --card: 4.84:1 ✓
    */
-  --openclaw-corner-radius-scale: 0.75;
+  --openclaw-corner-radius-scale: 1.4;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius: 14px;
+  --overlay-modal-radius: 1.35rem;
+  --shell-nav-expanded-width: 300px;
   --ring: #1e5f96;
   --accent: #1e5f96;
   --accent-hover: #174c78;
@@ -163,4 +178,37 @@
     "Noto Sans SC", "Microsoft YaHei", sans-serif;
   --font-display: var(--font-body);
   --font-chat: var(--font-body);
+}
+
+/* Floating panels: outer radius ≈ inner row radius + sidebar padding. */
+:is(:root[data-theme="maid"], :root[data-theme="maid-light"])
+  .shell:not(.shell--mobile-nav, .shell--onboarding) {
+  gap: 10px;
+  padding: 10px;
+  background-color: color-mix(in srgb, var(--bg) 88%, black);
+}
+
+:is(:root[data-theme="maid"], :root[data-theme="maid-light"])
+  .shell:not(.shell--mobile-nav, .shell--onboarding)
+  :is(.shell-nav, main.content) {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+  box-shadow: var(--shadow-md);
+}
+
+@supports (corner-shape: superellipse(1.5)) {
+  :is(:root[data-theme="maid"], :root[data-theme="maid-light"])
+    .shell:not(.shell--mobile-nav, .shell--onboarding)
+    :is(.shell-nav, main.content),
+  :is(:root[data-theme="maid"], :root[data-theme="maid-light"])
+    :is(
+      .sidebar-agent-roster__header,
+      .sidebar-agent-roster__row,
+      .sidebar-recent-session,
+      .chat-bubble,
+      .maid-atelier-agents
+    ) {
+    corner-shape: superellipse(1.5);
+  }
 }
