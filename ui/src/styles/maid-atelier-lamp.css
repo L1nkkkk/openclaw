@@ -1,22 +1,24 @@
-/* Maid status lamp. One 11px core, readable beside a 36px avatar.
-   ::before is the halo. ::after is tone-specific micro-detail.
-   Static colors are the reduced-motion appearance; motion is additive. */
+/* Maid status lamp. A 12px dual-tone core with a halo (::before) and a
+   tone-specific mark (::after). Static paint is the reduced-motion state;
+   motion is added only when the user has no motion preference.
+   Attention flares once per 1.8s and never hides the core. */
 
 .maid-lamp {
   --maid-lamp: var(--muted);
+  --maid-lamp-size: 12px;
   position: relative;
   z-index: 1;
   isolation: isolate;
   display: inline-block;
   flex: none;
-  width: 11px;
-  height: 11px;
+  width: var(--maid-lamp-size);
+  height: var(--maid-lamp-size);
   border-radius: var(--radius-full);
   background: radial-gradient(
     circle at 32% 30%,
-    color-mix(in srgb, white 72%, var(--maid-lamp)) 0%,
-    var(--maid-lamp) 38%,
-    color-mix(in srgb, var(--maid-lamp) 58%, black) 100%
+    color-mix(in srgb, white 78%, var(--maid-lamp)) 0%,
+    var(--maid-lamp) 42%,
+    color-mix(in srgb, var(--maid-lamp) 45%, black) 100%
   );
   box-shadow: 0 0 0 1.5px var(--bg-elevated);
 }
@@ -31,68 +33,76 @@
 
 .maid-lamp::before {
   z-index: -1;
-  inset: -5px;
+  inset: -8px;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--maid-lamp) 78%, transparent) 0%,
-    color-mix(in srgb, var(--maid-lamp) 26%, transparent) 46%,
-    transparent 72%
+    color-mix(in srgb, var(--maid-lamp) 90%, transparent) 0%,
+    color-mix(in srgb, var(--maid-lamp) 42%, transparent) 38%,
+    transparent 70%
   );
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .maid-lamp[data-tone="busy"] {
   --maid-lamp: var(--info);
+  box-shadow:
+    0 0 0 1.5px var(--bg-elevated),
+    0 0 6px 1px color-mix(in srgb, var(--maid-lamp) 55%, transparent);
 }
 
 .maid-lamp[data-tone="busy"]::before {
-  opacity: 0.62;
+  opacity: 0.85;
 }
 
-/* Soft arc parked at the top. Motion rotates it into an orbit. */
+/* Parked spark above the core. Motion swings it around the lamp. */
 .maid-lamp[data-tone="busy"]::after {
-  inset: -3px;
-  border: 1.5px solid transparent;
-  border-top-color: color-mix(in srgb, white 60%, var(--maid-lamp));
-  border-right-color: color-mix(in srgb, var(--maid-lamp) 75%, transparent);
+  top: -5px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  background: color-mix(in srgb, white 75%, var(--maid-lamp));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--maid-lamp) 80%, transparent),
+    0 0 5px 1px var(--maid-lamp);
+  transform-origin: 2px 11px;
 }
 
 .maid-lamp[data-tone="attention"] {
   --maid-lamp: var(--danger);
   box-shadow:
     0 0 0 1.5px var(--bg-elevated),
-    0 0 4px 0.5px color-mix(in srgb, var(--maid-lamp) 80%, transparent);
+    0 0 6px 1px color-mix(in srgb, var(--maid-lamp) 75%, transparent);
 }
 
 .maid-lamp[data-tone="attention"]::before {
-  opacity: 0.78;
+  opacity: 0.9;
 }
 
 .maid-lamp[data-tone="attention"]::after {
-  inset: -2px;
+  inset: -3px;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, white 40%, var(--maid-lamp)) 0%,
-    transparent 70%
+    color-mix(in srgb, white 55%, var(--maid-lamp)) 0%,
+    transparent 68%
   );
-  opacity: 0.5;
+  opacity: 0.55;
 }
 
 .maid-lamp[data-tone="success"] {
   --maid-lamp: var(--ok);
   box-shadow:
     0 0 0 1.5px var(--bg-elevated),
-    0 0 4px 1px color-mix(in srgb, var(--maid-lamp) 88%, transparent),
-    0 0 10px 2px color-mix(in srgb, var(--maid-lamp) 42%, transparent);
+    0 0 5px 1px color-mix(in srgb, var(--maid-lamp) 95%, transparent),
+    0 0 12px 4px color-mix(in srgb, var(--maid-lamp) 55%, transparent);
 }
 
 .maid-lamp[data-tone="success"]::before {
-  opacity: 0.92;
+  opacity: 1;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--maid-lamp) 92%, transparent) 0%,
-    color-mix(in srgb, var(--maid-lamp) 48%, transparent) 48%,
-    transparent 76%
+    color-mix(in srgb, var(--maid-lamp) 95%, transparent) 0%,
+    color-mix(in srgb, var(--maid-lamp) 55%, transparent) 42%,
+    transparent 74%
   );
 }
 
@@ -101,11 +111,13 @@
 }
 
 .maid-lamp[data-tone="idle"] {
-  opacity: 0.62;
+  background: color-mix(in srgb, var(--muted) 55%, var(--bg));
+  box-shadow: 0 0 0 1.5px var(--bg-elevated);
+  opacity: 0.5;
 }
 
 .maid-lamp[data-tone="idle"]::before {
-  opacity: 0.16;
+  opacity: 0.2;
 }
 
 .maid-lamp[data-tone="idle"]::after {
@@ -121,7 +133,10 @@
     animation: maid-lamp-orbit 2.6s linear infinite;
   }
 
-  /* ~0.55 Hz bloom. The core stays painted; only the halo flares. */
+  .maid-lamp[data-tone="attention"] {
+    animation: maid-lamp-attention 1.8s ease-in-out infinite;
+  }
+
   .maid-lamp[data-tone="attention"]::before {
     animation: maid-lamp-bloom 1.8s ease-in-out infinite;
   }
@@ -138,13 +153,13 @@
 @keyframes maid-lamp-breathe {
   0%,
   100% {
-    opacity: 0.28;
-    transform: scale(0.84);
+    opacity: 0.35;
+    transform: scale(0.78);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.14);
+    transform: scale(1.2);
   }
 }
 
@@ -154,39 +169,55 @@
   }
 }
 
+@keyframes maid-lamp-attention {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1.5px var(--bg-elevated),
+      0 0 3px 0 color-mix(in srgb, var(--maid-lamp) 40%, transparent);
+  }
+
+  42% {
+    box-shadow:
+      0 0 0 1.5px var(--bg-elevated),
+      0 0 8px 3px color-mix(in srgb, var(--maid-lamp) 95%, transparent),
+      0 0 16px 6px color-mix(in srgb, var(--maid-lamp) 45%, transparent);
+  }
+}
+
 @keyframes maid-lamp-bloom {
   0%,
   100% {
-    opacity: 0.22;
-    transform: scale(0.7);
+    opacity: 0.15;
+    transform: scale(0.62);
   }
 
   42% {
     opacity: 1;
-    transform: scale(1.32);
+    transform: scale(1.35);
   }
 }
 
 @keyframes maid-lamp-flare {
   0%,
   100% {
-    opacity: 0.9;
+    opacity: 0.95;
     transform: scale(1);
   }
 
   42% {
-    opacity: 0.12;
-    transform: scale(0.55);
+    opacity: 0.05;
+    transform: scale(0.4);
   }
 }
 
 @keyframes maid-lamp-ember {
   0%,
   100% {
-    opacity: 0.08;
+    opacity: 0.05;
   }
 
   50% {
-    opacity: 0.4;
+    opacity: 0.45;
   }
 }
