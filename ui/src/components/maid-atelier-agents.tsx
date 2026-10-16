@@ -20,6 +20,7 @@ import {
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
+import "../styles/maid-atelier-lamp.css";
 import "../styles/maid-atelier-sidebar.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
@@ -148,7 +149,7 @@ function MaidAgentRow(props: {
           }}
         />
         <span
-          class="maid-atelier-agents__status"
+          class="maid-atelier-agents__status maid-lamp"
           data-tone={tone()}
           role="img"
           aria-label={t(STATUS_KEYS[tone()])}

@@ -33,7 +33,11 @@
 }
 
 .maid-atelier-progress--strip[data-tone="attention"] {
-  background: var(--warn-subtle);
+  background: var(--danger-subtle);
+}
+
+.maid-atelier-progress__lamp {
+  margin-inline-end: 2px;
 }
 
 .maid-atelier-progress__status {
@@ -41,6 +45,18 @@
   color: var(--muted-strong);
   font-size: 11px;
   font-weight: 700;
+}
+
+.maid-atelier-progress[data-tone="working"] .maid-atelier-progress__status {
+  color: var(--info);
+}
+
+.maid-atelier-progress[data-tone="completed"] .maid-atelier-progress__status {
+  color: var(--ok);
+}
+
+.maid-atelier-progress[data-tone="attention"] .maid-atelier-progress__status {
+  color: var(--danger);
 }
 
 .maid-atelier-progress__target {

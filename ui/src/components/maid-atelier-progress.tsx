@@ -4,10 +4,16 @@ import { createMemo, Show } from "solid-js";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { resolveSessionDisplayName } from "../lib/session-display.ts";
-import { readMaidGoal, resolveMaidProgress, type MaidProgressTone } from "./maid-atelier-status.ts";
+import {
+  readMaidGoal,
+  resolveMaidProgress,
+  type MaidProgressTone,
+  type MaidTone,
+} from "./maid-atelier-status.ts";
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import "../styles/maid-atelier-chrome.css";
+import "../styles/maid-atelier-lamp.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
 
@@ -46,6 +52,13 @@ const PROGRESS_STATUS_KEYS = {
   attention: "agentsHome.maidStatusAttention",
   idle: "agentsHome.maidStatusIdle",
 } as const satisfies Record<MaidProgressTone, string>;
+
+const LAMP_TONES = {
+  working: "busy",
+  completed: "success",
+  attention: "attention",
+  idle: "idle",
+} as const satisfies Record<MaidProgressTone, MaidTone>;
 
 function MaidAtelierProgressLive(props: {
   placement: "chip" | "strip";
@@ -86,6 +99,11 @@ function MaidAtelierProgressLive(props: {
       data-source={model().source}
       aria-label={t("agentsHome.maidProgressLabel")}
     >
+      <span
+        class="maid-lamp maid-atelier-progress__lamp"
+        data-tone={LAMP_TONES[model().tone]}
+        aria-hidden="true"
+      />
       <Show when={props.placement === "chip"}>
         <span class="maid-atelier-progress__status">{status()}</span>
       </Show>

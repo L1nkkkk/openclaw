@@ -83,30 +83,8 @@
 
 .maid-atelier-agents__status {
   position: absolute;
-  z-index: 1;
-  right: -1px;
-  bottom: -1px;
-  width: 9px;
-  height: 9px;
-  border: 2px solid var(--bg-elevated);
-  border-radius: var(--radius-full);
-  background: var(--muted);
-}
-
-.maid-atelier-agents__status[data-tone="busy"] {
-  background: var(--info);
-}
-
-.maid-atelier-agents__status[data-tone="success"] {
-  background: var(--ok);
-}
-
-.maid-atelier-agents__status[data-tone="attention"] {
-  background: var(--warn);
-}
-
-.maid-atelier-agents__status[data-tone="idle"] {
-  background: var(--muted);
+  right: -2px;
+  bottom: -2px;
 }
 
 .maid-atelier-agents__copy,
