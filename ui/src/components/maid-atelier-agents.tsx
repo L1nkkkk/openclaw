@@ -1,6 +1,7 @@
 import type { JSX } from "@solidjs/web";
 import { createMemo, createSignal, For, Show } from "solid-js";
 import type { ApplicationContext } from "../app/context.ts";
+import { gatewayPresentationScope } from "../app/gateway-presentation-scope.ts";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { rosterActivityStore } from "../lib/agents/roster-activity-store.ts";
 import { formatRelativeTimestamp } from "../lib/format.ts";
@@ -8,17 +9,22 @@ import { projectAgents } from "../lib/reactive/domain-capabilities.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
-import { maidRowDetail, splitMaidAgents } from "./maid-atelier-agents.ts";
+import {
+  buildMaidBoard,
+  MAID_NAV,
+  MAID_SAMPLE_FILE_AGE_MS,
+  maidChecklistModel,
+  type MaidAgentFact,
+  type MaidBoardRow,
+  type MaidBoardSection,
+  type MaidChecklistItem,
+  type MaidNavItem,
+  type MaidNavRoute,
+  type MaidSessionFact,
+} from "./maid-atelier-board.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
-import {
-  maidClip,
-  maidIdentityTheme,
-  maidSessionSummaries,
-  maidTone,
-  type MaidSessionSummary,
-  type MaidTone,
-} from "./maid-atelier-status.ts";
+import { maidClip, maidIdentityTheme, maidTone, type MaidTone } from "./maid-atelier-status.ts";
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
@@ -31,36 +37,19 @@ type MaidContext = Pick<ApplicationContext, "gateway" | "agents" | "agentIdentit
 export type MaidAtelierHost = {
   readonly sessionDataContext: MaidContext | null;
   readonly sidebarAgentsMode: "chip" | "roster";
+  readonly connected?: boolean;
+  navigationView?: "pages" | "sessions" | "online";
   expandedAgentId(): string;
   openMainSession(agentId: string): void;
   switchChipAgent(agentId: string): void;
   subscribe(listener: () => void): () => void;
+  onOpenPalette?: () => void;
+  onNavigate?: (route: MaidNavRoute) => void;
+  requestOpenNewSession?: (agentId: string) => void;
+  requestUpdate?: () => void;
+  selectSession?: (sessionKey: string) => void;
+  getRouteSessionKey?: () => string;
 };
-
-const MINUTE_MS = 60_000;
-const SAMPLE_TASKS = [
-  { id: "notes", done: true, ageMs: 15 * MINUTE_MS },
-  { id: "diff", done: false, ageMs: 2 * 60 * MINUTE_MS },
-  { id: "checkpoint", done: false, ageMs: 26 * 60 * MINUTE_MS },
-] as const;
-
-type MaidCard = {
-  id: string;
-  name: string;
-  avatar: string | null;
-  textAvatar: string | null;
-  activeNow: boolean;
-  unreadCount: number;
-  lastActiveAt: number;
-  preview?: string;
-  role?: string;
-};
-
-const SAMPLE_TASK_LABELS = {
-  notes: "agentsHome.maidSampleNotes",
-  diff: "agentsHome.maidSampleDiff",
-  checkpoint: "agentsHome.maidSampleCheckpoint",
-} as const;
 
 const STATUS_KEYS = {
   busy: "agentsHome.maidStatusWorking",
@@ -76,41 +65,69 @@ const ACTIVITY_KEYS = {
   idle: "agentsHome.noMessage",
 } as const satisfies Record<MaidTone, string>;
 
-function roleLine(chief: boolean, tone: MaidTone, theme: string | null): string {
+export type MaidProfileModel = {
+  name: string;
+  status: string;
+  portraitId: string;
+  avatarUrl?: string | null;
+  online: boolean;
+};
+
+function roleLine(row: MaidBoardRow, tone: MaidTone): string {
   const status = t(STATUS_KEYS[tone]);
-  if (chief) {
+  if (row.kind === "session") {
+    return row.preview ? maidClip(row.preview) : status;
+  }
+  if (row.chief) {
     return `${t("agentsHome.maidRoleChief")} · ${status}`;
   }
+  const theme = maidIdentityTheme(row.role);
   return theme ? `${theme} · ${status}` : status;
 }
 
-function activityLine(
-  card: MaidCard,
-  tone: MaidTone,
-  summary: MaidSessionSummary | undefined,
-): string {
-  const preview = card.preview?.trim();
+function activityLine(row: MaidBoardRow, tone: MaidTone): string {
+  if (row.kind === "session") {
+    return row.preview ? maidClip(row.preview) : t(ACTIVITY_KEYS[tone]);
+  }
+  const preview = row.preview.trim();
   if (preview) {
     return maidClip(preview);
-  }
-  const label = summary?.label?.trim();
-  if (label && label !== card.name) {
-    return maidClip(label);
   }
   return t(ACTIVITY_KEYS[tone]);
 }
 
-function MaidHeading(props: { label: string; count: number; chief?: boolean; sample?: boolean }) {
+function MaidHeading(props: {
+  label: string;
+  count: number;
+  chief?: boolean;
+  sample?: boolean;
+  expanded?: boolean;
+  onToggle?: () => void;
+}) {
   return (
     <h2 class="maid-atelier-agents__heading">
-      <span class="maid-atelier-agents__heading-label">
-        <Show when={props.chief}>
-          <span class="maid-atelier-agents__mark" aria-hidden="true">
-            <Icon name="star" />
-          </span>
+      <button
+        type="button"
+        class="maid-atelier-agents__heading-button"
+        aria-expanded={props.onToggle ? (props.expanded ? "true" : "false") : undefined}
+        onClick={() => props.onToggle?.()}
+      >
+        <Show when={props.onToggle}>
+          <span
+            class="maid-atelier-agents__chevron"
+            data-expanded={props.expanded ? "true" : "false"}
+            aria-hidden="true"
+          />
         </Show>
-        <span>{props.label}</span>
-      </span>
+        <span class="maid-atelier-agents__heading-label">
+          <Show when={props.chief}>
+            <span class="maid-atelier-agents__mark" aria-hidden="true">
+              <Icon name="star" />
+            </span>
+          </Show>
+          <span>{props.label}</span>
+        </span>
+      </button>
       <span class="maid-atelier-agents__count">
         <Show when={props.sample}>
           <span class="maid-atelier-agents__sample">{t("agentsHome.maidWorkTasksNote")}</span>
@@ -121,65 +138,70 @@ function MaidHeading(props: { label: string; count: number; chief?: boolean; sam
   );
 }
 
-function MaidAgentRow(props: {
-  card: MaidCard;
-  chief: boolean;
-  summary: MaidSessionSummary | undefined;
-  current: boolean;
-  onOpen: (agentId: string) => void;
-}) {
+function MaidAgentRow(props: { row: MaidBoardRow; current: boolean; onOpen: () => void }) {
   const tone = () =>
     maidTone({
-      activeNow: props.card.activeNow,
-      unreadCount: props.card.unreadCount,
-      status: props.summary?.status,
-      failed: props.summary?.failed,
+      activeNow: props.row.activeNow,
+      unreadCount: props.row.unreadCount,
+      status: props.row.status,
+      failed: props.row.failed,
     });
-  const pinned = () => props.summary?.pinned === true;
-  const role = () => roleLine(props.chief, tone(), maidIdentityTheme(props.card.role));
-  const activity = () => activityLine(props.card, tone(), props.summary);
-  const detail = () => maidRowDetail(role(), activity());
-  const marked = () => props.chief || pinned();
+  const role = () => roleLine(props.row, tone());
+  const activity = () => activityLine(props.row, tone());
+  const detail = () => {
+    if (props.row.kind === "session" || !props.row.preview.trim()) {
+      return props.row.kind === "session" ? activity() : role();
+    }
+    return `${role()} · ${activity()}`;
+  };
   const when = () =>
-    props.card.lastActiveAt > 0
-      ? formatRelativeTimestamp(props.card.lastActiveAt)
+    props.row.lastActiveAt > 0
+      ? formatRelativeTimestamp(props.row.lastActiveAt)
       : t("agentsHome.neverActive");
+  const spaces = () =>
+    props.row.spaces > 0 ? t("agentsHome.maidSpaces", { count: String(props.row.spaces) }) : "";
   return (
     <button
       type="button"
       class="maid-atelier-agents__row"
-      data-maid-agent={props.card.id}
+      data-maid-kind={props.row.kind}
+      data-maid-agent={props.row.kind === "agent" ? props.row.id : undefined}
       data-maid-tone={tone()}
       aria-current={props.current ? "true" : undefined}
-      aria-label={`${props.card.name}, ${role()}, ${activity()}, ${when()}${pinned() ? `, ${t("agentsHome.maidPinned")}` : ""}`}
-      onClick={() => props.onOpen(props.card.id)}
+      aria-label={`${props.row.name}, ${detail()}, ${spaces()} ${when()}`.replace(/\s+/g, " ")}
+      onClick={() => props.onOpen()}
     >
       <span class="maid-atelier-agents__avatar">
         <Show
-          when={props.card.avatar}
-          fallback={
-            <img
-              class="maid-atelier-agents__portrait"
-              src={maidPortraitSrc(props.card.id)}
-              alt=""
-            />
-          }
+          when={props.row.kind === "agent"}
+          fallback={<MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />}
         >
-          <AgentIdentityAvatar
-            agent={{
-              id: props.card.id,
-              name: props.card.name,
-              avatar: props.card.avatar,
-              textAvatar: props.card.textAvatar,
-            }}
-          />
+          <Show
+            when={props.row.avatar}
+            fallback={
+              <img
+                class="maid-atelier-agents__portrait"
+                src={maidPortraitSrc(props.row.id)}
+                alt=""
+              />
+            }
+          >
+            <AgentIdentityAvatar
+              agent={{
+                id: props.row.id,
+                name: props.row.name,
+                avatar: props.row.avatar,
+                textAvatar: props.row.textAvatar,
+              }}
+            />
+          </Show>
+          <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
         </Show>
-        <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
       </span>
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">
-          <span class="maid-atelier-agents__name">{props.card.name}</span>
-          <Show when={marked()}>
+          <span class="maid-atelier-agents__name">{props.row.name}</span>
+          <Show when={props.row.marked}>
             <span class="maid-atelier-agents__pin" aria-hidden="true">
               <Icon name="star" />
             </span>
@@ -190,92 +212,249 @@ function MaidAgentRow(props: {
         </span>
       </span>
       <span class="maid-atelier-agents__aside">
-        <Show when={props.card.unreadCount > 0}>
+        <Show when={props.row.unreadCount > 0}>
           <span class="maid-atelier-agents__unread">
-            {t("agentsHome.maidUnread", { count: String(props.card.unreadCount) })}
+            {t("agentsHome.maidUnread", { count: String(props.row.unreadCount) })}
           </span>
         </Show>
         <span class="maid-atelier-agents__meta">{when()}</span>
+        <Show when={spaces()}>
+          <span class="maid-atelier-agents__spaces">{spaces()}</span>
+        </Show>
       </span>
     </button>
   );
 }
 
-type MaidAtelierRosterViewProps = {
-  chief: MaidCard | null;
-  independent: readonly MaidCard[];
-  summaryFor: (id: string) => MaidSessionSummary | undefined;
+/** Ids in the set are local flips. The source row stays the unchecked baseline. */
+function taskChecked(flipped: () => ReadonlySet<string>, item: MaidChecklistItem): boolean {
+  return flipped().has(item.id) !== item.done;
+}
+
+export function MaidAtelierBoard(props: {
+  sections: readonly MaidBoardSection[];
+  tasks: { sample: boolean; items: readonly MaidChecklistItem[] };
+  profile: MaidProfileModel;
   currentId: string;
-  onOpen: (agentId: string) => void;
+  currentSessionKey: string;
+  onOpenAgent: (id: string) => void;
+  onOpenSession: (key: string) => void;
+  onNav: (item: MaidNavItem) => void;
+  navDisabled?: (item: MaidNavItem) => boolean;
   done: () => ReadonlySet<string>;
   onToggleTask: (id: string) => void;
-};
-
-/** Shared maid roster body. The live sidebar fills it from the roster store. */
-function MaidAtelierRosterView(props: MaidAtelierRosterViewProps): JSX.Element {
+}): JSX.Element {
+  const [collapsed, setCollapsed] = createSignal<ReadonlySet<string>>(new Set());
+  const toggleSection = (id: string) => {
+    const next = new Set(collapsed());
+    if (!next.delete(id)) {
+      next.add(id);
+    }
+    setCollapsed(next);
+  };
+  const sectionLabel = (section: MaidBoardSection) =>
+    section.labelKey ? t(section.labelKey) : section.label;
   return (
     <section class="maid-atelier-agents" aria-label={t("agentsHome.manage")}>
-      <Show when={props.chief}>
-        {(chief) => (
-          <>
-            <MaidHeading label={t("agentsHome.maidSection")} count={1} chief={true} />
-            <MaidAgentRow
-              card={chief()}
-              chief={true}
-              summary={props.summaryFor(chief().id)}
-              current={props.currentId === chief().id}
-              onOpen={props.onOpen}
-            />
-          </>
-        )}
-      </Show>
-      <MaidHeading label={t("agentsHome.independentMaids")} count={props.independent.length} />
-      <Show
-        when={props.independent.length > 0}
-        fallback={<p class="maid-atelier-agents__empty">{t("agentsHome.maidNoIndependent")}</p>}
-      >
-        <For each={props.independent}>
-          {(card) => (
-            <MaidAgentRow
-              card={card}
-              chief={false}
-              summary={props.summaryFor(card.id)}
-              current={props.currentId === card.id}
-              onOpen={props.onOpen}
-            />
+      <nav class="maid-atelier-nav" aria-label={t("agentsHome.manage")}>
+        <For each={MAID_NAV}>
+          {(item) => (
+            <button
+              type="button"
+              class="maid-atelier-nav__item"
+              data-maid-nav={item.id}
+              disabled={props.navDisabled?.(item) === true}
+              onClick={() => props.onNav(item)}
+            >
+              <Icon name={item.icon} />
+              <span>{t(item.labelKey)}</span>
+            </button>
           )}
         </For>
-      </Show>
-      <MaidHeading
-        label={t("agentsHome.maidWorkTasks")}
-        count={SAMPLE_TASKS.length}
-        sample={true}
-      />
-      <For each={SAMPLE_TASKS}>
-        {(task) => (
-          <button
-            type="button"
-            class="maid-atelier-agents__task"
-            role="checkbox"
-            aria-checked={props.done().has(task.id) ? "true" : "false"}
-            onClick={() => props.onToggleTask(task.id)}
+      </nav>
+      <div class="maid-atelier-agents__scroll">
+        <Show
+          when={props.sections.length > 0}
+          fallback={<p class="maid-atelier-agents__empty">{t("agentsHome.maidNoIndependent")}</p>}
+        >
+          <For each={props.sections}>
+            {(section) => {
+              const expanded = () => !collapsed().has(section.id);
+              const chief = () => section.rows.some((row) => row.chief);
+              return (
+                <div class="maid-atelier-agents__section" data-maid-section={section.id}>
+                  <MaidHeading
+                    label={sectionLabel(section)}
+                    count={section.rows.length}
+                    chief={chief()}
+                    sample={section.sample}
+                    expanded={expanded()}
+                    onToggle={() => toggleSection(section.id)}
+                  />
+                  <Show when={expanded()}>
+                    <For each={section.rows}>
+                      {(row) => (
+                        <MaidAgentRow
+                          row={row}
+                          current={
+                            row.kind === "session"
+                              ? row.sessionKey === props.currentSessionKey
+                              : props.currentId === row.id
+                          }
+                          onOpen={() => {
+                            if (row.kind === "session" && row.sessionKey) {
+                              props.onOpenSession(row.sessionKey);
+                              return;
+                            }
+                            props.onOpenAgent(row.id);
+                          }}
+                        />
+                      )}
+                    </For>
+                  </Show>
+                </div>
+              );
+            }}
+          </For>
+        </Show>
+        <MaidHeading
+          label={t("agentsHome.maidWorkTasks")}
+          count={props.tasks.items.length}
+          sample={props.tasks.sample}
+        />
+        <For each={props.tasks.items}>
+          {(item) => {
+            const checked = () => taskChecked(props.done, item);
+            const when = () => {
+              if (item.at && item.at > 0) {
+                return formatRelativeTimestamp(item.at);
+              }
+              const age = MAID_SAMPLE_FILE_AGE_MS[item.id];
+              return age ? formatRelativeTimestamp(Date.now() - age) : "";
+            };
+            return (
+              <button
+                type="button"
+                class="maid-atelier-agents__task"
+                role="checkbox"
+                aria-checked={checked() ? "true" : "false"}
+                onClick={() => props.onToggleTask(item.id)}
+              >
+                <span class="maid-atelier-agents__check" aria-hidden="true" />
+                <span class="maid-atelier-agents__task-copy">
+                  <span class="maid-atelier-agents__task-label">{item.label}</span>
+                  <Show when={item.refine}>
+                    <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
+                  </Show>
+                </span>
+                <span class="maid-atelier-agents__task-time">{when()}</span>
+              </button>
+            );
+          }}
+        </For>
+      </div>
+      <div class="maid-atelier-profile">
+        <span class="maid-atelier-agents__avatar">
+          <Show
+            when={props.profile.avatarUrl}
+            fallback={
+              <img
+                class="maid-atelier-agents__portrait"
+                src={maidPortraitSrc(props.profile.portraitId)}
+                alt=""
+              />
+            }
           >
-            <span class="maid-atelier-agents__check" aria-hidden="true" />
-            <span class="maid-atelier-agents__task-label">{t(SAMPLE_TASK_LABELS[task.id])}</span>
-            <span class="maid-atelier-agents__task-time">
-              {formatRelativeTimestamp(Date.now() - task.ageMs, { suffix: false })}
-            </span>
-          </button>
-        )}
-      </For>
+            <img class="maid-atelier-agents__portrait" src={props.profile.avatarUrl ?? ""} alt="" />
+          </Show>
+          <MaidPresence
+            tone={props.profile.online ? "success" : "idle"}
+            label={props.profile.status}
+          />
+        </span>
+        <span class="maid-atelier-agents__copy">
+          <span class="maid-atelier-agents__name">{props.profile.name}</span>
+          <span class="maid-atelier-agents__activity">
+            {props.profile.status} · {t("agentsHome.maidProfileAtelier")}
+          </span>
+        </span>
+      </div>
     </section>
   );
 }
 
+function navDisabled(host: MaidAtelierHost, item: MaidNavItem): boolean {
+  switch (item.action) {
+    case "palette":
+      return !host.onOpenPalette;
+    case "new":
+      return !host.requestOpenNewSession;
+    case "route":
+      return !host.onNavigate;
+    case "pages":
+      return host.navigationView === undefined;
+    default:
+      return false;
+  }
+}
+
+function runNav(host: MaidAtelierHost, item: MaidNavItem) {
+  switch (item.action) {
+    case "palette":
+      host.onOpenPalette?.();
+      break;
+    case "new":
+      host.requestOpenNewSession?.(host.expandedAgentId());
+      break;
+    case "route":
+      if (item.route) {
+        host.onNavigate?.(item.route);
+      }
+      break;
+    case "pages":
+      host.navigationView = "pages";
+      host.requestUpdate?.();
+      break;
+    default:
+      break;
+  }
+}
+
+function sessionFacts(
+  rows: readonly {
+    key: string;
+    agentId?: string;
+    archived?: boolean;
+    category?: string | null;
+    label?: string | null;
+    displayName?: string | null;
+    lastMessagePreview?: string | null;
+    updatedAt?: number | null;
+    status?: string | null;
+    lastRunError?: string | null;
+    pinned?: boolean;
+  }[],
+  fallbackAgentId: string,
+): MaidSessionFact[] {
+  return rows.map((row) => ({
+    key: row.key,
+    agentId: resolveUiSessionRowAgentId(row, fallbackAgentId),
+    archived: row.archived,
+    category: row.category,
+    label: row.label,
+    displayName: row.displayName,
+    lastMessagePreview: row.lastMessagePreview,
+    updatedAt: row.updatedAt,
+    status: row.status,
+    lastRunError: row.lastRunError,
+    pinned: row.pinned,
+  }));
+}
+
 function MaidRoster(props: {
   context: MaidContext;
+  host: MaidAtelierHost;
   currentId: () => string;
-  onOpen: (agentId: string) => void;
   done: () => ReadonlySet<string>;
   onToggleTask: (id: string) => void;
 }) {
@@ -287,23 +466,55 @@ function MaidRoster(props: {
     }),
   );
   const agents = createMemo(() => projectAgents(props.context.agents));
-  const split = createMemo(() =>
-    splitMaidAgents(roster().read().cards, agents().read().agentsList?.defaultId ?? null),
-  );
-  const summaries = createMemo(() =>
-    maidSessionSummaries(
-      roster().read().result?.sessions ?? [],
-      agents().read().agentsList?.defaultId ?? "",
-      resolveUiSessionRowAgentId,
-    ),
-  );
+  const facts = createMemo(() => {
+    const list = agents().read().agentsList;
+    const cards = roster().read().cards;
+    const agentFacts: MaidAgentFact[] = cards.map((card) => ({
+      id: card.id,
+      name: card.name,
+      avatar: card.avatar,
+      textAvatar: card.textAvatar,
+      activeNow: card.activeNow,
+      unreadCount: card.unreadCount,
+      lastActiveAt: card.lastActiveAt,
+      preview: card.preview,
+      role: card.role,
+    }));
+    const sessions = sessionFacts(roster().read().result?.sessions ?? [], list?.defaultId ?? "");
+    return {
+      sections: buildMaidBoard(agentFacts, sessions, list?.defaultId ?? null),
+      tasks: maidChecklistModel({ sessions }),
+    };
+  });
+  const profile = createMemo((): MaidProfileModel => {
+    const user = gatewayPresentationScope(props.context.gateway).displayUser;
+    const online = props.host.connected === true;
+    return {
+      name: user?.name?.trim() || user?.email?.trim() || t("nav.owner"),
+      status: t(online ? "agentsHome.maidProfileOnline" : "agentsHome.maidProfileOffline"),
+      portraitId: user?.id || "atelier",
+      avatarUrl: user?.avatarUrl,
+      online,
+    };
+  });
+  const openAgent = (agentId: string) => {
+    if (props.host.sidebarAgentsMode === "roster") {
+      props.host.openMainSession(agentId);
+      return;
+    }
+    props.host.switchChipAgent(agentId);
+  };
   return (
-    <MaidAtelierRosterView
-      chief={split().chief}
-      independent={split().independent}
-      summaryFor={(id) => summaries().get(id)}
+    <MaidAtelierBoard
+      sections={facts().sections}
+      tasks={facts().tasks}
+      profile={profile()}
       currentId={props.currentId()}
-      onOpen={props.onOpen}
+      currentSessionKey={props.host.getRouteSessionKey?.() ?? ""}
+      onOpenAgent={openAgent}
+      onOpenSession={(key) => props.host.selectSession?.(key)}
+      onNav={(item) => runNav(props.host, item)}
+      navDisabled={(item) => navDisabled(props.host, item)}
       done={props.done}
       onToggleTask={props.onToggleTask}
     />
@@ -320,9 +531,7 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
   );
   const context = createMemo(() => host().read().sessionDataContext);
   const currentId = () => host().read().expandedAgentId();
-  const [done, setDone] = createSignal<ReadonlySet<string>>(
-    new Set(SAMPLE_TASKS.filter((task) => task.done).map((task) => task.id)),
-  );
+  const [done, setDone] = createSignal<ReadonlySet<string>>(new Set());
   const toggleTask = (id: string) => {
     const next = new Set(done());
     if (!next.delete(id)) {
@@ -330,25 +539,27 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
     }
     setDone(next);
   };
-  const open = (agentId: string) => {
-    const current = host().read();
-    if (current.sidebarAgentsMode === "roster") {
-      current.openMainSession(agentId);
-      return;
-    }
-    current.switchChipAgent(agentId);
-  };
+  const emptyProfile = (): MaidProfileModel => ({
+    name: t("nav.owner"),
+    status: t("agentsHome.maidProfileOffline"),
+    portraitId: "atelier",
+    online: false,
+  });
   return (
     <Show
       when={context()}
       keyed
       fallback={
-        <MaidAtelierRosterView
-          chief={null}
-          independent={[]}
-          summaryFor={() => undefined}
+        <MaidAtelierBoard
+          sections={[]}
+          tasks={maidChecklistModel({})}
+          profile={emptyProfile()}
           currentId={currentId()}
-          onOpen={open}
+          currentSessionKey=""
+          onOpenAgent={() => undefined}
+          onOpenSession={() => undefined}
+          onNav={(item) => runNav(host().read(), item)}
+          navDisabled={(item) => navDisabled(host().read(), item)}
           done={done}
           onToggleTask={toggleTask}
         />
@@ -357,8 +568,8 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
       {(current) => (
         <MaidRoster
           context={current}
+          host={host().read()}
           currentId={currentId}
-          onOpen={open}
           done={done}
           onToggleTask={toggleTask}
         />

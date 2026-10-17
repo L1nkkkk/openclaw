@@ -3,6 +3,7 @@ import { createMemo, Match, Show, Switch } from "solid-js";
 import { formatFencedCodeBlock } from "../../../../../src/shared/markdown-code.js";
 import { isStaleChunkImportError } from "../../../app/stale-chunk-reload.ts";
 import type { ImageLightboxItem } from "../../../components/image-lightbox.types.ts";
+import { useMaidTheme } from "../../../components/maid-atelier-theme.ts";
 import { handleMarkdownCodeBlockClick } from "../../../components/markdown-code-blocks.ts";
 import { markdownBlocksRef } from "../../../components/markdown-element-refs-solid.ts";
 import {
@@ -356,7 +357,12 @@ function sidebarTitle(content: ChatDetailPanelContent | null, showingRawText: bo
   }
 }
 
-function RawButton(props: { onClick: () => void; class?: string; style?: SolidJSX.CSSProperties }) {
+function RawButton(props: {
+  onClick: () => void;
+  class?: string;
+  style?: SolidJSX.CSSProperties;
+  label?: string;
+}) {
   return (
     <button
       onClick={() => props.onClick()}
@@ -364,7 +370,10 @@ function RawButton(props: { onClick: () => void; class?: string; style?: SolidJS
       type="button"
       style={props.style}
     >
-      {t("chat.detailPanel.viewRawText")}
+      <Show when={props.label}>
+        <Icon name="scrollText" />
+      </Show>
+      {props.label ?? t("chat.detailPanel.viewRawText")}
     </button>
   );
 }
@@ -408,7 +417,9 @@ function CanvasPreview(props: {
 }
 
 export function SidebarPanel(props: SidebarPanelProps) {
+  const maid = useMaidTheme();
   const title = () => sidebarTitle(props.content, props.showingRawText);
+  const sourceLabel = () => (maid() ? t("chat.detailPanel.viewSource") : undefined);
   const fillHost = () =>
     ["file", "markdown", "attachment", "session-diff"].includes(props.content?.kind ?? "");
   // Text attachments initialize their own asynchronously loaded Markdown.
@@ -574,6 +585,13 @@ export function SidebarPanel(props: SidebarPanelProps) {
                             />
                           </div>
                           <div class="sidebar-file-view__actions">
+                            <Show when={maid()}>
+                              <RawButton
+                                onClick={props.onViewRawText}
+                                class="btn btn--sm sidebar-file-view__action maid-atelier-source"
+                                label={sourceLabel()}
+                              />
+                            </Show>
                             <FileDownloadButton
                               scopeKey={[
                                 content().fileLinkSessionKey,
@@ -619,7 +637,11 @@ export function SidebarPanel(props: SidebarPanelProps) {
                           </Show>
                         </div>
                         <Show when={!props.showingRawText}>
-                          <RawButton onClick={props.onViewRawText} class="btn btn--sm" />
+                          <RawButton
+                            onClick={props.onViewRawText}
+                            class="btn btn--sm"
+                            label={sourceLabel()}
+                          />
                         </Show>
                       </div>
                     </Show>
