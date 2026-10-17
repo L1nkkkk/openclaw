@@ -8,7 +8,7 @@ import { projectAgents } from "../lib/reactive/domain-capabilities.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
-import { splitMaidAgents } from "./maid-atelier-agents.ts";
+import { maidRowDetail, splitMaidAgents } from "./maid-atelier-agents.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import {
@@ -100,11 +100,23 @@ function activityLine(
   return t(ACTIVITY_KEYS[tone]);
 }
 
-function MaidHeading(props: { label: string; count: number }) {
+function MaidHeading(props: { label: string; count: number; chief?: boolean; sample?: boolean }) {
   return (
     <h2 class="maid-atelier-agents__heading">
-      <span>{props.label}</span>
-      <span class="maid-atelier-agents__count">({props.count})</span>
+      <span class="maid-atelier-agents__heading-label">
+        <Show when={props.chief}>
+          <span class="maid-atelier-agents__mark" aria-hidden="true">
+            <Icon name="star" />
+          </span>
+        </Show>
+        <span>{props.label}</span>
+      </span>
+      <span class="maid-atelier-agents__count">
+        <Show when={props.sample}>
+          <span class="maid-atelier-agents__sample">{t("agentsHome.maidWorkTasksNote")}</span>
+        </Show>
+        ({props.count})
+      </span>
     </h2>
   );
 }
@@ -123,13 +135,15 @@ function MaidAgentRow(props: {
       status: props.summary?.status,
       failed: props.summary?.failed,
     });
+  const pinned = () => props.summary?.pinned === true;
   const role = () => roleLine(props.chief, tone(), maidIdentityTheme(props.card.role));
   const activity = () => activityLine(props.card, tone(), props.summary);
+  const detail = () => maidRowDetail(role(), activity());
+  const marked = () => props.chief || pinned();
   const when = () =>
     props.card.lastActiveAt > 0
       ? formatRelativeTimestamp(props.card.lastActiveAt)
       : t("agentsHome.neverActive");
-  const pinned = () => props.summary?.pinned === true;
   return (
     <button
       type="button"
@@ -165,15 +179,14 @@ function MaidAgentRow(props: {
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">
           <span class="maid-atelier-agents__name">{props.card.name}</span>
-          <Show when={pinned()}>
+          <Show when={marked()}>
             <span class="maid-atelier-agents__pin" aria-hidden="true">
               <Icon name="star" />
             </span>
           </Show>
         </span>
-        <span class="maid-atelier-agents__role">{role()}</span>
-        <span class="maid-atelier-agents__activity" title={activity()}>
-          {activity()}
+        <span class="maid-atelier-agents__activity" title={detail()}>
+          {detail()}
         </span>
       </span>
       <span class="maid-atelier-agents__aside">
@@ -205,7 +218,7 @@ function MaidAtelierRosterView(props: MaidAtelierRosterViewProps): JSX.Element {
       <Show when={props.chief}>
         {(chief) => (
           <>
-            <MaidHeading label={t("agentsHome.maidSection")} count={1} />
+            <MaidHeading label={t("agentsHome.maidSection")} count={1} chief={true} />
             <MaidAgentRow
               card={chief()}
               chief={true}
@@ -233,8 +246,11 @@ function MaidAtelierRosterView(props: MaidAtelierRosterViewProps): JSX.Element {
           )}
         </For>
       </Show>
-      <MaidHeading label={t("agentsHome.maidWorkTasks")} count={SAMPLE_TASKS.length} />
-      <p class="maid-atelier-agents__note">{t("agentsHome.maidWorkTasksNote")}</p>
+      <MaidHeading
+        label={t("agentsHome.maidWorkTasks")}
+        count={SAMPLE_TASKS.length}
+        sample={true}
+      />
       <For each={SAMPLE_TASKS}>
         {(task) => (
           <button

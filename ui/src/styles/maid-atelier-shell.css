@@ -8,31 +8,35 @@
 
 :root[data-theme-id="maid"] .chat-pane__session-title {
   color: var(--text-strong);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
 :root[data-theme-id="maid"] .chat-group {
-  --chat-turn-gap: 26px;
+  --chat-turn-gap: 22px;
 }
 
 :root[data-theme-id="maid"] .chat-group.assistant .chat-bubble {
   padding-block: 2px;
   color: var(--text);
-  font-size: 14.5px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.75;
 }
 
 :root[data-theme-id="maid"] .chat-group.user .chat-bubble {
   border: 0;
   border-radius: var(--radius-xl);
-  background: color-mix(in srgb, var(--bg-elevated) 82%, var(--accent));
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
+  font-size: 14.5px;
+  line-height: 1.6;
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
-  --chat-composer-surface: color-mix(in srgb, var(--bg-elevated) 88%, var(--bg));
-  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
-  background: color-mix(in srgb, var(--bg-elevated) 88%, var(--bg));
+  --chat-composer-surface: color-mix(in srgb, var(--bg-elevated) 78%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--bg));
 }
 
 :root[data-theme-id="maid"] .sidebar-region__right-runtime,
@@ -45,7 +49,7 @@
 
 :root[data-theme-id="maid"] .side-panel__header {
   background: transparent;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view,
@@ -118,17 +122,18 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h1) {
-  margin-bottom: 0.8em;
+  margin-bottom: 0.95em;
   padding-bottom: 0;
   border-bottom: 0;
   color: var(--text-strong);
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 650;
   letter-spacing: -0.03em;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(p) {
+  margin-bottom: 1.15em;
   color: var(--text);
 }
 
