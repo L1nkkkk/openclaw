@@ -4,6 +4,7 @@ import { createMemo, Show } from "solid-js";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { resolveSessionDisplayName } from "../lib/session-display.ts";
+import { MaidPresence } from "./maid-atelier-presence.tsx";
 import {
   readMaidGoal,
   resolveMaidProgress,
@@ -13,7 +14,6 @@ import {
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import "../styles/maid-atelier-chrome.css";
-import "../styles/maid-atelier-lamp.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
 
@@ -99,11 +99,7 @@ function MaidAtelierProgressLive(props: {
       data-source={model().source}
       aria-label={t("agentsHome.maidProgressLabel")}
     >
-      <span
-        class="maid-lamp maid-atelier-progress__lamp"
-        data-tone={LAMP_TONES[model().tone]}
-        aria-hidden="true"
-      />
+      <MaidPresence tone={LAMP_TONES[model().tone]} class="maid-atelier-progress__lamp" />
       <Show when={props.placement === "chip"}>
         <span class="maid-atelier-progress__status">{status()}</span>
       </Show>

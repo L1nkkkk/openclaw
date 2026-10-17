@@ -9,6 +9,7 @@ import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
 import { splitMaidAgents } from "./maid-atelier-agents.ts";
+import { MaidPresence } from "./maid-atelier-presence.tsx";
 import {
   maidClip,
   maidIdentityTheme,
@@ -20,7 +21,6 @@ import {
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
-import "../styles/maid-atelier-lamp.css";
 import "../styles/maid-atelier-sidebar.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
@@ -148,12 +148,7 @@ function MaidAgentRow(props: {
             textAvatar: props.card.textAvatar,
           }}
         />
-        <span
-          class="maid-atelier-agents__status maid-lamp"
-          data-tone={tone()}
-          role="img"
-          aria-label={t(STATUS_KEYS[tone()])}
-        />
+        <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
       </span>
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">

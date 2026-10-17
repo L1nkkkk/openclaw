@@ -81,10 +81,10 @@
   font-weight: 700;
 }
 
-.maid-atelier-agents__status {
+.maid-atelier-agents__avatar > .maid-presence {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  right: -1px;
+  bottom: -1px;
 }
 
 .maid-atelier-agents__copy,
