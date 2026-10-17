@@ -4,6 +4,7 @@ import { createEffect, createMemo, createSignal, Show, untrack } from "solid-js"
 import type { ControlUiSurfaceProps } from "../../../../src/plugin-sdk/control-ui.js";
 import type { ApplicationContext } from "../../app/context-types.ts";
 import { ExecApprovalCard } from "../../components/exec-approval-card-solid.tsx";
+import { MaidAtelierTaskLog } from "../../components/maid-atelier-task-log.tsx";
 import { Icon } from "../../components/solid/icon.tsx";
 import {
   KEYBOARD_SHORTCUT_COMBOS,
@@ -401,6 +402,10 @@ function ChatContent(input: { props: ChatProps }) {
                       forwardChatWheelToTranscript(event, input.props.transcript.scrollElement)
                     }
                   >
+                    <MaidAtelierTaskLog
+                      card={input.props.progressCard}
+                      active={(input.props.messages?.length ?? 0) > 0}
+                    />
                     <Show when={frame().historyFailed && !frame().transcriptEmpty}>
                       {historyFailure(true)}
                     </Show>

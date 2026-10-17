@@ -77,31 +77,52 @@
 :root[data-theme-id="maid"] .sidebar-file-view__path-bar,
 :root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar {
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px 0;
+  padding: 8px 16px 0;
   border: 0;
   background: transparent;
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path-field {
-  flex: 0 1 auto;
-  max-width: min(100%, 42ch);
-  justify-content: flex-end;
+  flex: 1 1 auto;
+  max-width: 100%;
+  justify-content: flex-start;
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path {
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 11px;
-  text-align: end;
+  font-size: 12px;
+  text-align: start;
 }
 
-:root[data-theme-id="maid"] .sidebar-file-view__action {
-  width: 22px;
-  height: 22px;
+:root[data-theme-id="maid"] .sidebar-file-view__action,
+:root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar .btn,
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
   border-radius: var(--radius-full);
-  color: var(--muted);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn::after {
+  content: attr(aria-label);
+  white-space: nowrap;
+}
+
+:root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar .btn svg,
+:root[data-theme-id="maid"] .maid-atelier-source svg,
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-shell__hint {
@@ -117,17 +138,17 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader {
-  max-width: 68ch;
+  max-width: 62ch;
   margin: 0;
-  padding: 28px 36px 80px;
+  padding: 18px 28px 72px;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 14.5px;
+  line-height: 1.62;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader::before {
@@ -135,18 +156,27 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h1) {
-  margin-bottom: 0.95em;
+  margin-bottom: 0.55em;
   padding-bottom: 0;
   border-bottom: 0;
   color: var(--text-strong);
-  font-size: 1.85rem;
+  font-size: 1.55rem;
   font-weight: 650;
   letter-spacing: -0.03em;
-  line-height: 1.2;
+  line-height: 1.15;
+}
+
+:root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h2) {
+  margin-bottom: 0.4em;
+  color: var(--text-strong);
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(p) {
-  margin-bottom: 1.15em;
+  margin-bottom: 0.68em;
   color: var(--text);
 }
 
