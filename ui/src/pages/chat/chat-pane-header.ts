@@ -569,6 +569,8 @@ export abstract class ChatPaneHeader extends ChatPaneDiscussion {
       actionsDisabled: this.state?.connected !== true,
       panelMenuActions,
       layoutMenuActions,
+      atelierCard: this.presented ? (this.progressCardPresentation?.card ?? null) : null,
+      atelierActive: branchSwitchWorking,
       runningSubagentCount: projectSubagentStatus(
         {
           ...this.projectChildRoster(this.resolveChatReadTarget()),

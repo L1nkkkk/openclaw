@@ -1,0 +1,150 @@
+.maid-atelier-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.maid-atelier-progress--chip {
+  flex: 0 1 240px;
+  max-width: 100%;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+}
+
+.maid-atelier-progress--strip {
+  margin: 2px 2px 0;
+  padding: 7px 10px 5px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+
+.maid-atelier-progress__lamp {
+  margin-inline-end: 2px;
+}
+
+.maid-atelier-progress__status {
+  flex: none;
+  color: var(--muted-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.maid-atelier-progress[data-tone="working"] .maid-atelier-progress__status {
+  color: var(--info);
+}
+
+.maid-atelier-progress[data-tone="completed"] .maid-atelier-progress__status {
+  color: var(--ok);
+}
+
+.maid-atelier-progress[data-tone="attention"] .maid-atelier-progress__status {
+  color: var(--danger);
+}
+
+.maid-atelier-progress__target {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maid-atelier-progress__check {
+  display: inline-flex;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--ok);
+}
+
+.maid-atelier-progress__check svg {
+  width: 14px;
+  height: 14px;
+}
+
+.maid-atelier-progress__sample {
+  flex: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.maid-atelier-progress__fraction {
+  flex: none;
+  margin-left: auto;
+  color: var(--text-strong);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .maid-atelier-progress__status,
+  .maid-atelier-progress__target {
+    transition: color 180ms ease-out;
+  }
+
+  /* A hairline travels the strip only while the pass is working. */
+  .maid-atelier-progress--strip[data-tone="working"] {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--info) 55%, transparent) 46%,
+      color-mix(in srgb, var(--info) 55%, transparent) 54%,
+      transparent
+    );
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 28% 2px;
+    animation: maid-atelier-progress-tick 2.8s ease-in-out infinite;
+  }
+
+  :root[data-theme-id="maid"] .agent-chat__input :is(.agent-chat__input-btn, .chat-send-btn),
+  :root[data-theme-id="maid"] .chat-composer-model-control {
+    transition:
+      color 160ms ease-out,
+      background-color 160ms ease-out,
+      opacity 120ms ease-out,
+      transform 120ms ease-out;
+  }
+
+  :root[data-theme-id="maid"]
+    .agent-chat__input
+    :is(.agent-chat__input-btn, .chat-send-btn):active:not(:disabled),
+  :root[data-theme-id="maid"] .chat-composer-model-control:active {
+    transform: scale(0.96);
+  }
+}
+
+@keyframes maid-atelier-progress-tick {
+  0% {
+    background-position: -30% 100%;
+  }
+
+  100% {
+    background-position: 130% 100%;
+  }
+}
+
+:root[data-theme-id="maid"] .chat-composer-model-control {
+  padding-inline: 8px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+}
+
+@supports (corner-shape: superellipse(1.5)) {
+  .maid-atelier-progress--chip,
+  .maid-atelier-progress--strip,
+  :root[data-theme-id="maid"] .chat-composer-model-control {
+    corner-shape: superellipse(1.5);
+  }
+}

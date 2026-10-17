@@ -18,3 +18,13 @@ export function splitMaidAgents<T extends { id: string }>(
     independent: cards.filter((_, cardIndex) => cardIndex !== index),
   };
 }
+
+/** One subtitle: role, then the live activity when it adds something. */
+export function maidRowDetail(role: string, activity: string): string {
+  const roleText = role.trim();
+  const activityText = activity.trim();
+  if (!activityText || activityText === roleText) {
+    return roleText;
+  }
+  return `${roleText} · ${activityText}`;
+}

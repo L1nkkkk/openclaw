@@ -1,3 +1,4 @@
+import type { ProgressCard } from "@openclaw/gateway-protocol";
 import { Show } from "solid-js";
 import { buildControlUiResourcePath } from "../../../../../src/gateway/control-ui-resource-routes.js";
 import { isIncognitoSessionKey } from "../../../../../src/shared/incognito-session-key.js";
@@ -9,6 +10,7 @@ import {
   SHELL_NAV_DRAWER_TOGGLE_EVENT,
   type ShellNavDrawerToggleDetail,
 } from "../../../components/command-palette-contract.ts";
+import { MaidAtelierProgress } from "../../../components/maid-atelier-progress.tsx";
 import { StandalonePersonLink } from "../../../components/person-activity-link-solid.tsx";
 import {
   personActivityLink,
@@ -17,10 +19,10 @@ import {
 import { SessionColorDot } from "../../../components/session-color.ts";
 import { isCloudWorkerPlacementState } from "../../../components/session-row-badges.ts";
 import { Icon } from "../../../components/solid/icon.tsx";
-import { Menu, type MenuItem } from "../../../components/solid/menu.tsx";
-import { renderSessionOwnerChip } from "../../../components/solid/session-presentation.tsx";
 import "../../../components/tooltip.ts";
 import "../../../components/workspace-icon.ts";
+import { Menu, type MenuItem } from "../../../components/solid/menu.tsx";
+import { renderSessionOwnerChip } from "../../../components/solid/session-presentation.tsx";
 import { SessionTitlePlaceholder } from "../../../components/solid/session-title-placeholder.tsx";
 import {
   clearCompositionEnd,
@@ -80,6 +82,9 @@ export type ChatPaneHeaderProps = ChatPaneLayoutMenuProps & {
   copiedAction: ChatPaneHeaderAction | null;
   renameDisabledReason?: string;
   runningSubagentCount?: number;
+  /** Maid theme reads the live progress card; other themes ignore it. */
+  atelierCard?: Pick<ProgressCard, "markdown" | "steps"> | null;
+  atelierActive?: boolean;
   detailsControl?: PaneDetailsProps;
   onOpenDetails?: (source: HTMLElement) => void;
   conversationVisible?: boolean;
@@ -383,7 +388,15 @@ function ChatPaneHeader(props: ChatPaneHeaderProps) {
               </button>
             </openclaw-tooltip>
           </Show>
-          <IdentityCrumbs {...props} /> <LitContent value={props.publicAccessIndicator} />
+          <IdentityCrumbs {...props} />{" "}
+          <MaidAtelierProgress
+            placement="chip"
+            card={props.atelierCard}
+            session={props.session}
+            title={props.title}
+            activeRun={props.atelierActive}
+          />{" "}
+          <LitContent value={props.publicAccessIndicator} />
           {props.mergedChrome || hasSharingControl() ? undefined : (
             <StandalonePersonLink
               link={

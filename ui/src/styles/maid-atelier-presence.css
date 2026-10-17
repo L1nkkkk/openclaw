@@ -1,0 +1,137 @@
+/* Presence badge. The core is a solid 12px disc with a 2px surface ring
+   so it reads as cut out of the avatar. The ping is a sibling behind it:
+   only the ping scales and fades. The core opacity never animates.
+   Motion is one slow bloom (2.5s attention, 2.8s working), well under 3 Hz. */
+
+.maid-presence {
+  --maid-presence: var(--muted);
+  --maid-presence-ring: var(--bg-elevated);
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+
+.maid-presence__core,
+.maid-presence__ping {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+}
+
+.maid-presence__ping {
+  background: var(--maid-presence);
+  opacity: 0;
+  pointer-events: none;
+  transition: background-color 180ms ease-out;
+}
+
+.maid-presence__core {
+  box-sizing: border-box;
+  border: 2px solid var(--maid-presence-ring);
+  background: var(--maid-presence);
+  transition:
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    box-shadow 240ms ease-out;
+}
+
+.maid-presence[data-tone="busy"] {
+  --maid-presence: var(--info);
+}
+
+.maid-presence[data-tone="busy"] .maid-presence__core {
+  box-shadow: 0 0 5px color-mix(in srgb, var(--maid-presence) 42%, transparent);
+}
+
+.maid-presence[data-tone="attention"] {
+  --maid-presence: var(--danger);
+}
+
+.maid-presence[data-tone="attention"] .maid-presence__core {
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--maid-presence) 48%, transparent);
+}
+
+.maid-presence[data-tone="success"] {
+  --maid-presence: var(--ok);
+}
+
+.maid-presence[data-tone="success"] .maid-presence__core {
+  box-shadow:
+    0 0 4px color-mix(in srgb, var(--maid-presence) 70%, transparent),
+    0 0 10px 1px color-mix(in srgb, var(--maid-presence) 38%, transparent);
+}
+
+/* Dim flat core. The ring stays opaque so the badge does not wash out. */
+.maid-presence[data-tone="idle"] {
+  --maid-presence: color-mix(in srgb, var(--muted) 58%, var(--bg-elevated));
+}
+
+.maid-presence[data-tone="idle"] .maid-presence__core {
+  overflow: hidden;
+}
+
+/* Crescent cut in the surface color. Stays inside the 8px core. */
+.maid-presence[data-tone="idle"] .maid-presence__core::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: inherit;
+  background: var(--maid-presence-ring);
+  inset-block-start: -1px;
+  inset-inline-end: -3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .maid-presence[data-tone="busy"] .maid-presence__ping {
+    animation: maid-presence-bloom 2.8s ease-out infinite;
+  }
+
+  .maid-presence[data-tone="attention"] .maid-presence__ping {
+    animation: maid-presence-attention 2.5s ease-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maid-presence__core,
+  .maid-presence__ping {
+    transition: none;
+  }
+}
+
+@keyframes maid-presence-bloom {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  68% {
+    opacity: 0;
+    transform: scale(1.85);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.85);
+  }
+}
+
+@keyframes maid-presence-attention {
+  0% {
+    opacity: 0.58;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(2.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.05);
+  }
+}
