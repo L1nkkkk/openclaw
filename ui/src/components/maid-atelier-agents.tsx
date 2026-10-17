@@ -9,6 +9,7 @@ import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
 import { splitMaidAgents } from "./maid-atelier-agents.ts";
+import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import {
   maidClip,
@@ -140,14 +141,25 @@ function MaidAgentRow(props: {
       onClick={() => props.onOpen(props.card.id)}
     >
       <span class="maid-atelier-agents__avatar">
-        <AgentIdentityAvatar
-          agent={{
-            id: props.card.id,
-            name: props.card.name,
-            avatar: props.card.avatar,
-            textAvatar: props.card.textAvatar,
-          }}
-        />
+        <Show
+          when={props.card.avatar}
+          fallback={
+            <img
+              class="maid-atelier-agents__portrait"
+              src={maidPortraitSrc(props.card.id)}
+              alt=""
+            />
+          }
+        >
+          <AgentIdentityAvatar
+            agent={{
+              id: props.card.id,
+              name: props.card.name,
+              avatar: props.card.avatar,
+              textAvatar: props.card.textAvatar,
+            }}
+          />
+        </Show>
         <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
       </span>
       <span class="maid-atelier-agents__copy">

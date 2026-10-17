@@ -13,7 +13,7 @@
 }
 
 :root[data-theme-id="maid"] .chat-group {
-  --chat-turn-gap: 20px;
+  --chat-turn-gap: 26px;
 }
 
 :root[data-theme-id="maid"] .chat-group.assistant .chat-bubble {
@@ -24,15 +24,15 @@
 }
 
 :root[data-theme-id="maid"] .chat-group.user .chat-bubble {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--bg-elevated) 90%, var(--accent));
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, var(--accent));
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
-  --chat-composer-surface: var(--bg-elevated);
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
+  --chat-composer-surface: color-mix(in srgb, var(--bg-elevated) 88%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, var(--bg));
 }
 
 :root[data-theme-id="maid"] .sidebar-region__right-runtime,
@@ -102,7 +102,7 @@
 :root[data-theme-id="maid"] .sidebar-markdown-reader {
   max-width: 68ch;
   margin: 0;
-  padding: 18px 28px 72px;
+  padding: 28px 36px 80px;
   border: 0;
   border-radius: 0;
   background: transparent;
