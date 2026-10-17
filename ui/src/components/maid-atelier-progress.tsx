@@ -14,6 +14,7 @@ import {
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import "../styles/maid-atelier-chrome.css";
+import "../styles/maid-atelier-shell.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
 

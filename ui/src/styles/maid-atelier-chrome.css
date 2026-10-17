@@ -18,22 +18,11 @@
 }
 
 .maid-atelier-progress--strip {
-  margin: 0 8px 8px;
-  padding: 5px 8px;
-  border-radius: calc(var(--radius-md) - 2px);
-  background: var(--bg-muted);
-}
-
-.maid-atelier-progress--strip[data-tone="working"] {
-  background: var(--info-subtle);
-}
-
-.maid-atelier-progress--strip[data-tone="completed"] {
-  background: var(--ok-subtle);
-}
-
-.maid-atelier-progress--strip[data-tone="attention"] {
-  background: var(--danger-subtle);
+  margin: 2px 2px 0;
+  padding: 6px 8px 4px;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
 }
 
 .maid-atelier-progress__lamp {
