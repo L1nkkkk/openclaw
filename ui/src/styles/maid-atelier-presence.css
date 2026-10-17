@@ -25,7 +25,7 @@
   background: var(--maid-presence);
   opacity: 0;
   pointer-events: none;
-  transition: background-color 200ms ease;
+  transition: background-color 180ms ease-out;
 }
 
 .maid-presence__core {
@@ -33,9 +33,9 @@
   border: 2px solid var(--maid-presence-ring);
   background: var(--maid-presence);
   transition:
-    background-color 200ms ease,
-    border-color 200ms ease,
-    box-shadow 240ms ease;
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    box-shadow 240ms ease-out;
 }
 
 .maid-presence[data-tone="busy"] {
@@ -92,6 +92,13 @@
 
   .maid-presence[data-tone="attention"] .maid-presence__ping {
     animation: maid-presence-attention 2.5s ease-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maid-presence__core,
+  .maid-presence__ping {
+    transition: none;
   }
 }
 

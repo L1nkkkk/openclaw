@@ -37,6 +37,19 @@
   --chat-composer-surface: color-mix(in srgb, var(--bg-elevated) 78%, var(--bg));
   border: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
   background: color-mix(in srgb, var(--bg-elevated) 78%, var(--bg));
+  transition:
+    border-color 180ms ease-out,
+    background-color 180ms ease-out;
+}
+
+:root[data-theme-id="maid"] .agent-chat__input:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme-id="maid"] .agent-chat__input {
+    transition: none;
+  }
 }
 
 :root[data-theme-id="maid"] .sidebar-region__right-runtime,
