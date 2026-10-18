@@ -60,6 +60,12 @@ const enAgentsHome = {
     maidProgressProcess: "Process {completed}/{total}",
     maidProgressSample: "Sample",
     maidProgressLabel: "Atelier progress",
+    maidRoomPrivate: "Private",
+    maidRoomGroup: "Group · {count}",
+    maidRoomPull: "Pull in",
+    maidRoomPullEmpty: "No other agents to pull in",
+    maidRoomPullDraft: "Pull {name} into this conversation.",
+    maidRoomYou: "You",
   },
   clawsCatalog: {
     explore: "Explore Claws",

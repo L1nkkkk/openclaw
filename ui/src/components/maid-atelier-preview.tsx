@@ -1,12 +1,14 @@
 import type { JSX } from "@solidjs/web";
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
 import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
+import { maidRoomPresentation } from "./maid-atelier-chat.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
+import { MaidAtelierRoom } from "./maid-atelier-room.tsx";
 import type { MaidTone } from "./maid-atelier-status.ts";
 import { MaidAtelierTaskLog } from "./maid-atelier-task-log.tsx";
 import { Icon } from "./solid/icon.tsx";
@@ -51,8 +53,30 @@ function SampleChatRow(props: {
   );
 }
 
+const FIXTURE_AGENTS = [
+  { id: "harper", name: "Harper" },
+  { id: "notes", name: "Notes" },
+  { id: "archive", name: "Archive" },
+];
+
+export type MaidAtelierPreviewScene = "dm" | "group" | "invite";
+
+function fixtureRoom(scene: MaidAtelierPreviewScene) {
+  return maidRoomPresentation({
+    agentId: "harper",
+    assistantName: "Harper",
+    userName: "Mori",
+    userId: "mori",
+    sessionTitle: "Chapter seven",
+    agents: FIXTURE_AGENTS,
+    children: scene === "group" ? [{ key: "agent:notes:subagent:margin", agentId: "notes" }] : [],
+    childKeys: [],
+    kind: "direct",
+  });
+}
+
 /** Density stand-in for screenshots. Project names and lines here are not live data. */
-export function MaidAtelierPreview(): JSX.Element {
+export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): JSX.Element {
   if (typeof document !== "undefined") {
     document.documentElement.dataset.themeId = "maid";
     document.documentElement.dataset.theme = "maid";
@@ -65,6 +89,8 @@ export function MaidAtelierPreview(): JSX.Element {
     }
     setFlipped(next);
   };
+  const scene = () => props.scene ?? "group";
+  const presented = () => fixtureRoom(scene());
   const sections = maidDensitySections(Date.now());
   for (const section of sections) {
     section.sample = false;
@@ -98,6 +124,17 @@ export function MaidAtelierPreview(): JSX.Element {
           <span class="chat-pane__session-title">manuscript / Chapter seven</span>
           <MaidAtelierProgress placement="chip" card={PREVIEW_CARD} activeRun={true} />
         </header>
+        <Show when={presented()}>
+          {(room) => (
+            <MaidAtelierRoom
+              room={room().room}
+              candidates={room().candidates}
+              sample
+              menuPinned={scene() === "invite"}
+              portrait={(member) => maidPortraitSrc(member.kind === "user" ? "mori" : member.id)}
+            />
+          )}
+        </Show>
         <div class="maid-atelier-preview__thread" data-maid-chat="sample">
           <MaidAtelierTaskLog card={PREVIEW_CARD} active={true} />
           <p class="maid-atelier-chat__sample">{t("agentsHome.maidProgressSample")}</p>
@@ -109,14 +146,16 @@ export function MaidAtelierPreview(): JSX.Element {
             when="2m ago"
             text="The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
           />
-          <SampleChatRow
-            side="assistant"
-            name="Notes"
-            portraitId="notes"
-            tone="idle"
-            when="8m ago"
-            text="The margin can wait. I will file it once the ending stays put."
-          />
+          <Show when={scene() === "group"}>
+            <SampleChatRow
+              side="assistant"
+              name="Notes"
+              portraitId="notes"
+              tone="idle"
+              when="8m ago"
+              text="The margin can wait. I will file it once the ending stays put."
+            />
+          </Show>
           <SampleChatRow
             side="user"
             name="Mori"
@@ -125,25 +164,41 @@ export function MaidAtelierPreview(): JSX.Element {
             when="1m ago"
             text="Keep going from the checkpoint, and leave the ending alone."
           />
-          <SampleChatRow
-            side="assistant"
-            name="Harper"
-            portraitId="harper"
-            tone="busy"
-            when="Just now"
-            text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
-          />
-          <SampleChatRow
-            side="user"
-            name="Mori"
-            portraitId="mori"
-            tone="success"
-            when="Just now"
-            text="That is enough for this pass. File the chapter where it is."
-          />
+          <Show
+            when={scene() === "group"}
+            fallback={
+              <SampleChatRow
+                side="assistant"
+                name="Harper"
+                portraitId="harper"
+                tone="busy"
+                when="Just now"
+                text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
+              />
+            }
+          >
+            <SampleChatRow
+              side="assistant"
+              name="Harper"
+              portraitId="harper"
+              tone="busy"
+              when="Just now"
+              text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
+            />
+            <SampleChatRow
+              side="user"
+              name="Mori"
+              portraitId="mori"
+              tone="success"
+              when="Just now"
+              text="That is enough for this pass. File the chapter where it is."
+            />
+          </Show>
         </div>
         <div class="agent-chat__input maid-atelier-preview__composer">
-          <div class="maid-atelier-preview__draft">Message Harper…</div>
+          <div class="maid-atelier-preview__draft">
+            {scene() === "group" ? "Message the group…" : "Message Harper…"}
+          </div>
           <div class="maid-atelier-preview__composer-bar">
             <span class="maid-atelier-preview__model">gemini-3.1-flash-lite</span>
             <button type="button" class="maid-atelier-preview__send">

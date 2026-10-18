@@ -293,7 +293,14 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "Keep going from the checkpoint, and leave the ending alone."
+      "text": "gemini-3.1-flash-lite"
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "Harper counted the open files the way the boy counted coins: three still warm, one already filed, and the last page left face down. Chief Maid did not ask for that page. The note under the folded chapter said the same thing it had said at dusk."
     },
     {
       "count": 1,
@@ -321,6 +328,27 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "Message the group…"
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "Outside, the row went dark from the far end inward. The wood kept the heat of the pans. She slid the draft back, set her hand on the untouched ending, and waited for the next instruction to be shorter than the one before it."
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "Send"
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
       "text": "She crossed out the sentence that explained the trick and left the smell of sugar and iron. A boy at the next table counted coins into a tin. Nobody looked up when the chapter changed hands."
     },
     {
@@ -329,13 +357,6 @@
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
       "text": "Source"
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
     },
     {
       "count": 1,
@@ -357,6 +378,20 @@
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
       "text": "The stall lights came on one row at a time. Harper waited at the last table, a marked-up chapter folded under one hand, and listened to the oil pop in the pans."
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "The title lost two words and gained a lamp. The first paragraph stopped explaining who had arrived and let the oil do it. A crossed-out line about the trick stayed in the margin, smaller than the sentence it used to be."
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "What still moved"
     },
     {
       "count": 1,

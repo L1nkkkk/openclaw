@@ -247,6 +247,136 @@
   text-transform: uppercase;
 }
 
+.maid-atelier-room-wrap {
+  flex: none;
+  margin: 0 12px 6px;
+}
+
+.maid-atelier-room {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.maid-atelier-room__faces {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.maid-atelier-room__face {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
+  color: var(--text-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face {
+  width: 26px;
+  height: 26px;
+  box-shadow: 0 0 0 2px var(--bg);
+  font-size: 10px;
+}
+
+.maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face + .maid-atelier-room__face {
+  margin-inline-start: -8px;
+}
+
+.maid-atelier-room__copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.maid-atelier-room__title {
+  overflow: hidden;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maid-atelier-room__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.maid-atelier-room__sample {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-room__pull {
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.maid-atelier-room__pull:disabled {
+  opacity: 0.45;
+}
+
+.maid-atelier-room__menu {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+
+.maid-atelier-room__candidate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  text-align: start;
+}
+
+.maid-atelier-room__candidate img {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.maid-atelier-room__candidate:hover,
+.maid-atelier-room__pull:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
+}
+
+.maid-atelier-room__pull:focus-visible,
+.maid-atelier-room__candidate:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .maid-atelier-log__item,
   .maid-atelier-log__check {
@@ -260,6 +390,11 @@
   .maid-atelier-log__item:active {
     transform: scale(0.985);
   }
+
+  .maid-atelier-room__pull,
+  .maid-atelier-room__candidate {
+    transition: background-color 160ms ease-out;
+  }
 }
 
 @supports (corner-shape: superellipse(1.5)) {
@@ -267,6 +402,8 @@
   .maid-atelier-progress--strip,
   .maid-atelier-log__item,
   .maid-atelier-log__refine,
+  .maid-atelier-room__pull,
+  .maid-atelier-room__menu,
   :root[data-theme-id="maid"] .chat-composer-model-control {
     corner-shape: superellipse(1.5);
   }

@@ -134,7 +134,8 @@ export function resolveTranscriptAvatarPlacement(
       ? "none"
       : defaultAvatarPlacement;
   // Hidden subagent avatars must not leave the group layout reserving their columns.
-  // The maid theme presents every other thread as a group chat of the real voices.
+  // The maid theme keeps avatars on the real voices. The room bar says whether
+  // that thread is a private chat or a group.
   const presented = presentMaidChat({
     maid: maidThemeSelected(),
     avatarPlacement,
