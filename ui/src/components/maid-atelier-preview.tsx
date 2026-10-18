@@ -5,6 +5,12 @@ import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
 import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
 import { maidRoomPresentation } from "./maid-atelier-chat.ts";
+import {
+  MaidMentionChip,
+  MaidMentionPicker,
+  MaidMentionText,
+} from "./maid-atelier-mention-picker.tsx";
+import type { MaidMentionAgent } from "./maid-atelier-mentions.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
@@ -33,6 +39,7 @@ function SampleChatRow(props: {
   tone: MaidTone;
   when: string;
   text: string;
+  agents?: readonly MaidMentionAgent[];
 }) {
   return (
     <div class={`chat-group ${props.side} chat-group--with-footer`} data-maid-speaker={props.name}>
@@ -41,7 +48,11 @@ function SampleChatRow(props: {
         <MaidPresence tone={props.tone} label={props.name} />
       </span>
       <div class="chat-group-messages">
-        <div class="chat-bubble">{props.text}</div>
+        <div class="chat-bubble">
+          <Show when={props.agents?.length} fallback={props.text}>
+            <MaidMentionText text={props.text} agents={props.agents ?? []} />
+          </Show>
+        </div>
       </div>
       <div class="chat-group-footer">
         <div class="chat-group-footer__meta">
@@ -59,7 +70,11 @@ const FIXTURE_AGENTS = [
   { id: "archive", name: "Archive" },
 ];
 
-export type MaidAtelierPreviewScene = "dm" | "group" | "invite";
+export type MaidAtelierPreviewScene = "dm" | "group" | "invite" | "mention" | "mentioned";
+
+function groupScene(scene: MaidAtelierPreviewScene): boolean {
+  return scene === "group" || scene === "mention" || scene === "mentioned";
+}
 
 function fixtureRoom(scene: MaidAtelierPreviewScene) {
   return maidRoomPresentation({
@@ -69,7 +84,7 @@ function fixtureRoom(scene: MaidAtelierPreviewScene) {
     userId: "mori",
     sessionTitle: "Chapter seven",
     agents: FIXTURE_AGENTS,
-    children: scene === "group" ? [{ key: "agent:notes:subagent:margin", agentId: "notes" }] : [],
+    children: groupScene(scene) ? [{ key: "agent:notes:subagent:margin", agentId: "notes" }] : [],
     childKeys: [],
     kind: "direct",
   });
@@ -91,6 +106,19 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
   };
   const scene = () => props.scene ?? "group";
   const presented = () => fixtureRoom(scene());
+  const grouped = () => groupScene(scene());
+  const mentioning = () => scene() === "mention" || scene() === "mentioned";
+  const mentionAgents = (): MaidMentionAgent[] => {
+    const room = presented();
+    if (!room || room.room.kind !== "group") {
+      return [];
+    }
+    return room.room.members.flatMap((member) =>
+      member.kind === "agent"
+        ? [{ id: member.id, name: member.name, portraitUrl: maidPortraitSrc(member.id) }]
+        : [],
+    );
+  };
   const sections = maidDensitySections(Date.now());
   for (const section of sections) {
     section.sample = false;
@@ -146,7 +174,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             when="2m ago"
             text="The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
           />
-          <Show when={scene() === "group"}>
+          <Show when={grouped()}>
             <SampleChatRow
               side="assistant"
               name="Notes"
@@ -165,7 +193,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             text="Keep going from the checkpoint, and leave the ending alone."
           />
           <Show
-            when={scene() === "group"}
+            when={grouped()}
             fallback={
               <SampleChatRow
                 side="assistant"
@@ -191,13 +219,40 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               portraitId="mori"
               tone="success"
               when="Just now"
-              text="That is enough for this pass. File the chapter where it is."
+              text={
+                mentioning()
+                  ? "@Notes, tighten the lamp line and leave the ending."
+                  : "That is enough for this pass. File the chapter where it is."
+              }
+              agents={mentioning() ? mentionAgents() : undefined}
             />
           </Show>
         </div>
         <div class="agent-chat__input maid-atelier-preview__composer">
-          <div class="maid-atelier-preview__draft">
-            {scene() === "group" ? "Message the group…" : "Message Harper…"}
+          <Show when={scene() === "mention"}>
+            <MaidMentionPicker agents={mentionAgents()} activeIndex={0} />
+          </Show>
+          <Show
+            when={
+              scene() === "mentioned"
+                ? mentionAgents().find((agent) => agent.id === "notes")
+                : undefined
+            }
+          >
+            {(agent) => (
+              <div class="maid-atelier-mention-chips">
+                <MaidMentionChip agent={agent()} />
+              </div>
+            )}
+          </Show>
+          <div class={["maid-atelier-preview__draft", { "is-filled": mentioning() }]}>
+            {scene() === "mention"
+              ? "@"
+              : scene() === "mentioned"
+                ? "keep the crossed-out sentence in the margin."
+                : grouped()
+                  ? "Message the group…"
+                  : "Message Harper…"}
           </div>
           <div class="maid-atelier-preview__composer-bar">
             <span class="maid-atelier-preview__model">gemini-3.1-flash-lite</span>

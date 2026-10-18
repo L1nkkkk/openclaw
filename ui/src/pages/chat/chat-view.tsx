@@ -61,6 +61,7 @@ type ChatViewInput = {
   frame: ChatViewFrame;
   presented: boolean;
   application?: ApplicationContext;
+  maidGroupAgents?: ChatProps["maidGroupAgents"];
 };
 
 function ChatTranscript(input: ChatViewInput) {
@@ -163,10 +164,23 @@ function ChatFooterContent(input: ChatViewInput) {
   );
 }
 
+function maidMemberPortrait(
+  props: ChatProps,
+  member: { id: string; kind: "user" | "agent" },
+): string | null {
+  if (member.kind === "user") {
+    return maidPortraitUrl(props.userAvatar);
+  }
+  const uploaded = props.agentsList?.agents.find((agent) => agent.id === member.id)?.identity
+    ?.avatarUrl;
+  return maidPortraitUrl(uploaded) ?? maidPortraitSrc(member.id);
+}
+
 function ChatComposerView(input: ChatViewInput) {
   return (
     <ChatComposer
       {...input.props}
+      maidGroupAgents={input.maidGroupAgents}
       renderRevision={input.frame}
       progressCard={input.props.detailsEnabled ? null : input.props.progressCard}
       progressCardInitialLoading={
@@ -297,6 +311,23 @@ function ChatContent(input: { props: ChatProps }) {
       participantCount: session?.participantCount,
     });
   });
+  const maidGroupAgents = createMemo(() => {
+    const presented = atelierRoom();
+    if (presented?.room.kind !== "group") {
+      return [];
+    }
+    return presented.room.members.flatMap((member) =>
+      member.kind === "agent"
+        ? [
+            {
+              id: member.id,
+              name: member.name,
+              portraitUrl: maidMemberPortrait(input.props, member),
+            },
+          ]
+        : [],
+    );
+  });
   const [presentationRevision, setPresentationRevision] = createSignal(0, { ownedWrite: true });
   createEffect(
     () => input.props.presented,
@@ -319,6 +350,7 @@ function ChatContent(input: { props: ChatProps }) {
     frame: frame(),
     presented: presented(),
     application,
+    maidGroupAgents: maidGroupAgents(),
   });
   const historyMessage = () => {
     const state = frame().historyLoadState;
@@ -437,15 +469,7 @@ function ChatContent(input: { props: ChatProps }) {
                         <MaidAtelierRoom
                           room={room().room}
                           candidates={room().candidates}
-                          portrait={(member) => {
-                            if (member.kind === "user") {
-                              return maidPortraitUrl(input.props.userAvatar);
-                            }
-                            const uploaded = input.props.agentsList?.agents.find(
-                              (agent) => agent.id === member.id,
-                            )?.identity?.avatarUrl;
-                            return maidPortraitUrl(uploaded) ?? maidPortraitSrc(member.id);
-                          }}
+                          portrait={(member) => maidMemberPortrait(input.props, member)}
                           onPull={(agent) => {
                             const ask = t("agentsHome.maidRoomPullDraft", { name: agent.name });
                             const state = getChatComposerState(input.props.paneId);

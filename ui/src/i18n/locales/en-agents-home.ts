@@ -66,6 +66,8 @@ const enAgentsHome = {
     maidRoomPullEmpty: "No other agents to pull in",
     maidRoomPullDraft: "Pull {name} into this conversation.",
     maidRoomYou: "You",
+    maidMentionMenu: "Agents in this group",
+    maidMentionRemove: "Remove {name}",
   },
   clawsCatalog: {
     explore: "Explore Claws",

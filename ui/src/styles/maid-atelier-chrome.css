@@ -392,7 +392,8 @@
   }
 
   .maid-atelier-room__pull,
-  .maid-atelier-room__candidate {
+  .maid-atelier-room__candidate,
+  .maid-atelier-mention-menu__option {
     transition: background-color 160ms ease-out;
   }
 }
@@ -404,7 +405,96 @@
   .maid-atelier-log__refine,
   .maid-atelier-room__pull,
   .maid-atelier-room__menu,
+  .maid-atelier-mention-menu,
+  .maid-atelier-mention,
   :root[data-theme-id="maid"] .chat-composer-model-control {
     corner-shape: superellipse(1.5);
   }
+}
+
+.agent-chat__input:has(> .maid-atelier-mention-menu) {
+  z-index: 25;
+}
+
+.maid-atelier-mention-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--chat-composer-surface, var(--popover));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.maid-atelier-mention-menu__label {
+  padding: 4px 8px 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.maid-atelier-mention-menu__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  text-align: start;
+  font: inherit;
+}
+
+.maid-atelier-mention-menu__option[aria-selected="true"],
+.maid-atelier-mention-menu__option:hover {
+  background: var(--bg-hover);
+}
+
+.maid-atelier-mention-menu__option:focus-visible,
+.maid-atelier-mention:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.maid-atelier-mention-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.maid-atelier-mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 8px 1px 1px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-weight: 650;
+  line-height: 1.4;
+  vertical-align: baseline;
+}
+
+.maid-atelier-mention__face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 24%, var(--bg));
+  object-fit: cover;
+  font-size: 11px;
 }

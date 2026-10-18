@@ -12,6 +12,7 @@ import {
 } from "./chat-composer-slash-menu.tsx";
 import { commitComposerDraft } from "./chat-composer-state.ts";
 import type { ChatComposerProps, ChatComposerState } from "./chat-composer-types.ts";
+import { maidMentionComposerHost } from "./maid-agent-mention-menu.ts";
 
 type ComposerKeyDownDeps = {
   prediction?: { text: string | null; dismiss: () => void };
@@ -62,6 +63,18 @@ export function createComposerKeyDownHandler({
     }
 
     if (state.emojiMenu.handleKeydown(event, props.paneId, requestUpdate)) {
+      return;
+    }
+
+    if (
+      state.maidMentionMenu.handleKeydown(
+        event,
+        maidMentionComposerHost(props, state, (value, mentions) => {
+          commitComposerDraft(props, value, mentions);
+        }),
+        requestUpdate,
+      )
+    ) {
       return;
     }
 

@@ -10,6 +10,7 @@ import { HumanMentionMenu } from "./chat-composer-mention-menu.tsx";
 import { createSkillMenuState } from "./chat-composer-skill-menu.tsx";
 import { createSlashMenuState } from "./chat-composer-slash-menu.tsx";
 import type { ChatComposerProps, ChatComposerState } from "./chat-composer-types.ts";
+import { MaidAgentMentionMenu } from "./maid-agent-mention-menu.ts";
 
 function createChatComposerState(): ChatComposerState {
   return {
@@ -18,6 +19,7 @@ function createChatComposerState(): ChatComposerState {
     composerComposing: false,
     editRevision: 0,
     mentionMenu: new HumanMentionMenu(),
+    maidMentionMenu: new MaidAgentMentionMenu(),
     emojiMenu: new ComposerEmojiMenu(),
     composingDraft: null,
     composerInputIntentKey: null,
@@ -170,6 +172,7 @@ export function suppressStaleSubmittedDraftReplay(
 function disposeChatComposerState(state: ChatComposerState) {
   state.emojiMenu.close();
   state.mentionMenu.dispose();
+  state.maidMentionMenu.close();
   state.composerDraftScope = null;
   state.dictation?.dispose();
   state.microphonePicker?.dispose();

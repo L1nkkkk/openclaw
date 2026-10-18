@@ -9,6 +9,7 @@ import type {
 import type { ApplicationGateway } from "../../../app/gateway.ts";
 import type { QuestionPrompt } from "../../../app/question-prompt.ts";
 import type { ChatFollowUpMode, ChatSendShortcut } from "../../../app/settings.ts";
+import type { MaidMentionAgent } from "../../../components/maid-atelier-mentions.ts";
 import type { SessionProgressCardRefreshAction } from "../../../components/session-progress-card.ts";
 import type {
   ChatGoalAction,
@@ -47,6 +48,7 @@ import type {
 import type { SkillMenuState } from "./chat-composer-skill-menu.tsx";
 import type { SlashMenuState } from "./chat-composer-slash-menu.tsx";
 import type { ChatPermissionPickerProps } from "./chat-permission-picker.tsx";
+import type { MaidAgentMentionMenu } from "./maid-agent-mention-menu.ts";
 
 type ChatQueuedEditProps = {
   editingId: string | null;
@@ -125,6 +127,8 @@ export type ChatComposerProps = ChatAttachmentControlsProps & {
   mentions?: readonly HumanMention[];
   getMentions?: () => readonly HumanMention[];
   mentionDirectory?: HumanMentionDirectory;
+  /** Agents already in a maid group. Empty outside that room, so DMs keep the people picker. */
+  maidGroupAgents?: readonly MaidMentionAgent[];
   mentionsUnsupported?: boolean;
   modelCatalog: readonly ModelCatalogEntry[];
   modelSwitching: boolean;
@@ -212,6 +216,7 @@ export type ChatComposerState = SkillMenuState &
     composerComposing: boolean;
     editRevision: number;
     mentionMenu: HumanMentionMenu;
+    maidMentionMenu: MaidAgentMentionMenu;
     emojiMenu: ComposerEmojiMenu;
     mentionInput?: HumanMentionInput;
     composingDraft: ScopedComposerDraft | null;

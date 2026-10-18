@@ -493,6 +493,8 @@
 }
 
 .maid-atelier-preview__composer {
+  position: relative;
+  z-index: 2;
   margin: 0 16px 14px;
   padding: 10px 12px 4px;
 }
@@ -501,6 +503,10 @@
   min-height: 36px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.maid-atelier-preview__draft.is-filled {
+  color: var(--text);
 }
 
 .maid-atelier-preview__composer-bar {

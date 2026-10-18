@@ -1,16 +1,19 @@
 import { truncateUtf16Safe } from "@openclaw/normalization-core/utf16-slice";
 import { dynamic } from "@solidjs/web";
 import { createMemo, createRenderEffect, onCleanup, Show, untrack } from "solid-js";
-import { MaidAtelierProgress } from "../../../components/maid-atelier-progress.tsx";
+import { MaidMentionDraftChips } from "../../../components/maid-atelier-mention-picker.tsx";
 import "../../../styles/chat/composer-surface.css";
 import "../../../components/mcp-app-catalog.tsx";
 import "../../../components/solid/mcp-app-context-strip.tsx";
 import "../../../components/mcp-app-resources.tsx";
+import { removeMaidMention } from "../../../components/maid-atelier-mentions.ts";
+import { MaidAtelierProgress } from "../../../components/maid-atelier-progress.tsx";
 import { Icon } from "../../../components/solid/icon.tsx";
+import { updateHumanMentions } from "../../../lib/chat/human-mentions.ts";
+import "../../../styles/chat/composer-context-strip.css";
 import { clearCompositionEnd } from "../../../lib/ime.ts";
 import { t } from "../../../lib/reactive/i18n.ts";
 import { detectTextDirection } from "../../../lib/text-direction.ts";
-import "../../../styles/chat/composer-context-strip.css";
 import { insertComposerDictation } from "../composer-dictation.ts";
 import { ChatAttachmentInputs } from "./chat-attachment-inputs.tsx";
 import { handleChatAttachmentPaste } from "./chat-attachments.ts";
@@ -43,11 +46,14 @@ import { renderFallbackIndicatorSolid } from "./chat-composer-status.tsx";
 import { isPastedTextAttachment } from "./chat-pasted-text.ts";
 import { ChatPermissionPicker } from "./chat-permission-picker.tsx";
 import { ChatVoiceStatus } from "./chat-voice-activity.tsx";
+import { maidMentionComposerHost } from "./maid-agent-mention-menu.ts";
+import { MaidAgentMentionMenuView } from "./maid-agent-mention-menu.tsx";
 
 type ChatComposerViewContext = ReturnType<typeof createChatComposerContext>;
 
 export function renderChatComposerView(context: ChatComposerViewContext) {
   const props = untrack(() => context.props);
+  context.state.maidMentionMenu.syncAgents(props.maidGroupAgents);
 
   const activeSession = createMemo(() => props.selectedSession);
   const composerControls = createMemo(() => props.composerControls ?? undefined);
@@ -243,6 +249,7 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                 resetSlashMenuState(context.state);
                 resetSkillMenuState(context.state);
                 context.state.mentionMenu.close();
+                context.state.maidMentionMenu.close();
                 context.state.emojiMenu.dismiss(context.state.composerTextarea);
                 context.requestUpdate();
               }}
@@ -273,6 +280,23 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                   context.requestUpdate,
                 ]}
               />
+              {context.state.maidMentionMenu.open ? (
+                <MaidAgentMentionMenuView
+                  menu={context.state.maidMentionMenu}
+                  paneId={props.paneId}
+                  onSelect={() => {
+                    context.state.maidMentionMenu.commit(
+                      maidMentionComposerHost(props, context.state, (value, mentions) => {
+                        commitComposerDraft(props, value, mentions);
+                      }),
+                      context.requestUpdate,
+                    );
+                  }}
+                  onHover={(index) => {
+                    context.state.maidMentionMenu.hover(index, context.requestUpdate);
+                  }}
+                />
+              ) : undefined}
               {context.menus.mentionMenuVisible ? (
                 <HumanMentionMenuView
                   args={[context.state.mentionMenu, context.mentionMenuHost, context.requestUpdate]}
@@ -293,6 +317,21 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                   </>
                 )}
                 <GoalComposerMode controller={context.goalComposer} />
+                <MaidMentionDraftChips
+                  text={context.visibleDraft}
+                  agents={props.maidGroupAgents}
+                  onRemove={(token) => {
+                    const current = props.getDraft?.() ?? props.draft;
+                    const next = removeMaidMention(current, token);
+                    const mentions = props.getMentions?.() ?? props.mentions ?? [];
+                    commitComposerDraft(
+                      props,
+                      next,
+                      mentions.length ? updateHumanMentions(current, next, mentions) : undefined,
+                    );
+                    context.requestUpdate();
+                  }}
+                />
                 <SelectedHumanMentions
                   text={context.visibleDraft}
                   mentions={props.mentions}
@@ -585,9 +624,21 @@ function ComposerTextarea(view: {
       disabled={!context.canCompose}
       readonly={context.dictation?.locksComposer === true || context.goalComposer.pending}
       aria-autocomplete="list"
-      aria-controls={context.menus.menuVisible ? context.menus.menuListboxId : undefined}
-      aria-haspopup={context.menus.menuVisible ? "listbox" : undefined}
-      aria-activedescendant={context.menus.activeMenuOptionId ?? undefined}
+      aria-controls={
+        context.state.maidMentionMenu.open
+          ? paneDomId(composer.paneId, "maid-mention-menu")
+          : context.menus.menuVisible
+            ? context.menus.menuListboxId
+            : undefined
+      }
+      aria-haspopup={
+        context.state.maidMentionMenu.open || context.menus.menuVisible ? "listbox" : undefined
+      }
+      aria-activedescendant={
+        context.state.maidMentionMenu.open
+          ? (context.state.maidMentionMenu.activeId(composer.paneId) ?? undefined)
+          : (context.menus.activeMenuOptionId ?? undefined)
+      }
       aria-describedby={`${view.announcementId}${
         composer.disabledReason ? ` ${view.disabledReasonId}` : ""
       }`}

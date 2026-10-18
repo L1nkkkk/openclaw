@@ -51,6 +51,38 @@ it("renders a private chat with only the user and the main agent", () => {
   expect(center?.querySelectorAll("[data-maid-chat='sample'] .chat-avatar")).toHaveLength(3);
 });
 
+it("opens the group @ picker for agents already in the room", () => {
+  const view = mountSolid(() => <MaidAtelierPreview scene="mention" />);
+  flush();
+  const center = view.container.querySelector("[data-maid-shot='center']");
+  const options = [...(center?.querySelectorAll("[data-maid-mention-option]") ?? [])].map(
+    (option) => option.getAttribute("data-maid-mention-option"),
+  );
+  expect(options).toEqual(["harper", "notes"]);
+  expect(center?.querySelector("[data-maid-mention-menu='open']")).not.toBeNull();
+  expect(center?.querySelector("[data-maid-mention='notes']")).not.toBeNull();
+  expect(center?.textContent).toContain("Sample");
+  expect(center?.textContent).toContain("Agents in this group");
+  expect(center?.querySelector("[data-maid-room='group']")).not.toBeNull();
+});
+
+it("shows a composed @mention chip without the picker", () => {
+  const view = mountSolid(() => <MaidAtelierPreview scene="mentioned" />);
+  flush();
+  const center = view.container.querySelector("[data-maid-shot='center']");
+  expect(center?.querySelector("[data-maid-mention-menu]")).toBeNull();
+  expect(center?.querySelector("[data-maid-mention='notes']")).not.toBeNull();
+  expect(center?.textContent).toContain("keep the crossed-out sentence in the margin.");
+  expect(center?.textContent).toContain("Sample");
+});
+
+it("does not open the multi-agent picker in a private chat", () => {
+  const view = mountSolid(() => <MaidAtelierPreview scene="dm" />);
+  flush();
+  expect(view.container.querySelector("[data-maid-mention-menu]")).toBeNull();
+  expect(view.container.querySelector("[data-maid-mention]")).toBeNull();
+});
+
 it("lists real other agents to pull in, and stays labeled Sample", () => {
   let pulled = "";
   const view = mountSolid(() => (

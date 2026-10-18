@@ -307,6 +307,13 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "keep the crossed-out sentence in the margin."
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
       "text": "manuscript / Chapter seven"
     },
     {
