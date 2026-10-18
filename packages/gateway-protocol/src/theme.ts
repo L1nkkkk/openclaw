@@ -236,7 +236,7 @@ export const BUILTIN_THEMES: readonly ThemeDescriptor[] = (
       lobsterdex: false,
       workingPhrases: ["Preparing", "Reviewing", "Noting", "Sorting"],
       description:
-        "Soft charcoal surfaces, muted grey text, quiet blue links, and a sage success green. System type, a neutral mark named Maid, and no lobster. A calm atelier workspace.",
+        "Charcoal surfaces, muted grey text, blush and gold highlights, amber when a maid is working, and mint when idle. System type, a neutral mark named Maid, and no lobster. A calm atelier workspace.",
     },
   ] satisfies Array<Omit<ThemeDescriptor, "source" | "modes">>
 ).map<ThemeDescriptor>((theme) =>

@@ -45,7 +45,10 @@ function SampleChatRow(props: {
 }) {
   return (
     <div class={`chat-group ${props.side} chat-group--with-footer`} data-maid-speaker={props.name}>
-      <span class="chat-avatar-slot maid-atelier-chat__avatar">
+      <span
+        class="chat-avatar-slot maid-atelier-chat__avatar"
+        data-maid-mark={props.name.slice(0, 1)}
+      >
         <img
           class={`chat-avatar ${props.side}`}
           data-maid-face={props.portraitId}

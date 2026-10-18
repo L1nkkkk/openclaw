@@ -25,6 +25,40 @@
   height: 32px;
 }
 
+:root[data-theme-id="maid"] .chat-group .chat-avatar {
+  border: 1px solid var(--maid-gold, var(--border-strong));
+  border-radius: 0;
+  clip-path: polygon(
+    4px 0,
+    calc(100% - 4px) 0,
+    100% 4px,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    4px 100%,
+    0 calc(100% - 4px),
+    0 4px
+  );
+}
+
+:root[data-theme-id="maid"] .chat-avatar-slot[data-maid-mark]::after {
+  content: attr(data-maid-mark);
+  position: absolute;
+  z-index: 2;
+  top: -4px;
+  inset-inline-end: -4px;
+  display: grid;
+  place-items: center;
+  width: 10px;
+  height: 10px;
+  background: var(--maid-gold, var(--accent-2));
+  color: var(--bg);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+}
+
 :root[data-theme-id="maid"] .chat-group.chat-group--with-footer > .chat-group-footer {
   grid-row: 1;
   min-height: 0;
@@ -67,22 +101,34 @@
   pointer-events: auto;
 }
 
-:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell) {
+:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell),
+:root[data-theme-id="maid"] .chat-group.user .chat-bubble {
   padding: 8px 12px;
-  border-radius: var(--radius-xl);
-  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
-  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--maid-gold, var(--border)) 46%, transparent);
+  border-radius: 0;
   font-size: 14px;
   line-height: 1.5;
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+}
+
+:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell) {
+  border-inline-start: 3px solid var(--maid-gold, var(--accent-2));
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  color: var(--text);
 }
 
 :root[data-theme-id="maid"] .chat-group.user .chat-bubble {
-  border: 0;
-  border-radius: var(--radius-xl);
-  padding: 8px 12px;
-  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
-  font-size: 14px;
-  line-height: 1.5;
+  border-inline-start: 3px solid var(--maid-blush, var(--accent));
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--maid-blush, var(--accent)));
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
@@ -95,7 +141,7 @@
 }
 
 :root[data-theme-id="maid"] .agent-chat__input:focus-within {
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  border-color: color-mix(in srgb, var(--maid-gold, var(--ring)) 62%, var(--border));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -260,8 +306,6 @@
 }
 
 @supports (corner-shape: superellipse(1.5)) {
-  :root[data-theme-id="maid"] .chat-group .chat-bubble,
-  :root[data-theme-id="maid"] .chat-avatar,
   :root[data-theme-id="maid"] .agent-chat__input {
     corner-shape: superellipse(1.5);
   }

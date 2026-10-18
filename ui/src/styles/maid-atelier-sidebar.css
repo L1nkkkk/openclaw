@@ -71,7 +71,7 @@
   margin: 10px 8px 2px;
   padding-top: 8px;
   border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
-  color: var(--muted);
+  color: color-mix(in srgb, var(--maid-gold, var(--muted)) 78%, var(--muted));
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -168,12 +168,40 @@
   background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
 }
 
+.maid-atelier-agents__row[data-maid-kind="agent"] {
+  width: calc(100% - 12px);
+  margin: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--maid-gold, var(--border)) 42%, var(--border));
+  border-radius: 0;
+  background: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
+}
+
+.maid-atelier-agents__row[data-maid-kind="agent"]:hover {
+  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 12%, var(--bg-hover));
+}
+
 .maid-atelier-agents__row[aria-current="true"] {
   background: color-mix(in srgb, var(--bg-hover) 58%, var(--accent));
 }
 
-.maid-atelier-agents__row[aria-current="true"]:hover {
-  background: color-mix(in srgb, var(--bg-hover) 42%, var(--accent));
+.maid-atelier-agents__row[data-maid-kind="agent"][aria-current="true"],
+.maid-atelier-agents__row[data-maid-kind="agent"][aria-current="true"]:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--maid-blush, var(--accent)) 72%,
+    var(--maid-gold, var(--border))
+  );
+  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 18%, var(--bg-elevated));
 }
 
 .maid-atelier-agents__row:focus-visible,
@@ -202,10 +230,87 @@
   font-weight: 700;
 }
 
+.maid-atelier-agents__row[data-maid-kind="agent"]
+  .maid-atelier-agents__avatar
+  :is(img, .identity-avatar, .identity-avatar--agent),
+.maid-atelier-profile
+  .maid-atelier-agents__avatar
+  :is(img, .identity-avatar, .identity-avatar--agent) {
+  border: 1px solid var(--maid-gold, var(--border-strong));
+  border-radius: 0;
+  clip-path: polygon(
+    4px 0,
+    calc(100% - 4px) 0,
+    100% 4px,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    4px 100%,
+    0 calc(100% - 4px),
+    0 4px
+  );
+}
+
+.maid-atelier-agents__row[data-maid-kind="agent"]
+  .maid-atelier-agents__avatar[data-maid-mark]::after,
+.maid-atelier-profile .maid-atelier-agents__avatar[data-maid-mark]::after {
+  content: attr(data-maid-mark);
+  position: absolute;
+  z-index: 2;
+  top: -4px;
+  inset-inline-end: -4px;
+  display: grid;
+  place-items: center;
+  width: 10px;
+  height: 10px;
+  background: var(--maid-gold, var(--accent-2));
+  color: var(--bg);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+}
+
+.maid-atelier-agents__plate {
+  max-width: 100%;
+  padding: 1px 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.maid-atelier-agents__plate[data-maid-tone="busy"] {
+  background: var(--maid-amber, var(--warn));
+  color: var(--bg);
+}
+
+.maid-atelier-agents__plate[data-maid-tone="idle"] {
+  background: color-mix(in srgb, var(--maid-mint, var(--ok)) 16%, transparent);
+  color: var(--maid-mint, var(--ok));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--maid-mint, var(--ok)) 70%, transparent);
+}
+
+.maid-atelier-agents__plate[data-maid-tone="success"] {
+  background: var(--maid-mint, var(--ok));
+  color: var(--bg);
+}
+
+.maid-atelier-agents__plate[data-maid-tone="attention"] {
+  color: var(--danger);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 55%, transparent);
+}
+
 .maid-atelier-agents__avatar > .maid-presence {
   position: absolute;
   right: -1px;
   bottom: -1px;
+  z-index: 2;
 }
 
 .maid-atelier-agents__row[data-maid-kind="session"] {
@@ -546,9 +651,10 @@ button.maid-atelier-profile {
 @supports (corner-shape: superellipse(1.5)) {
   .maid-atelier-agents,
   .maid-atelier-nav__item,
-  .maid-atelier-agents__row,
+  .maid-atelier-agents__row:not([data-maid-kind="agent"]),
   .maid-atelier-agents__task,
   .maid-atelier-agents__refine,
+  .maid-atelier-agents__plate,
   .maid-atelier-profile,
   .maid-atelier-preview__send {
     corner-shape: superellipse(1.5);

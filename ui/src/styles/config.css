@@ -365,9 +365,9 @@
 
 .settings-theme-card--maid,
 .settings-accent-theme--maid {
-  --theme-chip-bg: #1c1d21;
-  --theme-chip-accent: #7aa2d0;
-  --theme-chip-accent-2: #7dba96;
+  --theme-chip-bg: #1a1d24;
+  --theme-chip-accent: #f0a0b0;
+  --theme-chip-accent-2: #c9a86a;
 }
 
 :root[data-theme-mode="light"] :is(.settings-theme-card--claw, .settings-accent-theme--claw) {
@@ -441,8 +441,8 @@
 
 :root[data-theme-mode="light"] :is(.settings-theme-card--maid, .settings-accent-theme--maid) {
   --theme-chip-bg: #f3f4f2;
-  --theme-chip-accent: #1e5f96;
-  --theme-chip-accent-2: #2f6d4a;
+  --theme-chip-accent: #9c3d62;
+  --theme-chip-accent-2: #7a5a12;
 }
 /* stylelint-enable color-no-hex */
 

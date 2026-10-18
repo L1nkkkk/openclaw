@@ -328,7 +328,7 @@ clawtributors:hidden:end -->
 
 ## Maid Atelier
 
-This fork adds a built-in Control UI theme, **Maid Atelier**. Its id is `maid`. The palette is soft charcoal with muted grey text, a quiet blue accent, and a sage success green. Panels use continuous corners and a soft inset. It uses the system typeface and a neutral mark named Maid instead of the lobster. With the theme selected, the sessions sidebar lists Gateway agents as Maids and Independent Maids.
+This fork adds a built-in Control UI theme, **Maid Atelier**. Its id is `maid`. The palette is charcoal `#1a1d24` with blush and gold highlights, amber for working status, and mint for idle or online. Portrait frames are lightly chamfered. Workstation cards and chat quotes use the same cut corners, and buttons stay rounded. It uses the system typeface and a neutral mark named Maid instead of the lobster. With the theme selected, the sessions sidebar lists Gateway agents as Maids and Independent Maids. Click a portrait to open the wardrobe drawer on the right.
 
 Open **Settings → Appearance**, choose **Maid Atelier**, and set color mode to **Dark**.
 

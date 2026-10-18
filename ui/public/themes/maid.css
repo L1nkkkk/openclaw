@@ -2,15 +2,16 @@
 
 :root[data-theme="maid"] {
   /*
-   * Accent — quiet blue on soft charcoal, sage as the second chip.
+   * Atelier accents — blush and gold on neutral charcoal. Busy is amber.
+   * Idle and online are mint. The base stays #1a1d24, not a purple black.
    *
-   * WCAG 2.1 AA audit (bg = #1c1d21, relative luminance ≈ 0.012):
-   *   --accent #7aa2d0  contrast ≈ 7.4:1  AA text ✓
-   *   --primary-foreground #12161c on #7aa2d0 button: 6.83:1 ✓
-   *   --primary-foreground #12161c on #98b8de hover: 8.85:1 ✓
-   *   --destructive-foreground #fafafa on #bc2a2a button: 5.74:1 ✓
-   *   worst text pairing --muted on --bg-muted: 5.14:1 ✓
-   *   --ok #6fbf8a on its 8% tint over --bg-muted: 5.23:1 ✓
+   * WCAG 2.1 AA audit (bg = #1a1d24):
+   *   --accent #f0a0b0 contrast ≈ 8.3:1
+   *   --primary-foreground #1a1d24 on #f0a0b0 ≈ 8.3:1
+   *   --maid-gold #c9a86a contrast ≈ 7.5:1
+   *   --maid-amber #e0a04a contrast ≈ 7.5:1
+   *   --maid-mint #6fbf9a contrast ≈ 7.7:1
+   *   --muted #9aa1ab on --bg-elevated #242830 ≈ 5.7:1
    */
   /* Above the 1.25 continuous-corner signal so panels, rows, and inputs nest softly. */
   --openclaw-corner-radius-scale: 1.4;
@@ -21,47 +22,53 @@
   --radius: 14px;
   --overlay-modal-radius: 1.35rem;
   --shell-nav-expanded-width: 300px;
-  --ring: #7aa2d0;
-  --accent: #7aa2d0;
-  --accent-hover: #98b8de;
-  --accent-muted: #7aa2d0;
-  --accent-subtle: rgba(122, 162, 208, 0.12);
-  --accent-glow: rgba(122, 162, 208, 0.18);
-  --primary: #7aa2d0;
-  --primary-hover: #98b8de;
-  --primary-foreground: #12161c;
-  --accent-foreground: #12161c;
+  --ring: #c9a86a;
+  --accent: #f0a0b0;
+  --accent-hover: #f6b8c4;
+  --accent-muted: #f0a0b0;
+  --accent-subtle: rgba(240, 160, 176, 0.14);
+  --accent-glow: rgba(240, 160, 176, 0.2);
+  --primary: #f0a0b0;
+  --primary-hover: #f6b8c4;
+  --primary-foreground: #1a1d24;
+  --accent-foreground: #1a1d24;
+  /* Portrait frames, wardrobe rail, and workstation hairlines. */
+  --maid-blush: #f0a0b0;
+  --maid-gold: #c9a86a;
+  /* Status. Busy is amber. Idle and online stay mint, never blush. */
+  --maid-amber: #e0a04a;
+  --maid-mint: #6fbf9a;
 
   --destructive: #d32f2f;
   --destructive-hover: #bc2a2a;
 
-  /* Sage success, softer than the default neon green. Keep the 8% / 75% pair. */
-  --ok: #6fbf8a;
-  --ok-muted: rgba(111, 191, 138, 0.75);
-  --ok-subtle: rgba(111, 191, 138, 0.08);
+  /* Mint idle and online. Kept off the hot-green end of the scale. */
+  --ok: #6fbf9a;
+  --ok-muted: rgba(111, 191, 154, 0.75);
+  --ok-subtle: rgba(111, 191, 154, 0.08);
 
-  --focus: rgba(122, 162, 208, 0.2);
+  --focus: rgba(201, 168, 106, 0.22);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in srgb, var(--ring) 70%, transparent);
   --focus-glow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring), 0 0 16px var(--accent-glow);
 
-  /* Surfaces — neutral charcoal, not blue-black and not pure black. */
-  --bg: #1c1d21;
-  --bg-accent: #202228;
-  --bg-elevated: #26282e;
-  --bg-hover: #2c2f36;
-  --bg-muted: #2c2f36;
+  /* Surfaces — #1a1d24 charcoal. Lifted steps stay in the same neutral hue. */
+  --bg: #1a1d24;
+  --bg-accent: #20242c;
+  --bg-elevated: #242830;
+  --bg-hover: #2c313a;
+  --bg-muted: #2c313a;
 
-  --card: #22242a;
+  --card: #20242c;
   --card-foreground: #e8e9ed;
   --card-highlight: rgba(220, 224, 230, 0.04);
-  --popover: #26282e;
+  --popover: #242830;
   --popover-foreground: #e8e9ed;
 
-  --panel: #1c1d21;
-  --panel-strong: #22242a;
-  --panel-hover: #2c2f36;
-  --chrome: rgba(28, 29, 33, 0.96);
-  --chrome-strong: rgba(28, 29, 33, 0.98);
+  --panel: #1a1d24;
+  --panel-strong: #20242c;
+  --panel-hover: #2c313a;
+  --chrome: rgba(26, 29, 36, 0.96);
+  --chrome-strong: rgba(26, 29, 36, 0.98);
 
   --text: #c6c8ce;
   --text-strong: #f3f4f6;
@@ -70,16 +77,16 @@
   --muted-strong: #a8aeb8;
   --muted-foreground: #9aa1ab;
 
-  --border: #32353d;
-  --border-strong: #4a505b;
-  --border-hover: #5c6370;
-  --input: #32353d;
+  --border: #3a3f4a;
+  --border-strong: #525866;
+  --border-hover: #6a7180;
+  --input: #3a3f4a;
 
-  --secondary: #22242a;
+  --secondary: #20242c;
   --secondary-foreground: #e8e9ed;
-  --accent-2: #7dba96;
-  --accent-2-muted: rgba(125, 186, 150, 0.7);
-  --accent-2-subtle: rgba(125, 186, 150, 0.12);
+  --accent-2: #c9a86a;
+  --accent-2-muted: rgba(201, 168, 106, 0.72);
+  --accent-2-subtle: rgba(201, 168, 106, 0.14);
 
   --shadow-sm: 0 1px 2px rgba(8, 9, 12, 0.4);
   --shadow-md: 0 4px 16px rgba(8, 9, 12, 0.45);
@@ -97,13 +104,14 @@
 
 :root[data-theme="maid-light"] {
   /*
-   * Accent — deep blue on warm grey paper.
+   * Same blush, gold, amber, and mint on warm paper. Darker values keep AA.
    *
-   * WCAG 2.1 AA audit (bg = #f3f4f2, relative luminance ≈ 0.902):
-   *   --accent #1e5f96  contrast ≈ 6.4:1  AA text ✓
-   *   --primary-foreground #ffffff on #1e5f96 button: 6.70:1 ✓
-   *   --primary-foreground #ffffff on #174c78 hover: 8.97:1 ✓
-   *   worst text pairing --muted on --card: 4.84:1 ✓
+   * WCAG 2.1 AA audit (bg = #f3f4f2):
+   *   --accent #9c3d62 contrast ≈ 5.8:1
+   *   --primary-foreground #ffffff on #9c3d62 ≈ 5.8:1
+   *   --maid-gold #7a5a12 contrast ≈ 5.8:1
+   *   --maid-amber #7a4e12 contrast ≈ 6.5:1
+   *   --maid-mint #2a6b4a contrast ≈ 5.8:1
    */
   --openclaw-corner-radius-scale: 1.4;
   --radius-sm: 10px;
@@ -113,16 +121,23 @@
   --radius: 14px;
   --overlay-modal-radius: 1.35rem;
   --shell-nav-expanded-width: 300px;
-  --ring: #1e5f96;
-  --accent: #1e5f96;
-  --accent-hover: #174c78;
-  --accent-muted: #1e5f96;
-  --accent-subtle: rgba(30, 95, 150, 0.1);
-  --accent-glow: rgba(30, 95, 150, 0.14);
-  --primary: #1e5f96;
+  --ring: #7a5a12;
+  --accent: #9c3d62;
+  --accent-hover: #7d3050;
+  --accent-muted: #9c3d62;
+  --accent-subtle: rgba(156, 61, 98, 0.1);
+  --accent-glow: rgba(156, 61, 98, 0.14);
+  --primary: #9c3d62;
   --primary-hover: var(--accent-hover);
   --primary-foreground: #ffffff;
   --accent-foreground: #ffffff;
+  --maid-blush: #9c3d62;
+  --maid-gold: #7a5a12;
+  --maid-amber: #7a4e12;
+  --maid-mint: #2a6b4a;
+  --ok: #2a6b4a;
+  --ok-muted: rgba(42, 107, 74, 0.75);
+  --ok-subtle: rgba(42, 107, 74, 0.1);
 
   --bg: #f3f4f2;
   --bg-accent: #eceeed;
@@ -163,9 +178,9 @@
 
   --secondary: #eceeed;
   --secondary-foreground: #3c4046;
-  --accent-2: #2f6d4a;
-  --accent-2-muted: rgba(47, 109, 74, 0.75);
-  --accent-2-subtle: rgba(47, 109, 74, 0.1);
+  --accent-2: #7a5a12;
+  --accent-2-muted: rgba(122, 90, 18, 0.75);
+  --accent-2-subtle: rgba(122, 90, 18, 0.12);
 
   --shadow-sm: 0 1px 2px rgba(28, 30, 34, 0.05);
   --shadow-md: 0 4px 12px rgba(28, 30, 34, 0.07);

@@ -171,7 +171,7 @@ The Appearance panel has the built-in Claw, Knot, Dash, Absolutely, Tide, Beacon
 
 ### Maid Atelier
 
-Maid Atelier (`maid`) is the soft charcoal theme: muted grey text, a quiet blue accent, sage success green, continuous corners, and a neutral mark. While it is selected the display name is Maid, Lobsterdex stays hidden, and the sessions sidebar lists Maids and Independent Maids from the Gateway agent roster. A sample Work tasks checklist under that list is layout only. Claw remains the default until you choose otherwise.
+Maid Atelier (`maid`) is the charcoal theme: muted grey text, blush and gold highlights, amber for a working maid, and mint for idle or online. Portrait frames are lightly chamfered. Workstation cards and chat quotes use the same cut corners. Buttons stay rounded. Click a portrait to open the wardrobe drawer on the right. While the theme is selected the display name is Maid, Lobsterdex stays hidden, and the sessions sidebar lists Maids and Independent Maids from the Gateway agent roster. A sample Work tasks checklist under that list is layout only. Claw remains the default until you choose otherwise.
 
 1. Open **Settings → Appearance**.
 2. Choose **Maid Atelier**.

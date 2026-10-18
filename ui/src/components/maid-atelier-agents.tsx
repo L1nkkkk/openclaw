@@ -204,6 +204,7 @@ function MaidAgentRow(props: {
       <span
         class="maid-atelier-agents__avatar"
         data-maid-avatar-edit={props.onEditAvatar ? props.row.id : undefined}
+        data-maid-mark={props.row.kind === "agent" ? props.row.name.slice(0, 1) : undefined}
       >
         <Show
           when={props.row.kind === "agent"}
@@ -252,6 +253,11 @@ function MaidAgentRow(props: {
         </span>
       </span>
       <span class="maid-atelier-agents__aside">
+        <Show when={props.row.kind === "agent"}>
+          <span class="maid-atelier-agents__plate" data-maid-tone={tone()}>
+            {t(STATUS_KEYS[tone()])}
+          </span>
+        </Show>
         <Show when={props.row.unreadCount > 0}>
           <span class="maid-atelier-agents__unread">
             {t("agentsHome.maidUnread", { count: String(props.row.unreadCount) })}
@@ -444,7 +450,7 @@ export function MaidAtelierBoard(props: {
 function ProfileFace(props: { profile: MaidProfileModel }) {
   return (
     <>
-      <span class="maid-atelier-agents__avatar">
+      <span class="maid-atelier-agents__avatar" data-maid-mark={props.profile.name.slice(0, 1)}>
         <Show
           when={props.profile.avatarUrl}
           fallback={

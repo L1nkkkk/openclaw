@@ -95,6 +95,16 @@ proxy, without stopping the Gateway or deleting either application's state.
 Without `OPENCLAW_UI_DEV_GATEWAY_URL`, `pnpm ui:dev` retains its existing
 standalone connection behavior. This setting does not affect `pnpm ui:build`.
 
+### Maid Atelier
+
+Choose **Settings → Appearance → Maid Atelier** and set the color mode to **Dark**. The shell stays on the charcoal base. Workstation cards are the agent rows under Maids. A selected row is the current agent. Working status is amber. Idle and online status are mint.
+
+Click the portrait on a row, the profile strip, or a face in the room header. That opens the wardrobe drawer on the right. **Upload a picture** uses the existing profile or agent image save. **Atelier portraits** replace the face with a bundled portrait. **Close** dismisses the drawer. The row label still opens the session.
+
+In a group room, type `@` in the composer to mention an agent already in the room. The mention is draft text. A private room does not open that picker.
+
+The Work tasks list under the roster is a Sample layout. It is not a live task store. Group `@` does not start another agent turn.
+
 For a standalone preview with synthetic data, use:
 
 ```bash
