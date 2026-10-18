@@ -4,6 +4,7 @@ import { createEffect, createMemo, createSignal, Show, untrack } from "solid-js"
 import type { ControlUiSurfaceProps } from "../../../../src/plugin-sdk/control-ui.js";
 import type { ApplicationContext } from "../../app/context-types.ts";
 import { ExecApprovalCard } from "../../components/exec-approval-card-solid.tsx";
+import { commitMaidAvatar } from "../../components/maid-atelier-avatar-save.ts";
 import {
   maidPortraitUrl,
   maidPullDraft,
@@ -470,6 +471,17 @@ function ChatContent(input: { props: ChatProps }) {
                           room={room().room}
                           candidates={room().candidates}
                           portrait={(member) => maidMemberPortrait(input.props, member)}
+                          custom={(member) =>
+                            member.kind === "user"
+                              ? Boolean(maidPortraitUrl(input.props.userAvatar))
+                              : maidMemberPortrait(input.props, member) !==
+                                maidPortraitSrc(member.id)
+                          }
+                          onCommit={
+                            application
+                              ? (subject, choice) => commitMaidAvatar(application, subject, choice)
+                              : undefined
+                          }
                           onPull={(agent) => {
                             const ask = t("agentsHome.maidRoomPullDraft", { name: agent.name });
                             const state = getChatComposerState(input.props.paneId);

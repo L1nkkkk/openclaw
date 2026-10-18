@@ -9,6 +9,9 @@ import { projectAgents } from "../lib/reactive/domain-capabilities.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
+import { MaidAvatarEditor } from "./maid-atelier-avatar-picker.tsx";
+import { commitMaidAvatar } from "./maid-atelier-avatar-save.ts";
+import type { MaidAvatarChoice, MaidAvatarSubject } from "./maid-atelier-avatar.ts";
 import {
   buildMaidBoard,
   MAID_NAV,
@@ -22,6 +25,7 @@ import {
   type MaidNavRoute,
   type MaidSessionFact,
 } from "./maid-atelier-board.ts";
+import { maidPortraitUrl } from "./maid-atelier-chat.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { maidClip, maidIdentityTheme, maidTone, type MaidTone } from "./maid-atelier-status.ts";
@@ -32,7 +36,16 @@ import "../styles/maid-atelier-sidebar.css";
 
 registerEnglishCatalog(registerAgentsHomeEnglish);
 
-type MaidContext = Pick<ApplicationContext, "gateway" | "agents" | "agentIdentity" | "sessions">;
+type MaidContext = Pick<
+  ApplicationContext,
+  | "gateway"
+  | "agents"
+  | "agentIdentity"
+  | "sessions"
+  | "runtimeConfig"
+  | "config"
+  | "resourceBasePath"
+>;
 
 export type MaidAtelierHost = {
   readonly sessionDataContext: MaidContext | null;
@@ -138,7 +151,13 @@ function MaidHeading(props: {
   );
 }
 
-function MaidAgentRow(props: { row: MaidBoardRow; current: boolean; onOpen: () => void }) {
+function MaidAgentRow(props: {
+  row: MaidBoardRow;
+  current: boolean;
+  faceSrc?: string;
+  onOpen: () => void;
+  onEditAvatar?: () => void;
+}) {
   const tone = () =>
     maidTone({
       activeNow: props.row.activeNow,
@@ -169,15 +188,29 @@ function MaidAgentRow(props: { row: MaidBoardRow; current: boolean; onOpen: () =
       data-maid-tone={tone()}
       aria-current={props.current ? "true" : undefined}
       aria-label={`${props.row.name}, ${detail()}, ${spaces()} ${when()}`.replace(/\s+/g, " ")}
-      onClick={() => props.onOpen()}
+      onClick={(event) => {
+        const target = event.target;
+        if (
+          props.onEditAvatar &&
+          target instanceof Element &&
+          target.closest("[data-maid-avatar-edit]")
+        ) {
+          props.onEditAvatar();
+          return;
+        }
+        props.onOpen();
+      }}
     >
-      <span class="maid-atelier-agents__avatar">
+      <span
+        class="maid-atelier-agents__avatar"
+        data-maid-avatar-edit={props.onEditAvatar ? props.row.id : undefined}
+      >
         <Show
           when={props.row.kind === "agent"}
           fallback={<MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />}
         >
           <Show
-            when={props.row.avatar}
+            when={props.faceSrc || props.row.avatar}
             fallback={
               <img
                 class="maid-atelier-agents__portrait"
@@ -186,14 +219,21 @@ function MaidAgentRow(props: { row: MaidBoardRow; current: boolean; onOpen: () =
               />
             }
           >
-            <AgentIdentityAvatar
-              agent={{
-                id: props.row.id,
-                name: props.row.name,
-                avatar: props.row.avatar,
-                textAvatar: props.row.textAvatar,
-              }}
-            />
+            <Show
+              when={props.faceSrc}
+              fallback={
+                <AgentIdentityAvatar
+                  agent={{
+                    id: props.row.id,
+                    name: props.row.name,
+                    avatar: props.row.avatar,
+                    textAvatar: props.row.textAvatar,
+                  }}
+                />
+              }
+            >
+              <img class="maid-atelier-agents__portrait" src={props.faceSrc ?? ""} alt="" />
+            </Show>
           </Show>
           <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
         </Show>
@@ -243,8 +283,11 @@ export function MaidAtelierBoard(props: {
   navDisabled?: (item: MaidNavItem) => boolean;
   done: () => ReadonlySet<string>;
   onToggleTask: (id: string) => void;
+  faces?: Readonly<Record<string, string>>;
+  onCommit?: (subject: MaidAvatarSubject, choice: MaidAvatarChoice) => Promise<string | null>;
 }): JSX.Element {
   const [collapsed, setCollapsed] = createSignal<ReadonlySet<string>>(new Set());
+  const [editing, setEditing] = createSignal<MaidAvatarSubject | null>(null);
   const toggleSection = (id: string) => {
     const next = new Set(collapsed());
     if (!next.delete(id)) {
@@ -296,10 +339,22 @@ export function MaidAtelierBoard(props: {
                       {(row) => (
                         <MaidAgentRow
                           row={row}
+                          faceSrc={props.faces?.[row.id]}
                           current={
                             row.kind === "session"
                               ? row.sessionKey === props.currentSessionKey
                               : props.currentId === row.id
+                          }
+                          onEditAvatar={
+                            props.onCommit && row.kind === "agent"
+                              ? () =>
+                                  setEditing({
+                                    kind: "agent",
+                                    id: row.id,
+                                    name: row.name,
+                                    custom: Boolean(maidPortraitUrl(row.avatar)),
+                                  })
+                              : undefined
                           }
                           onOpen={() => {
                             if (row.kind === "session" && row.sessionKey) {
@@ -353,33 +408,67 @@ export function MaidAtelierBoard(props: {
           }}
         </For>
       </div>
-      <div class="maid-atelier-profile">
-        <span class="maid-atelier-agents__avatar">
-          <Show
-            when={props.profile.avatarUrl}
-            fallback={
-              <img
-                class="maid-atelier-agents__portrait"
-                src={maidPortraitSrc(props.profile.portraitId)}
-                alt=""
-              />
-            }
-          >
-            <img class="maid-atelier-agents__portrait" src={props.profile.avatarUrl ?? ""} alt="" />
-          </Show>
-          <MaidPresence
-            tone={props.profile.online ? "success" : "idle"}
-            label={props.profile.status}
-          />
-        </span>
-        <span class="maid-atelier-agents__copy">
-          <span class="maid-atelier-agents__name">{props.profile.name}</span>
-          <span class="maid-atelier-agents__activity">
-            {props.profile.status} · {t("agentsHome.maidProfileAtelier")}
-          </span>
-        </span>
-      </div>
+      <MaidAvatarEditor
+        subject={editing()}
+        onClose={() => setEditing(null)}
+        onCommit={props.onCommit}
+      />
+      <Show
+        when={props.onCommit}
+        fallback={
+          <div class="maid-atelier-profile">
+            <ProfileFace profile={props.profile} />
+          </div>
+        }
+      >
+        <button
+          type="button"
+          class="maid-atelier-profile"
+          aria-label={t("agentsHome.maidAvatarChange", { name: props.profile.name })}
+          onClick={() =>
+            setEditing({
+              kind: "user",
+              id: props.profile.portraitId,
+              name: props.profile.name,
+              custom: Boolean(maidPortraitUrl(props.profile.avatarUrl)),
+            })
+          }
+        >
+          <ProfileFace profile={props.profile} />
+        </button>
+      </Show>
     </section>
+  );
+}
+
+function ProfileFace(props: { profile: MaidProfileModel }) {
+  return (
+    <>
+      <span class="maid-atelier-agents__avatar">
+        <Show
+          when={props.profile.avatarUrl}
+          fallback={
+            <img
+              class="maid-atelier-agents__portrait"
+              src={maidPortraitSrc(props.profile.portraitId)}
+              alt=""
+            />
+          }
+        >
+          <img class="maid-atelier-agents__portrait" src={props.profile.avatarUrl ?? ""} alt="" />
+        </Show>
+        <MaidPresence
+          tone={props.profile.online ? "success" : "idle"}
+          label={props.profile.status}
+        />
+      </span>
+      <span class="maid-atelier-agents__copy">
+        <span class="maid-atelier-agents__name">{props.profile.name}</span>
+        <span class="maid-atelier-agents__activity">
+          {props.profile.status} · {t("agentsHome.maidProfileAtelier")}
+        </span>
+      </span>
+    </>
   );
 }
 
@@ -511,6 +600,7 @@ function MaidRoster(props: {
       profile={profile()}
       currentId={props.currentId()}
       currentSessionKey={props.host.getRouteSessionKey?.() ?? ""}
+      onCommit={(subject, choice) => commitMaidAvatar(props.context, subject, choice)}
       onOpenAgent={openAgent}
       onOpenSession={(key) => props.host.selectSession?.(key)}
       onNav={(item) => runNav(props.host, item)}

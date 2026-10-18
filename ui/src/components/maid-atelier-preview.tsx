@@ -3,6 +3,7 @@ import { createSignal, Show } from "solid-js";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
+import type { MaidAvatarSubject } from "./maid-atelier-avatar.ts";
 import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
 import { maidRoomPresentation } from "./maid-atelier-chat.ts";
 import {
@@ -11,7 +12,7 @@ import {
   MaidMentionText,
 } from "./maid-atelier-mention-picker.tsx";
 import type { MaidMentionAgent } from "./maid-atelier-mentions.ts";
-import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
+import { maidPortraitSrc, MAID_PORTRAIT_SRCS } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
 import { MaidAtelierRoom } from "./maid-atelier-room.tsx";
@@ -36,6 +37,7 @@ function SampleChatRow(props: {
   side: "assistant" | "user";
   name: string;
   portraitId: string;
+  src?: string;
   tone: MaidTone;
   when: string;
   text: string;
@@ -44,7 +46,12 @@ function SampleChatRow(props: {
   return (
     <div class={`chat-group ${props.side} chat-group--with-footer`} data-maid-speaker={props.name}>
       <span class="chat-avatar-slot maid-atelier-chat__avatar">
-        <img class={`chat-avatar ${props.side}`} src={maidPortraitSrc(props.portraitId)} alt="" />
+        <img
+          class={`chat-avatar ${props.side}`}
+          data-maid-face={props.portraitId}
+          src={props.src ?? maidPortraitSrc(props.portraitId)}
+          alt=""
+        />
         <MaidPresence tone={props.tone} label={props.name} />
       </span>
       <div class="chat-group-messages">
@@ -70,10 +77,28 @@ const FIXTURE_AGENTS = [
   { id: "archive", name: "Archive" },
 ];
 
-export type MaidAtelierPreviewScene = "dm" | "group" | "invite" | "mention" | "mentioned";
+export type MaidAtelierPreviewScene =
+  | "dm"
+  | "group"
+  | "invite"
+  | "mention"
+  | "mentioned"
+  | "avatar"
+  | "avatar-set";
 
 function groupScene(scene: MaidAtelierPreviewScene): boolean {
-  return scene === "group" || scene === "mention" || scene === "mentioned";
+  return (
+    scene === "group" ||
+    scene === "mention" ||
+    scene === "mentioned" ||
+    scene === "avatar" ||
+    scene === "avatar-set"
+  );
+}
+
+function changedPortrait(id: string): string {
+  const current = maidPortraitSrc(id);
+  return MAID_PORTRAIT_SRCS.find((src) => src !== current) ?? current;
 }
 
 function fixtureRoom(scene: MaidAtelierPreviewScene) {
@@ -108,6 +133,11 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
   const presented = () => fixtureRoom(scene());
   const grouped = () => groupScene(scene());
   const mentioning = () => scene() === "mention" || scene() === "mentioned";
+  const avatarSubject = (): MaidAvatarSubject | undefined =>
+    scene() === "avatar"
+      ? { kind: "agent", id: "harper", name: "Harper", custom: true }
+      : undefined;
+  const harperFace = () => (scene() === "avatar-set" ? changedPortrait("harper") : undefined);
   const mentionAgents = (): MaidMentionAgent[] => {
     const room = presented();
     if (!room || room.room.kind !== "group") {
@@ -138,6 +168,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             portraitId: "mori",
             online: true,
           }}
+          faces={harperFace() ? { harper: harperFace() ?? "" } : undefined}
           currentId="harper"
           currentSessionKey="fixture:chapter-seven"
           onOpenAgent={() => undefined}
@@ -159,7 +190,13 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               candidates={room().candidates}
               sample
               menuPinned={scene() === "invite"}
-              portrait={(member) => maidPortraitSrc(member.kind === "user" ? "mori" : member.id)}
+              avatarPinned={avatarSubject()}
+              portrait={(member) => {
+                const face = harperFace();
+                return member.id === "harper" && face
+                  ? face
+                  : maidPortraitSrc(member.kind === "user" ? "mori" : member.id);
+              }}
             />
           )}
         </Show>
@@ -170,6 +207,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             side="assistant"
             name="Harper"
             portraitId="harper"
+            src={harperFace()}
             tone="busy"
             when="2m ago"
             text="The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
@@ -199,6 +237,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
                 side="assistant"
                 name="Harper"
                 portraitId="harper"
+                src={harperFace()}
                 tone="busy"
                 when="Just now"
                 text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
@@ -209,6 +248,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               side="assistant"
               name="Harper"
               portraitId="harper"
+              src={harperFace()}
               tone="busy"
               when="Just now"
               text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."

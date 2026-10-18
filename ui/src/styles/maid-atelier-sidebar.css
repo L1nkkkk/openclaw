@@ -413,6 +413,15 @@
   transform: translateY(-1px) rotate(45deg);
 }
 
+button.maid-atelier-profile {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
 .maid-atelier-profile {
   z-index: 1;
   display: grid;

@@ -1,5 +1,5 @@
 /** Bundled stand-in faces for maids who have no uploaded avatar. */
-const MAID_PORTRAITS = [
+export const MAID_PORTRAIT_SRCS = [
   "/maid-avatars/01.jpg",
   "/maid-avatars/02.jpg",
   "/maid-avatars/03.jpg",
@@ -17,5 +17,5 @@ export function maidPortraitSrc(id: string): string {
     hash ^= id.charCodeAt(index);
     hash = Math.imul(hash, 16777619);
   }
-  return MAID_PORTRAITS[(hash >>> 0) % MAID_PORTRAITS.length] ?? MAID_PORTRAITS[0];
+  return MAID_PORTRAIT_SRCS[(hash >>> 0) % MAID_PORTRAIT_SRCS.length] ?? MAID_PORTRAIT_SRCS[0];
 }
