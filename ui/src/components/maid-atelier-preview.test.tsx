@@ -22,6 +22,11 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(text).toContain("Refine");
   expect(text).toContain("ch07_mud-and-whispers.md");
   expect(text).toContain("Goal");
+  expect(text).toContain("Sample");
+  expect(text).toContain("Harper");
+  expect(text).toContain("Notes");
+  expect(text).toContain("Mori");
+  expect(view.container.querySelectorAll("[data-maid-chat='sample'] .chat-avatar")).toHaveLength(5);
   expect(text).toContain("The night market");
   expect(text).toContain("Source");
   expect(view.container.querySelector("[aria-label='Copy path']")).not.toBeNull();

@@ -7,6 +7,8 @@ import {
   resolveLocalUserAvatarUrl,
   resolveLocalUserName,
 } from "../../app/user-identity.ts";
+import { maidPortraitSrc } from "../../components/maid-atelier-portraits.ts";
+import { useMaidTheme } from "../../components/maid-atelier-theme.ts";
 import { ChannelAvatar } from "../../components/solid/channel-avatar.tsx";
 import {
   IdentityAvatarImage,
@@ -204,6 +206,7 @@ function AgentAvatar(props: {
   textAvatar?: string | null;
 }) {
   const gateway = useAvatarGatewayContext();
+  const maid = useMaidTheme();
   const branding = projectSource(null, {
     read: currentThemeBranding,
     subscribe: (_source, notify) => subscribeThemeBranding(notify),
@@ -222,10 +225,17 @@ function AgentAvatar(props: {
         (url().startsWith("blob:") || isRenderableControlUiAvatarUrl(url()))
       }
       fallback={
-        <AgentIdentityAvatar
-          agent={{ id: props.id, name: props.name, textAvatar: props.textAvatar }}
-          class="chat-avatar assistant"
-        />
+        <Show
+          when={maid()}
+          fallback={
+            <AgentIdentityAvatar
+              agent={{ id: props.id, name: props.name, textAvatar: props.textAvatar }}
+              class="chat-avatar assistant"
+            />
+          }
+        >
+          <img class="chat-avatar assistant" src={maidPortraitSrc(props.id)} alt="" />
+        </Show>
       }
     >
       <span ref={identityAvatarState(view)} class="chat-avatar-slot">

@@ -143,17 +143,17 @@
 
 .maid-atelier-log {
   flex: none;
-  max-height: 38%;
-  margin: 0 18px 4px;
+  max-height: 18%;
+  margin: 0 12px 2px;
   overflow: auto;
-  padding: 4px 2px 8px;
+  padding: 0 2px 4px;
 }
 
 .maid-atelier-log__line {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   color: var(--muted-strong);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .maid-atelier-log__list {
@@ -170,14 +170,14 @@
   gap: 8px;
   align-items: center;
   width: 100%;
-  min-height: 28px;
-  padding: 2px 4px;
+  min-height: 22px;
+  padding: 0 4px;
   border: 0;
   border-radius: var(--radius-lg);
   background: transparent;
   color: var(--text);
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   text-align: start;
 }
 

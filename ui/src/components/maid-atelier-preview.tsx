@@ -4,7 +4,10 @@ import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
 import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
+import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
+import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
+import type { MaidTone } from "./maid-atelier-status.ts";
 import { MaidAtelierTaskLog } from "./maid-atelier-task-log.tsx";
 import { Icon } from "./solid/icon.tsx";
 
@@ -21,7 +24,34 @@ const PREVIEW_CARD = {
   ],
 };
 
-/** Density stand-in for screenshots. Project names here are not live data. */
+function SampleChatRow(props: {
+  side: "assistant" | "user";
+  name: string;
+  portraitId: string;
+  tone: MaidTone;
+  when: string;
+  text: string;
+}) {
+  return (
+    <div class={`chat-group ${props.side} chat-group--with-footer`} data-maid-speaker={props.name}>
+      <span class="chat-avatar-slot maid-atelier-chat__avatar">
+        <img class={`chat-avatar ${props.side}`} src={maidPortraitSrc(props.portraitId)} alt="" />
+        <MaidPresence tone={props.tone} label={props.name} />
+      </span>
+      <div class="chat-group-messages">
+        <div class="chat-bubble">{props.text}</div>
+      </div>
+      <div class="chat-group-footer">
+        <div class="chat-group-footer__meta">
+          <span class="chat-sender-name">{props.name}</span>
+          <time class="chat-group-timestamp">{props.when}</time>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Density stand-in for screenshots. Project names and lines here are not live data. */
 export function MaidAtelierPreview(): JSX.Element {
   if (typeof document !== "undefined") {
     document.documentElement.dataset.themeId = "maid";
@@ -68,38 +98,49 @@ export function MaidAtelierPreview(): JSX.Element {
           <span class="chat-pane__session-title">manuscript / Chapter seven</span>
           <MaidAtelierProgress placement="chip" card={PREVIEW_CARD} activeRun={true} />
         </header>
-        <div class="maid-atelier-preview__thread">
+        <div class="maid-atelier-preview__thread" data-maid-chat="sample">
           <MaidAtelierTaskLog card={PREVIEW_CARD} active={true} />
-          <div class="chat-group assistant">
-            <div class="chat-group-messages">
-              <div class="chat-bubble">
-                The draft is open in the reader. I kept the chapter title and loosened the first two
-                paragraphs. The ending stays where it was.
-              </div>
-            </div>
-          </div>
-          <div class="chat-group user">
-            <div class="chat-group-messages">
-              <div class="chat-bubble">
-                Keep going from the checkpoint, and leave the ending alone.
-              </div>
-            </div>
-          </div>
-          <div class="chat-group assistant">
-            <div class="chat-group-messages">
-              <div class="chat-bubble">
-                I shortened the lamp line and left the last page face down. The crossed-out sentence
-                stays in the margin.
-              </div>
-            </div>
-          </div>
-          <div class="chat-group user">
-            <div class="chat-group-messages">
-              <div class="chat-bubble">
-                That is enough for this pass. File the chapter where it is.
-              </div>
-            </div>
-          </div>
+          <p class="maid-atelier-chat__sample">{t("agentsHome.maidProgressSample")}</p>
+          <SampleChatRow
+            side="assistant"
+            name="Harper"
+            portraitId="harper"
+            tone="busy"
+            when="2m ago"
+            text="The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
+          />
+          <SampleChatRow
+            side="assistant"
+            name="Notes"
+            portraitId="notes"
+            tone="idle"
+            when="8m ago"
+            text="The margin can wait. I will file it once the ending stays put."
+          />
+          <SampleChatRow
+            side="user"
+            name="Mori"
+            portraitId="mori"
+            tone="success"
+            when="1m ago"
+            text="Keep going from the checkpoint, and leave the ending alone."
+          />
+          <SampleChatRow
+            side="assistant"
+            name="Harper"
+            portraitId="harper"
+            tone="busy"
+            when="Just now"
+            text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
+          />
+          <SampleChatRow
+            side="user"
+            name="Mori"
+            portraitId="mori"
+            tone="success"
+            when="Just now"
+            text="That is enough for this pass. File the chapter where it is."
+          />
         </div>
         <div class="agent-chat__input maid-atelier-preview__composer">
           <div class="maid-atelier-preview__draft">Message Harper…</div>

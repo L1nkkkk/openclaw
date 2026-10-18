@@ -1,5 +1,7 @@
 import { asOptionalRecord } from "@openclaw/normalization-core/record-coerce";
 import { classifySessionKind } from "../../../../../src/sessions/classify-session-kind.js";
+import { presentMaidChat } from "../../../components/maid-atelier-chat.ts";
+import { maidThemeSelected } from "../../../components/maid-atelier-theme.ts";
 import {
   normalizeRoleForGrouping,
   resolveMessageRole,
@@ -41,6 +43,7 @@ export function resolveTranscriptParticipants(
       sessionParticipants,
       activeSession?.owner?.actor.identity,
       ...(props.pendingInputs ?? []),
+      maidThemeSelected(),
     ],
     () => {
       // Use unfiltered history and retained participants so searching or paging away
@@ -75,7 +78,10 @@ export function resolveTranscriptParticipants(
           identity && identity.type !== "agent" ? [sessionParticipantIdentityKey(identity)] : [],
         ),
       );
-      return { showOwnSenderName, sessionPeople };
+      return {
+        showOwnSenderName: showOwnSenderName || maidThemeSelected(),
+        sessionPeople,
+      };
     },
   );
 }
@@ -128,5 +134,11 @@ export function resolveTranscriptAvatarPlacement(
       ? "none"
       : defaultAvatarPlacement;
   // Hidden subagent avatars must not leave the group layout reserving their columns.
-  return { isDirectThread: avatarPlacement !== "gutter", avatarPlacement };
+  // The maid theme presents every other thread as a group chat of the real voices.
+  const presented = presentMaidChat({
+    maid: maidThemeSelected(),
+    avatarPlacement,
+    showOwnSenderName: false,
+  });
+  return { isDirectThread: presented.isDirectThread, avatarPlacement: presented.avatarPlacement };
 }
