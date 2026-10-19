@@ -67,6 +67,14 @@ it("opens the group @ picker for agents already in the room", () => {
   expect(options).toEqual(["harper", "notes"]);
   expect(center?.querySelector("[data-maid-mention-menu='open']")).not.toBeNull();
   expect(center?.querySelector("[data-maid-mention='notes']")).not.toBeNull();
+  const strip = center?.querySelector(
+    ".maid-atelier-preview__composer .maid-atelier-progress--strip",
+  );
+  expect(strip?.textContent).toContain("Goal");
+  expect(strip?.textContent).toContain("Process 4/5");
+  expect(center?.querySelector("[data-maid-mention-menu='open']")?.contains(strip ?? null)).toBe(
+    false,
+  );
   expect(center?.textContent).toContain("Sample");
   expect(center?.textContent).toContain("Agents in this group");
   expect(center?.querySelector("[data-maid-room='group']")).not.toBeNull();

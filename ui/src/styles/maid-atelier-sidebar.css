@@ -215,6 +215,20 @@
   height: 8px;
 }
 
+/* Amber busy, a lighter cool mint for idle, sage online. The dark outline
+   stays. Idle drops the crescent: on an 8px pip it covers the fill. */
+.maid-atelier-agents__avatar > .maid-presence[data-tone="busy"] {
+  --maid-presence: var(--warn);
+}
+
+.maid-atelier-agents__avatar > .maid-presence[data-tone="idle"] {
+  --maid-presence: color-mix(in srgb, var(--control-ui-environment-teal-ink) 48%, var(--info));
+}
+
+.maid-atelier-agents__avatar > .maid-presence[data-tone="idle"] .maid-presence__core::after {
+  content: none;
+}
+
 .maid-atelier-agents__row[data-maid-kind="session"] {
   min-height: 26px;
   padding-block: 0;
