@@ -14,23 +14,75 @@
 }
 
 :root[data-theme-id="maid"] .chat-group {
-  --chat-turn-gap: 22px;
+  --chat-turn-gap: 10px;
+  --chat-avatar-column: 24px;
+  --chat-avatar-gap: 8px;
 }
 
-:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble {
-  padding-block: 2px;
+:root[data-theme-id="maid"] .chat-group :is(.chat-avatar, .chat-avatar-slot) {
+  display: grid;
+  width: 24px;
+  height: 24px;
+}
+
+:root[data-theme-id="maid"] .chat-group.chat-group--with-footer > .chat-group-footer {
+  grid-row: 1;
+  min-height: 0;
+  margin-block-start: 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:root[data-theme-id="maid"] .chat-group.chat-group--with-footer > .chat-group-messages {
+  grid-row: 2;
+}
+
+:root[data-theme-id="maid"] .chat-group-footer--persistent-identity .chat-group-timestamp,
+:root[data-theme-id="maid"] .chat-group-footer--persistent-identity .msg-meta__summary {
+  position: static;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:root[data-theme-id="maid"] .chat-sender-name {
+  color: var(--text-strong);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+:root[data-theme-id="maid"] .chat-group-timestamp,
+:root[data-theme-id="maid"] .msg-meta__summary {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+:root[data-theme-id="maid"] .chat-group-footer-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root[data-theme-id="maid"] .chat-group:hover .chat-group-footer-actions,
+:root[data-theme-id="maid"] .chat-group:focus-within .chat-group-footer-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell) {
+  padding: 8px 12px;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
   color: var(--text);
-  font-size: 15px;
-  line-height: 1.75;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 :root[data-theme-id="maid"] .chat-group.user .chat-bubble {
   border: 0;
   border-radius: var(--radius-xl);
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
-  font-size: 14.5px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
@@ -77,31 +129,52 @@
 :root[data-theme-id="maid"] .sidebar-file-view__path-bar,
 :root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar {
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px 0;
+  padding: 8px 16px 0;
   border: 0;
   background: transparent;
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path-field {
-  flex: 0 1 auto;
-  max-width: min(100%, 42ch);
-  justify-content: flex-end;
+  flex: 1 1 auto;
+  max-width: 100%;
+  justify-content: flex-start;
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path {
   color: var(--muted);
   font-family: var(--font-body);
-  font-size: 11px;
-  text-align: end;
+  font-size: 12px;
+  text-align: start;
 }
 
-:root[data-theme-id="maid"] .sidebar-file-view__action {
-  width: 22px;
-  height: 22px;
+:root[data-theme-id="maid"] .sidebar-file-view__action,
+:root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar .btn,
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
   border-radius: var(--radius-full);
-  color: var(--muted);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn::after {
+  content: attr(aria-label);
+  white-space: nowrap;
+}
+
+:root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar .btn svg,
+:root[data-theme-id="maid"] .maid-atelier-source svg,
+:root[data-theme-id="maid"] .sidebar-file-view__path-bar .chat-copy-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-shell__hint {
@@ -117,17 +190,17 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader {
-  max-width: 68ch;
+  max-width: 62ch;
   margin: 0;
-  padding: 28px 36px 80px;
+  padding: 14px 22px 48px;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 14.5px;
+  line-height: 1.62;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader::before {
@@ -135,23 +208,60 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h1) {
-  margin-bottom: 0.95em;
+  margin-bottom: 0.55em;
   padding-bottom: 0;
   border-bottom: 0;
   color: var(--text-strong);
-  font-size: 1.85rem;
+  font-size: 1.55rem;
   font-weight: 650;
   letter-spacing: -0.03em;
-  line-height: 1.2;
+  line-height: 1.15;
+}
+
+:root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h2) {
+  margin-bottom: 0.4em;
+  color: var(--text-strong);
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(p) {
-  margin-bottom: 1.15em;
+  margin-bottom: 0.68em;
   color: var(--text);
 }
 
+.maid-atelier-chat__sample {
+  margin: 2px 4px 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-chat__avatar {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.chat-avatar-slot.maid-atelier-chat__avatar > img.chat-avatar {
+  width: 24px;
+  height: 24px;
+}
+
+.chat-avatar-slot.maid-atelier-chat__avatar > .maid-presence {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  display: inline-block;
+}
+
 @supports (corner-shape: superellipse(1.5)) {
-  :root[data-theme-id="maid"] .chat-group.user .chat-bubble,
+  :root[data-theme-id="maid"] .chat-group .chat-bubble,
+  :root[data-theme-id="maid"] .chat-avatar,
   :root[data-theme-id="maid"] .agent-chat__input {
     corner-shape: superellipse(1.5);
   }

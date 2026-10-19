@@ -58,6 +58,7 @@ import {
   suppressStaleSubmittedDraftReplay,
 } from "./chat-composer-state.ts";
 import type { ChatComposerProps } from "./chat-composer-types.ts";
+import { maintainComposerMentions } from "./maid-agent-mention-menu.ts";
 
 registerChatGoalsEnglish();
 
@@ -257,7 +258,7 @@ export function createChatComposerContext(
 
   const syncComposerDraftAfterSend = (target: HTMLTextAreaElement | null) => {
     state.emojiMenu.close();
-    state.mentionMenu.close();
+    maintainComposerMentions(state, props.maidGroupAgents, null, requestUpdate, "close");
     const submittedDraft = target?.value ?? props.getDraft?.() ?? props.draft;
     const hostDraft = props.getDraft?.() ?? props.draft;
     const clearedSubmittedDraft =
@@ -330,7 +331,8 @@ export function createChatComposerContext(
       !state.composerComposing &&
         !state.skillMenuOpen &&
         !state.slashMenuOpen &&
-        !state.mentionMenu.open,
+        !state.mentionMenu.open &&
+        !state.maidMentionMenu.open,
     );
   const syncComposerValue = (target: HTMLTextAreaElement, typedAtSign = false) => {
     prediction?.dismiss();
@@ -355,7 +357,7 @@ export function createChatComposerContext(
       updateSlashMenu(target.value, state, slashMenuHost, requestUpdate);
       updateSkillMenu(target.value, target.selectionStart, state, skillMenuHost, requestUpdate);
       const mentionIntent = typedAtSign ? "trigger" : "input";
-      state.mentionMenu.update(target, requestUpdate, mentionIntent);
+      maintainComposerMentions(state, props.maidGroupAgents, target, requestUpdate, mentionIntent);
     }
     updateEmojiMenu(target);
     // The textarea owns ordinary edits; only redraw the pane when surrounding
@@ -413,7 +415,7 @@ export function createChatComposerContext(
     }
     const typedAtSign = event.inputType === "insertText" && event.data?.includes("@") === true;
     if (event.inputType === "insertFromPaste" || event.inputType === "insertFromDrop") {
-      state.mentionMenu.close();
+      maintainComposerMentions(state, props.maidGroupAgents, null, requestUpdate, "close");
     }
     syncComposerValue(target, typedAtSign);
   };
@@ -432,7 +434,7 @@ export function createChatComposerContext(
     if (goalComposer.active) {
       return;
     }
-    state.mentionMenu.update(target, requestUpdate);
+    maintainComposerMentions(state, props.maidGroupAgents, target, requestUpdate, "selection");
     if (event.type === "keyup") {
       return;
     }

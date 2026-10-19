@@ -1,4 +1,5 @@
 import { createEffect, createMemo, onCleanup } from "solid-js";
+import { useMaidTheme } from "../../../components/maid-atelier-theme.ts";
 import { handleMarkdownCodeBlockClick } from "../../../components/markdown-code-blocks.ts";
 import {
   linkReaderPrefetchRef as createLinkReaderPrefetchRef,
@@ -57,8 +58,10 @@ export function ChatThread(input: {
     root?.removeEventListener("touchstart", historyIntent);
     root?.removeEventListener("touchmove", historyIntent);
   });
-  const current = createMemo(() =>
-    input.transcript.renderSession(input.props.sessionKey, (session) => {
+  const maid = useMaidTheme();
+  const current = createMemo(() => {
+    maid();
+    return input.transcript.renderSession(input.props.sessionKey, (session) => {
       const projection = projectChatTranscript(input.props, session);
       // Empty shells establish the baseline for first-submission animation.
       if (projection.isEmpty || projection.showLoadingSkeleton) {
@@ -70,8 +73,8 @@ export function ChatThread(input: {
         );
       }
       return { session, projection };
-    }),
-  );
+    });
+  });
   const showLoadingSkeleton = createMemo(() => current().projection.showLoadingSkeleton);
   const isEmpty = createMemo(() => current().projection.isEmpty);
   const searchOpen = createMemo(() => current().projection.searchOpen);

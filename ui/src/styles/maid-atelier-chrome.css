@@ -18,11 +18,34 @@
 }
 
 .maid-atelier-progress--strip {
-  margin: 2px 2px 0;
-  padding: 7px 10px 5px;
-  border-top: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
+  margin: 0 0 2px;
+  padding: 2px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
   border-radius: 0;
   background: transparent;
+}
+
+/* The strip is the last footer child. Row 1 parks the goal against the editor. */
+:root[data-theme-id="maid"] .agent-chat__composer-footer:has(> .maid-atelier-progress--strip) {
+  row-gap: 2px;
+  margin-bottom: 2px;
+  padding-block: 2px;
+}
+
+:root[data-theme-id="maid"]
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
+  > .agent-chat__composer-lead,
+:root[data-theme-id="maid"]
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
+  > .agent-chat__composer-trail {
+  grid-row: 2;
+}
+
+:root[data-theme-id="maid"] .agent-chat__composer-footer > .maid-atelier-progress--strip {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0;
+  padding: 1px 2px 3px;
 }
 
 .maid-atelier-progress__lamp {
@@ -141,10 +164,442 @@
   background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
 }
 
+.maid-atelier-log {
+  flex: none;
+  max-height: 18%;
+  margin: 0 12px 2px;
+  overflow: auto;
+  padding: 0 2px 4px;
+}
+
+.maid-atelier-log__line {
+  margin: 0 0 4px;
+  color: var(--muted-strong);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.maid-atelier-log__list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.maid-atelier-log__item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 22px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  text-align: start;
+}
+
+.maid-atelier-log__item:hover {
+  background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
+}
+
+.maid-atelier-log__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.maid-atelier-log__item[aria-checked="true"] .maid-atelier-log__label {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.maid-atelier-log__check {
+  width: 14px;
+  height: 14px;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 70%, transparent);
+  border-radius: var(--radius-md);
+  background: transparent;
+}
+
+.maid-atelier-log__item[aria-checked="true"] .maid-atelier-log__check {
+  border-color: transparent;
+  background: var(--ok);
+}
+
+.maid-atelier-log__item[aria-checked="true"] .maid-atelier-log__check::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 7px;
+  margin: 0 auto;
+  border: solid var(--bg);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.maid-atelier-log__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maid-atelier-log__refine {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--warn) 16%, transparent);
+  color: var(--warn);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-log__sample {
+  margin-inline-start: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-room-wrap {
+  flex: none;
+  margin: 0 12px 6px;
+}
+
+.maid-atelier-room {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.maid-atelier-room__faces {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.maid-atelier-room__face {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  object-fit: cover;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
+  color: var(--text-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.maid-atelier-room__face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face {
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 0 2px var(--bg);
+  font-size: 9px;
+}
+
+.maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face + .maid-atelier-room__face {
+  margin-inline-start: -6px;
+}
+
+.maid-atelier-room__copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.maid-atelier-room__title {
+  overflow: hidden;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maid-atelier-room__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.maid-atelier-room__sample {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.maid-atelier-room__pull {
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.maid-atelier-room__pull:disabled {
+  opacity: 0.45;
+}
+
+.maid-atelier-room__menu {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+
+.maid-atelier-room__candidate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  text-align: start;
+}
+
+.maid-atelier-room__candidate img {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.maid-atelier-room__candidate:hover,
+.maid-atelier-room__pull:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
+}
+
+.maid-atelier-room__pull:focus-visible,
+.maid-atelier-room__candidate:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .maid-atelier-log__item,
+  .maid-atelier-log__check {
+    transition:
+      background-color 160ms ease-out,
+      border-color 160ms ease-out,
+      color 160ms ease-out,
+      transform 140ms ease-out;
+  }
+
+  .maid-atelier-log__item:active {
+    transform: scale(0.985);
+  }
+
+  .maid-atelier-room__pull,
+  .maid-atelier-room__candidate,
+  .maid-atelier-mention-menu__option {
+    transition: background-color 160ms ease-out;
+  }
+}
+
 @supports (corner-shape: superellipse(1.5)) {
   .maid-atelier-progress--chip,
   .maid-atelier-progress--strip,
+  .maid-atelier-log__item,
+  .maid-atelier-log__refine,
+  .maid-atelier-room__pull,
+  .maid-atelier-room__menu,
+  .maid-atelier-mention-menu,
+  .maid-atelier-mention,
+  .maid-atelier-avatar-menu,
   :root[data-theme-id="maid"] .chat-composer-model-control {
     corner-shape: superellipse(1.5);
   }
+}
+
+.agent-chat__input:has(> .maid-atelier-mention-menu) {
+  z-index: 25;
+}
+
+.maid-atelier-avatar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(232px, 100%);
+  margin: 0 8px 6px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background: var(--chat-composer-surface, var(--popover));
+  color: var(--text);
+}
+
+.maid-atelier-avatar-menu--inline {
+  position: relative;
+  z-index: 3;
+}
+
+.maid-atelier-avatar-menu__title {
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.maid-atelier-avatar-menu__note,
+.maid-atelier-avatar-menu__error {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.maid-atelier-avatar-menu__error {
+  color: var(--danger);
+}
+
+.maid-atelier-avatar-menu__action {
+  align-self: flex-start;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.maid-atelier-avatar-menu__action:disabled {
+  opacity: 0.45;
+}
+
+.maid-atelier-avatar-menu__portraits {
+  display: grid;
+  grid-template-columns: repeat(4, 36px);
+  gap: 4px;
+}
+
+.maid-atelier-avatar-menu__portrait {
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: transparent;
+}
+
+.maid-atelier-avatar-menu__portrait img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+}
+
+.maid-atelier-mention-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--chat-composer-surface, var(--popover));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.maid-atelier-mention-menu__label {
+  padding: 4px 8px 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.maid-atelier-mention-menu__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  text-align: start;
+  font: inherit;
+}
+
+.maid-atelier-mention-menu__option[aria-selected="true"],
+.maid-atelier-mention-menu__option:hover {
+  background: var(--bg-hover);
+}
+
+.maid-atelier-mention-menu__option:focus-visible,
+.maid-atelier-mention:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.maid-atelier-mention-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.maid-atelier-mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 8px 1px 1px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-weight: 650;
+  line-height: 1.4;
+  vertical-align: baseline;
+}
+
+.maid-atelier-mention__face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 24%, var(--bg));
+  object-fit: cover;
+  font-size: 11px;
 }

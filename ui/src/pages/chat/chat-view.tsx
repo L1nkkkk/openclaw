@@ -4,6 +4,16 @@ import { createEffect, createMemo, createSignal, Show, untrack } from "solid-js"
 import type { ControlUiSurfaceProps } from "../../../../src/plugin-sdk/control-ui.js";
 import type { ApplicationContext } from "../../app/context-types.ts";
 import { ExecApprovalCard } from "../../components/exec-approval-card-solid.tsx";
+import { commitMaidAvatar } from "../../components/maid-atelier-avatar-save.ts";
+import {
+  maidPortraitUrl,
+  maidPullDraft,
+  maidRoomPresentation,
+} from "../../components/maid-atelier-chat.ts";
+import { maidPortraitSrc } from "../../components/maid-atelier-portraits.ts";
+import { MaidAtelierRoom } from "../../components/maid-atelier-room.tsx";
+import { MaidAtelierTaskLog } from "../../components/maid-atelier-task-log.tsx";
+import { useMaidTheme } from "../../components/maid-atelier-theme.ts";
 import { Icon } from "../../components/solid/icon.tsx";
 import {
   KEYBOARD_SHORTCUT_COMBOS,
@@ -11,6 +21,7 @@ import {
 } from "../../lib/keyboard-shortcut-contract.ts";
 import { ApplicationProvider, useOptionalApplication } from "../../lib/reactive/context.ts";
 import { t } from "../../lib/reactive/i18n.ts";
+import { resolveSessionDisplayName } from "../../lib/session-display.ts";
 import { scopedSessionArtifactKey } from "../../lib/sessions/session-key.ts";
 import { PRESENTATION_CHANGED_EVENT } from "../../lit/presentation-binding.ts";
 import { PluginSurface } from "../../plugins/control-ui-view.solid.tsx";
@@ -51,6 +62,7 @@ type ChatViewInput = {
   frame: ChatViewFrame;
   presented: boolean;
   application?: ApplicationContext;
+  maidGroupAgents?: ChatProps["maidGroupAgents"];
 };
 
 function ChatTranscript(input: ChatViewInput) {
@@ -153,10 +165,23 @@ function ChatFooterContent(input: ChatViewInput) {
   );
 }
 
+function maidMemberPortrait(
+  props: ChatProps,
+  member: { id: string; kind: "user" | "agent" },
+): string | null {
+  if (member.kind === "user") {
+    return maidPortraitUrl(props.userAvatar);
+  }
+  const uploaded = props.agentsList?.agents.find((agent) => agent.id === member.id)?.identity
+    ?.avatarUrl;
+  return maidPortraitUrl(uploaded) ?? maidPortraitSrc(member.id);
+}
+
 function ChatComposerView(input: ChatViewInput) {
   return (
     <ChatComposer
       {...input.props}
+      maidGroupAgents={input.maidGroupAgents}
       renderRevision={input.frame}
       progressCard={input.props.detailsEnabled ? null : input.props.progressCard}
       progressCardInitialLoading={
@@ -265,7 +290,45 @@ export function ChatView(input: { props: ChatProps; application?: ApplicationCon
 
 function ChatContent(input: { props: ChatProps }) {
   const application = useOptionalApplication();
+  const maid = useMaidTheme();
   const frame = createMemo(() => createChatViewFrame(input.props));
+  const atelierRoom = createMemo(() => {
+    if (!maid()) {
+      return null;
+    }
+    const session = input.props.selectedSession;
+    return maidRoomPresentation({
+      agentId: input.props.currentAgentId,
+      assistantName: input.props.assistantName,
+      userName: input.props.userName?.trim() || t("agentsHome.maidRoomYou"),
+      userId: input.props.userId,
+      sessionTitle: session ? resolveSessionDisplayName(session.key, session) : "",
+      agents: input.props.agentsList?.agents ?? [],
+      children: input.props.subagentSessions ?? [],
+      childKeys: session?.childSessions ?? [],
+      kind: session?.kind,
+      chatType: session?.chatType,
+      participants: session?.expandedParticipants ?? session?.participants,
+      participantCount: session?.participantCount,
+    });
+  });
+  const maidGroupAgents = createMemo(() => {
+    const presented = atelierRoom();
+    if (presented?.room.kind !== "group") {
+      return [];
+    }
+    return presented.room.members.flatMap((member) =>
+      member.kind === "agent"
+        ? [
+            {
+              id: member.id,
+              name: member.name,
+              portraitUrl: maidMemberPortrait(input.props, member),
+            },
+          ]
+        : [],
+    );
+  });
   const [presentationRevision, setPresentationRevision] = createSignal(0, { ownedWrite: true });
   createEffect(
     () => input.props.presented,
@@ -288,6 +351,7 @@ function ChatContent(input: { props: ChatProps }) {
     frame: frame(),
     presented: presented(),
     application,
+    maidGroupAgents: maidGroupAgents(),
   });
   const historyMessage = () => {
     const state = frame().historyLoadState;
@@ -401,6 +465,39 @@ function ChatContent(input: { props: ChatProps }) {
                       forwardChatWheelToTranscript(event, input.props.transcript.scrollElement)
                     }
                   >
+                    <Show when={atelierRoom()}>
+                      {(room) => (
+                        <MaidAtelierRoom
+                          room={room().room}
+                          candidates={room().candidates}
+                          portrait={(member) => maidMemberPortrait(input.props, member)}
+                          custom={(member) =>
+                            member.kind === "user"
+                              ? Boolean(maidPortraitUrl(input.props.userAvatar))
+                              : maidMemberPortrait(input.props, member) !==
+                                maidPortraitSrc(member.id)
+                          }
+                          onCommit={
+                            application
+                              ? (subject, choice) => commitMaidAvatar(application, subject, choice)
+                              : undefined
+                          }
+                          onPull={(agent) => {
+                            const ask = t("agentsHome.maidRoomPullDraft", { name: agent.name });
+                            const state = getChatComposerState(input.props.paneId);
+                            state.editRevision += 1;
+                            input.props.onDraftChange(
+                              maidPullDraft(input.props.getDraft?.() ?? input.props.draft, ask),
+                            );
+                            state.composerTextarea?.focus();
+                          }}
+                        />
+                      )}
+                    </Show>
+                    <MaidAtelierTaskLog
+                      card={input.props.progressCard}
+                      active={(input.props.messages?.length ?? 0) > 0}
+                    />
                     <Show when={frame().historyFailed && !frame().transcriptEmpty}>
                       {historyFailure(true)}
                     </Show>
