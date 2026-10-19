@@ -28,13 +28,7 @@ import {
 import { maidPortraitUrl } from "./maid-atelier-chat.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
-import {
-  maidClip,
-  maidIdentityTheme,
-  maidPresenceHold,
-  maidTone,
-  type MaidTone,
-} from "./maid-atelier-status.ts";
+import { maidClip, maidIdentityTheme, maidTone, type MaidTone } from "./maid-atelier-status.ts";
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
@@ -76,6 +70,7 @@ const STATUS_KEYS = {
   success: "agentsHome.maidStatusDone",
   idle: "agentsHome.maidStatusIdle",
   blocked: "agentsHome.maidStatusBlocked",
+  pending: "agentsHome.maidStatusPending",
 } as const satisfies Record<MaidTone, string>;
 
 const ACTIVITY_KEYS = {
@@ -84,6 +79,7 @@ const ACTIVITY_KEYS = {
   success: "agentsHome.maidActivityDone",
   idle: "agentsHome.noMessage",
   blocked: "agentsHome.maidActivityBlocked",
+  pending: "agentsHome.maidActivityPending",
 } as const satisfies Record<MaidTone, string>;
 
 export type MaidProfileModel = {
@@ -94,15 +90,12 @@ export type MaidProfileModel = {
   online: boolean;
 };
 
-function toneLabel(tone: MaidTone, hold: "blocked" | "pending" | null): string {
-  if (hold === "pending") {
-    return t("agentsHome.maidStatusPending");
-  }
+function toneLabel(tone: MaidTone): string {
   return t(STATUS_KEYS[tone]);
 }
 
 function roleLine(row: MaidBoardRow, tone: MaidTone): string {
-  const status = toneLabel(tone, maidPresenceHold(row.status));
+  const status = toneLabel(tone);
   if (row.kind === "session") {
     return row.preview ? maidClip(row.preview) : status;
   }
@@ -180,7 +173,7 @@ function MaidAgentRow(props: {
       status: props.row.status,
       failed: props.row.failed,
     });
-  const label = () => toneLabel(tone(), maidPresenceHold(props.row.status));
+  const label = () => toneLabel(tone());
   const role = () => roleLine(props.row, tone());
   const activity = () => activityLine(props.row, tone());
   const detail = () => {
@@ -412,8 +405,8 @@ export function MaidAtelierBoard(props: {
                   <Show when={!checked() ? item.hold : undefined}>
                     {(hold) => (
                       <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
-                        <MaidPresence tone="blocked" label={toneLabel("blocked", hold())} />
-                        {toneLabel("blocked", hold())}
+                        <MaidPresence tone={hold()} label={toneLabel(hold())} />
+                        {toneLabel(hold())}
                       </span>
                     )}
                   </Show>

@@ -30,10 +30,10 @@ describe("maidTone", () => {
   it("keeps blocked and pending approval off the busy pip", () => {
     expect(maidTone({ activeNow: true, unreadCount: 0, status: "blocked" })).toBe("blocked");
     expect(maidTone({ activeNow: true, unreadCount: 1, status: "pending_approval" })).toBe(
-      "blocked",
+      "pending",
     );
     expect(maidTone({ activeNow: false, unreadCount: 0, status: "pending-approval" })).toBe(
-      "blocked",
+      "pending",
     );
     expect(maidPresenceHold("pending_approval")).toBe("pending");
     expect(maidPresenceHold("blocked")).toBe("blocked");

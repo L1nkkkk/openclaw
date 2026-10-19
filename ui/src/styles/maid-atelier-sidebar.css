@@ -216,9 +216,9 @@
   height: 8px;
 }
 
-/* Amber busy, a lighter cool mint for idle, sage online. Blocked and pending
-   approval keep the purple pip. The dark outline stays. Idle drops the
-   crescent: on an 8px pip it covers the fill. */
+/* Amber busy, a lighter cool mint for idle, sage online. Pending and blocked
+   keep the blue and red fills from maid-presence. The dark outline stays.
+   Idle drops the crescent: on an 8px pip it covers the fill. */
 .maid-atelier-agents__avatar > .maid-presence[data-tone="busy"] {
   --maid-presence: var(--warn);
 }
@@ -338,11 +338,21 @@
   flex: none;
   align-items: center;
   gap: 3px;
-  color: var(--control-ui-environment-purple-ink);
+  color: var(--maid-presence, var(--muted));
   font-size: 10px;
   font-weight: 600;
   line-height: 1.1;
 }
+
+/* stylelint-disable color-no-hex -- Same fixed pip fills as maid-presence. */
+.maid-atelier-agents__hold[data-maid-hold="pending"] {
+  --maid-presence: #5b8def;
+}
+
+.maid-atelier-agents__hold[data-maid-hold="blocked"] {
+  --maid-presence: #d4546a;
+}
+/* stylelint-enable color-no-hex */
 
 .maid-atelier-agents__hold > .maid-presence {
   width: 8px;

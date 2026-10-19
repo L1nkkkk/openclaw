@@ -48,7 +48,7 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(view.container.querySelectorAll("[data-maid-chat='sample'] .chat-avatar")).toHaveLength(5);
   expect(text).toContain("gateway log");
   expect(rowTone(view.container, "gateway log")).toBe("busy");
-  expect(rowTone(view.container, "config diff")).toBe("blocked");
+  expect(rowTone(view.container, "config diff")).toBe("pending");
   expect(rowTone(view.container, "release cut")).toBe("blocked");
   expect(
     view.container
@@ -63,6 +63,11 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(view.container.querySelector("[data-maid-hold='pending']")?.textContent).toContain(
     "Pending",
   );
+  expect(
+    view.container
+      .querySelector("[data-maid-hold='pending'] .maid-presence")
+      ?.getAttribute("data-tone"),
+  ).toBe("pending");
   expect(
     view.container
       .querySelector("[data-maid-hold='blocked'] .maid-presence")
