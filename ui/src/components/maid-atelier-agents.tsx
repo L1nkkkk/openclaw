@@ -28,7 +28,13 @@ import {
 import { maidPortraitUrl } from "./maid-atelier-chat.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
-import { maidClip, maidIdentityTheme, maidTone, type MaidTone } from "./maid-atelier-status.ts";
+import {
+  maidClip,
+  maidIdentityTheme,
+  maidPresenceHold,
+  maidTone,
+  type MaidTone,
+} from "./maid-atelier-status.ts";
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
@@ -69,6 +75,7 @@ const STATUS_KEYS = {
   attention: "agentsHome.maidStatusAttention",
   success: "agentsHome.maidStatusDone",
   idle: "agentsHome.maidStatusIdle",
+  blocked: "agentsHome.maidStatusBlocked",
 } as const satisfies Record<MaidTone, string>;
 
 const ACTIVITY_KEYS = {
@@ -76,6 +83,7 @@ const ACTIVITY_KEYS = {
   attention: "agentsHome.maidActivityUnread",
   success: "agentsHome.maidActivityDone",
   idle: "agentsHome.noMessage",
+  blocked: "agentsHome.maidActivityBlocked",
 } as const satisfies Record<MaidTone, string>;
 
 export type MaidProfileModel = {
@@ -86,8 +94,15 @@ export type MaidProfileModel = {
   online: boolean;
 };
 
+function toneLabel(tone: MaidTone, hold: "blocked" | "pending" | null): string {
+  if (hold === "pending") {
+    return t("agentsHome.maidStatusPending");
+  }
+  return t(STATUS_KEYS[tone]);
+}
+
 function roleLine(row: MaidBoardRow, tone: MaidTone): string {
-  const status = t(STATUS_KEYS[tone]);
+  const status = toneLabel(tone, maidPresenceHold(row.status));
   if (row.kind === "session") {
     return row.preview ? maidClip(row.preview) : status;
   }
@@ -165,6 +180,7 @@ function MaidAgentRow(props: {
       status: props.row.status,
       failed: props.row.failed,
     });
+  const label = () => toneLabel(tone(), maidPresenceHold(props.row.status));
   const role = () => roleLine(props.row, tone());
   const activity = () => activityLine(props.row, tone());
   const detail = () => {
@@ -231,7 +247,7 @@ function MaidAgentRow(props: {
             <img class="maid-atelier-agents__portrait" src={props.faceSrc ?? ""} alt="" />
           </Show>
         </Show>
-        <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
+        <MaidPresence tone={tone()} label={label()} />
       </span>
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">
@@ -393,6 +409,14 @@ export function MaidAtelierBoard(props: {
                 <span class="maid-atelier-agents__check" aria-hidden="true" />
                 <span class="maid-atelier-agents__task-copy">
                   <span class="maid-atelier-agents__task-label">{item.label}</span>
+                  <Show when={!checked() ? item.hold : undefined}>
+                    {(hold) => (
+                      <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
+                        <MaidPresence tone="blocked" label={toneLabel("blocked", hold())} />
+                        {toneLabel("blocked", hold())}
+                      </span>
+                    )}
+                  </Show>
                   <Show when={item.refine}>
                     <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
                   </Show>

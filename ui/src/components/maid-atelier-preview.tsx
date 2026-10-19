@@ -23,13 +23,13 @@ import { Icon } from "./solid/icon.tsx";
 registerEnglishCatalog(registerAgentsHomeEnglish);
 
 const PREVIEW_CARD = {
-  markdown: "Chapter files are open in the reader. Leave the ending where it is.",
+  markdown: "Queue idle.",
   steps: [
-    { step: "ch03_dawn-wind.md", status: "completed" as const },
-    { step: "ch04_in-the-dark.md", status: "completed" as const },
-    { step: "ch07_mud-and-whispers.md", status: "in_progress" as const },
-    { step: "ch10_open-air.md", status: "completed" as const },
-    { step: "Finish the rewrite of volume 1", status: "completed" as const },
+    { step: "lint", status: "completed" as const },
+    { step: "typecheck", status: "completed" as const },
+    { step: "approval", status: "in_progress" as const },
+    { step: "build", status: "completed" as const },
+    { step: "deploy", status: "completed" as const },
   ],
 };
 
@@ -107,7 +107,7 @@ function fixtureRoom(scene: MaidAtelierPreviewScene) {
     assistantName: "Harper",
     userName: "Mori",
     userId: "mori",
-    sessionTitle: "Chapter seven",
+    sessionTitle: "deploy check",
     agents: FIXTURE_AGENTS,
     children: groupScene(scene) ? [{ key: "agent:notes:subagent:margin", agentId: "notes" }] : [],
     childKeys: [],
@@ -155,9 +155,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
   }
   return (
     <div class="maid-atelier-preview" data-maid-fixture="density">
-      <p class="maid-atelier-preview__note">
-        Density fixture for the maid atelier. These project names are not live sessions.
-      </p>
+      <p class="maid-atelier-preview__note">Sample. These names are not live sessions.</p>
       <aside class="maid-atelier-preview__sidebar" data-maid-shot="sidebar">
         <MaidAtelierBoard
           sections={sections}
@@ -170,7 +168,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
           }}
           faces={harperFace() ? { harper: harperFace() ?? "" } : undefined}
           currentId="harper"
-          currentSessionKey="fixture:chapter-seven"
+          currentSessionKey="fixture:deploy-check"
           onOpenAgent={() => undefined}
           onOpenSession={() => undefined}
           onNav={() => undefined}
@@ -180,7 +178,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
       </aside>
       <div class="maid-atelier-preview__center" data-maid-shot="center">
         <header class="chat-pane__header maid-atelier-preview__header">
-          <span class="chat-pane__session-title">manuscript / Chapter seven</span>
+          <span class="chat-pane__session-title">desk / deploy check</span>
           <MaidAtelierProgress placement="chip" card={PREVIEW_CARD} activeRun={true} />
         </header>
         <Show when={presented()}>
@@ -210,7 +208,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             src={harperFace()}
             tone="busy"
             when="2m ago"
-            text="The draft is open in the reader. I kept the chapter title and loosened the first two paragraphs. The ending stays where it was."
+            text="Run started."
           />
           <Show when={grouped()}>
             <SampleChatRow
@@ -219,7 +217,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               portraitId="notes"
               tone="idle"
               when="8m ago"
-              text="The margin can wait. I will file it once the ending stays put."
+              text="Waiting."
             />
           </Show>
           <SampleChatRow
@@ -228,7 +226,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             portraitId="mori"
             tone="success"
             when="1m ago"
-            text="Keep going from the checkpoint, and leave the ending alone."
+            text="Continue."
           />
           <Show
             when={grouped()}
@@ -240,7 +238,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
                 src={harperFace()}
                 tone="busy"
                 when="Just now"
-                text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
+                text="Diff ready."
               />
             }
           >
@@ -251,7 +249,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               src={harperFace()}
               tone="busy"
               when="Just now"
-              text="I shortened the lamp line and left the last page face down. The crossed-out sentence stays in the margin."
+              text="Diff ready."
             />
             <SampleChatRow
               side="user"
@@ -259,11 +257,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               portraitId="mori"
               tone="success"
               when="Just now"
-              text={
-                mentioning()
-                  ? "@Notes, tighten the lamp line and leave the ending."
-                  : "That is enough for this pass. File the chapter where it is."
-              }
+              text={mentioning() ? "@Notes, review the diff." : "Stop here."}
               agents={mentioning() ? mentionAgents() : undefined}
             />
           </Show>
@@ -276,7 +270,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             {scene() === "mention"
               ? "@"
               : scene() === "mentioned"
-                ? "keep the crossed-out sentence in the margin."
+                ? "review the diff."
                 : grouped()
                   ? "Message the group…"
                   : "Message Harper…"}
@@ -305,8 +299,8 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
         <section class="sidebar-markdown-shell">
           <div class="sidebar-file-view__path-bar">
             <div class="sidebar-file-view__path-field">
-              <span class="sidebar-file-view__path" title="manuscript/chapter-07.md">
-                manuscript/chapter-07.md
+              <span class="sidebar-file-view__path" title="logs/gateway.log">
+                logs/gateway.log
               </span>
             </div>
             <div class="sidebar-file-view__actions">
@@ -329,46 +323,10 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             </div>
           </div>
           <article class="sidebar-markdown-reader sidebar-markdown">
-            <h1>The night market</h1>
-            <p>
-              The stall lights came on one row at a time. Harper waited at the last table, a
-              marked-up chapter folded under one hand, and listened to the oil pop in the pans.
-            </p>
-            <p>
-              Chief Maid read the note twice. The ending stayed where it was. Everything before it
-              could still move: the first paragraph, the title, the line about the lamps.
-            </p>
-            <h2>After the checkpoint</h2>
-            <p>
-              She crossed out the sentence that explained the trick and left the smell of sugar and
-              iron. A boy at the next table counted coins into a tin. Nobody looked up when the
-              chapter changed hands.
-            </p>
-            <p>
-              By the time the last lamp took, the page was shorter and the night was not. Harper
-              slid the draft back across the wood. “Keep the ending,” the note said. She already
-              had.
-            </p>
-            <p>
-              The market kept its own hours. When the row went dark, the only thing still bright was
-              the margin she had refused to touch.
-            </p>
-            <h2>What still moved</h2>
-            <p>
-              The title lost two words and gained a lamp. The first paragraph stopped explaining who
-              had arrived and let the oil do it. A crossed-out line about the trick stayed in the
-              margin, smaller than the sentence it used to be.
-            </p>
-            <p>
-              Harper counted the open files the way the boy counted coins: three still warm, one
-              already filed, and the last page left face down. Chief Maid did not ask for that page.
-              The note under the folded chapter said the same thing it had said at dusk.
-            </p>
-            <p>
-              Outside, the row went dark from the far end inward. The wood kept the heat of the
-              pans. She slid the draft back, set her hand on the untouched ending, and waited for
-              the next instruction to be shorter than the one before it.
-            </p>
+            <h1>gateway log</h1>
+            <p>status: running</p>
+            <p>approval: pending</p>
+            <p>last: lint passed</p>
           </article>
         </section>
       </aside>

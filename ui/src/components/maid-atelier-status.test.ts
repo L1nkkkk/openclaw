@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   maidClip,
   maidIdentityTheme,
+  maidPresenceHold,
   maidSessionSummaries,
   maidTone,
   readMaidGoal,
@@ -24,6 +25,19 @@ describe("maidTone", () => {
   it("marks a finished quiet run as success and everything else idle", () => {
     expect(maidTone({ activeNow: false, unreadCount: 0, status: "done" })).toBe("success");
     expect(maidTone({ activeNow: false, unreadCount: 0 })).toBe("idle");
+  });
+
+  it("keeps blocked and pending approval off the busy pip", () => {
+    expect(maidTone({ activeNow: true, unreadCount: 0, status: "blocked" })).toBe("blocked");
+    expect(maidTone({ activeNow: true, unreadCount: 1, status: "pending_approval" })).toBe(
+      "blocked",
+    );
+    expect(maidTone({ activeNow: false, unreadCount: 0, status: "pending-approval" })).toBe(
+      "blocked",
+    );
+    expect(maidPresenceHold("pending_approval")).toBe("pending");
+    expect(maidPresenceHold("blocked")).toBe("blocked");
+    expect(maidTone({ activeNow: true, unreadCount: 0, status: "running" })).toBe("busy");
   });
 });
 

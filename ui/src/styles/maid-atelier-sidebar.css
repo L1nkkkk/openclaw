@@ -31,24 +31,24 @@
 .maid-atelier-nav__item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  min-height: 26px;
-  padding: 1px 8px;
+  min-height: 24px;
+  padding: 0 6px;
   border: 0;
   border-radius: var(--radius-lg);
   background: transparent;
   color: var(--muted-strong);
   font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 500;
   text-align: start;
 }
 
 .maid-atelier-nav__item svg {
   flex: none;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 
 .maid-atelier-nav__item:hover:not(:disabled) {
@@ -69,14 +69,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin: 6px 8px 1px;
-  padding-top: 6px;
+  gap: 6px;
+  margin: 4px 6px 0;
+  padding-top: 4px;
   border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -150,12 +150,13 @@
 .maid-atelier-agents__row,
 .maid-atelier-agents__task {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
-  gap: 6px;
+  /* Half-step under the previous 28px / 12.5px row. */
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 5px;
   align-items: center;
   width: 100%;
-  min-height: 28px;
-  padding: 1px 8px;
+  min-height: 26px;
+  padding: 0 6px;
   border: 0;
   border-radius: var(--radius-xl);
   background: transparent;
@@ -189,15 +190,15 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .maid-atelier-agents__avatar :is(img, .identity-avatar, .identity-avatar--agent),
 .maid-atelier-agents__portrait {
   box-sizing: border-box;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   object-fit: cover;
   border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
@@ -215,8 +216,9 @@
   height: 8px;
 }
 
-/* Amber busy, a lighter cool mint for idle, sage online. The dark outline
-   stays. Idle drops the crescent: on an 8px pip it covers the fill. */
+/* Amber busy, a lighter cool mint for idle, sage online. Blocked and pending
+   approval keep the purple pip. The dark outline stays. Idle drops the
+   crescent: on an 8px pip it covers the fill. */
 .maid-atelier-agents__avatar > .maid-presence[data-tone="busy"] {
   --maid-presence: var(--warn);
 }
@@ -230,7 +232,7 @@
 }
 
 .maid-atelier-agents__row[data-maid-kind="session"] {
-  min-height: 26px;
+  min-height: 24px;
   padding-block: 0;
 }
 
@@ -238,7 +240,7 @@
 .maid-atelier-agents__aside {
   display: grid;
   min-width: 0;
-  gap: 1px;
+  gap: 0;
 }
 
 .maid-atelier-agents__aside {
@@ -258,9 +260,9 @@
   min-width: 0;
   overflow: hidden;
   color: var(--text);
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.15;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -276,8 +278,8 @@
 .maid-atelier-agents__task-time {
   overflow: hidden;
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.3;
+  font-size: 10px;
+  line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -285,8 +287,8 @@
 .maid-atelier-agents__activity {
   overflow: hidden;
   color: var(--muted-strong);
-  font-size: 11px;
-  line-height: 1.2;
+  font-size: 10px;
+  line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -329,6 +331,22 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
+}
+
+.maid-atelier-agents__hold {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  color: var(--control-ui-environment-purple-ink);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.maid-atelier-agents__hold > .maid-presence {
+  width: 8px;
+  height: 8px;
 }
 
 .maid-atelier-agents__refine {
@@ -437,10 +455,10 @@ button.maid-atelier-profile {
   z-index: 1;
   display: grid;
   flex: none;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 6px;
   align-items: center;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
   background: var(--bg);
 }
