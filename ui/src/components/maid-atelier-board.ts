@@ -376,9 +376,9 @@ export function maidChecklistModel(input: {
     };
   }
   return {
-    sample: true,
+    sample: false,
     log,
-    items: MAID_SAMPLE_FILES,
+    items: [],
   };
 }
 

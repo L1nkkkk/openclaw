@@ -15,7 +15,7 @@ function checked(flipped: () => ReadonlySet<string>, item: MaidChecklistItem): b
 
 export function MaidAtelierTaskLog(props: {
   card?: Pick<ProgressCard, "markdown" | "steps"> | null;
-  /** Sample files stay off an empty welcome thread. Real steps still show. */
+  /** An empty welcome thread stays blank. A thread with messages says No log. */
   active?: boolean;
 }): JSX.Element {
   const maid = useMaidTheme();
@@ -36,7 +36,7 @@ function MaidAtelierTaskLogLive(props: {
       markdown: props.card?.markdown,
     }),
   );
-  const visible = () => !model().sample || props.active === true;
+  const visible = () => model().items.length > 0 || props.active === true;
   const [flipped, setFlipped] = createSignal<ReadonlySet<string>>(new Set());
   const toggle = (id: string) => {
     const next = new Set(flipped());
@@ -45,39 +45,37 @@ function MaidAtelierTaskLogLive(props: {
     }
     setFlipped(next);
   };
-  const log = () => model().log || (model().sample ? t("agentsHome.maidTaskLogSample") : "");
+  const log = () =>
+    model().log || (model().items.length === 0 ? t("agentsHome.maidTaskLogSample") : "");
   return (
-    <Show when={visible() && model().items.length > 0}>
+    <Show when={visible()}>
       <section class="maid-atelier-log" aria-label={t("agentsHome.maidChecklist")}>
         <Show when={log()}>
-          <p class="maid-atelier-log__line">
-            {log()}
-            <Show when={model().sample}>
-              <span class="maid-atelier-log__sample">{t("agentsHome.maidProgressSample")}</span>
-            </Show>
-          </p>
+          <p class="maid-atelier-log__line">{log()}</p>
         </Show>
-        <ul class="maid-atelier-log__list">
-          <For each={model().items}>
-            {(item) => (
-              <li>
-                <button
-                  type="button"
-                  class="maid-atelier-log__item"
-                  role="checkbox"
-                  aria-checked={checked(flipped, item) ? "true" : "false"}
-                  onClick={() => toggle(item.id)}
-                >
-                  <span class="maid-atelier-log__check" aria-hidden="true" />
-                  <span class="maid-atelier-log__label">{item.label}</span>
-                  <Show when={item.refine}>
-                    <span class="maid-atelier-log__refine">{t("agentsHome.maidRefine")}</span>
-                  </Show>
-                </button>
-              </li>
-            )}
-          </For>
-        </ul>
+        <Show when={model().items.length > 0}>
+          <ul class="maid-atelier-log__list">
+            <For each={model().items}>
+              {(item) => (
+                <li>
+                  <button
+                    type="button"
+                    class="maid-atelier-log__item"
+                    role="checkbox"
+                    aria-checked={checked(flipped, item) ? "true" : "false"}
+                    onClick={() => toggle(item.id)}
+                  >
+                    <span class="maid-atelier-log__check" aria-hidden="true" />
+                    <span class="maid-atelier-log__label">{item.label}</span>
+                    <Show when={item.refine}>
+                      <span class="maid-atelier-log__refine">{t("agentsHome.maidRefine")}</span>
+                    </Show>
+                  </button>
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
       </section>
     </Show>
   );

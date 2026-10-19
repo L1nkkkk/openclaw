@@ -81,17 +81,22 @@ function MaidAtelierProgressLive(props: {
       activeRun: props.activeRun,
     });
   });
+  const empty = () => model().source === "empty";
   const target = () => {
-    const value = model().target.trim();
-    if (value) {
-      return value;
+    if (empty()) {
+      return t("agentsHome.maidSampleTarget");
     }
-    return model().source === "sample"
-      ? t("agentsHome.maidSampleTarget")
-      : t("agentsHome.maidCurrentSession");
+    const value = model().target.trim();
+    return value || t("agentsHome.maidCurrentSession");
   };
   const status = () => t(PROGRESS_STATUS_KEYS[model().tone]);
   const fraction = () => `${model().completed}/${model().total}`;
+  const targetText = () =>
+    empty()
+      ? target()
+      : props.placement === "strip"
+        ? t("agentsHome.maidProgressTarget", { target: target(), status: status() })
+        : target();
   return (
     <div
       class={`maid-atelier-progress maid-atelier-progress--${props.placement}`}
@@ -101,30 +106,27 @@ function MaidAtelierProgressLive(props: {
       aria-label={t("agentsHome.maidProgressLabel")}
     >
       <MaidPresence tone={LAMP_TONES[model().tone]} class="maid-atelier-progress__lamp" />
-      <Show when={props.placement === "chip"}>
+      <Show when={props.placement === "chip" && !empty()}>
         <span class="maid-atelier-progress__status">{status()}</span>
       </Show>
       <span class="maid-atelier-progress__target" title={target()}>
-        {props.placement === "strip"
-          ? t("agentsHome.maidProgressTarget", { target: target(), status: status() })
-          : target()}
+        {targetText()}
       </span>
       <Show when={props.placement === "strip" && model().tone === "completed"}>
         <span class="maid-atelier-progress__check" aria-hidden="true">
           <Icon name="check" />
         </span>
       </Show>
-      <Show when={model().source === "sample"}>
-        <span class="maid-atelier-progress__sample">{t("agentsHome.maidProgressSample")}</span>
+      <Show when={model().total > 0}>
+        <span class="maid-atelier-progress__fraction">
+          {props.placement === "strip"
+            ? t("agentsHome.maidProgressProcess", {
+                completed: String(model().completed),
+                total: String(model().total),
+              })
+            : fraction()}
+        </span>
       </Show>
-      <span class="maid-atelier-progress__fraction">
-        {props.placement === "strip"
-          ? t("agentsHome.maidProgressProcess", {
-              completed: String(model().completed),
-              total: String(model().total),
-            })
-          : fraction()}
-      </span>
     </div>
   );
 }

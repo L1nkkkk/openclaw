@@ -126,7 +126,7 @@ describe("maid progress", () => {
     });
   });
 
-  it("falls back to the session title, then a sample stand-in", () => {
+  it("falls back to the session title, then an empty strip", () => {
     expect(resolveMaidProgress({ title: "Harper", sessionStatus: "done" })).toMatchObject({
       source: "session",
       target: "Harper",
@@ -135,11 +135,11 @@ describe("maid progress", () => {
       total: 1,
     });
     expect(resolveMaidProgress({})).toEqual({
-      source: "sample",
+      source: "empty",
       target: "",
-      tone: "working",
-      completed: 4,
-      total: 5,
+      tone: "idle",
+      completed: 0,
+      total: 0,
     });
   });
 

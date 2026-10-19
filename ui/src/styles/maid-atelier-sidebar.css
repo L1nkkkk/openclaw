@@ -216,15 +216,24 @@
   height: 8px;
 }
 
-/* Amber busy, a lighter cool mint for idle, sage online. Pending and blocked
-   keep the blue and red fills from maid-presence. The dark outline stays.
-   Idle drops the crescent: on an 8px pip it covers the fill. */
+/* Hot orange busy versus a cooler mint idle. These fills stay off --warn and
+   --info so light mode does not turn busy brown and idle blue. Pending and
+   blocked keep the blue and red fills from maid-presence. The dark outline
+   stays. Idle drops the crescent: on an 8px pip it covers the fill. */
 .maid-atelier-agents__avatar > .maid-presence[data-tone="busy"] {
-  --maid-presence: var(--warn);
+  --maid-presence: color-mix(
+    in srgb,
+    var(--control-ui-environment-amber) 62%,
+    var(--control-ui-environment-coral)
+  );
 }
 
 .maid-atelier-agents__avatar > .maid-presence[data-tone="idle"] {
-  --maid-presence: color-mix(in srgb, var(--control-ui-environment-teal-ink) 48%, var(--info));
+  --maid-presence: color-mix(
+    in srgb,
+    var(--control-ui-environment-teal) 72%,
+    var(--control-ui-environment-teal-ink)
+  );
 }
 
 .maid-atelier-agents__avatar > .maid-presence[data-tone="idle"] .maid-presence__core::after {
@@ -553,8 +562,12 @@ button.maid-atelier-profile {
 }
 
 .maid-atelier-preview__composer > .maid-atelier-progress--strip {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 5;
   margin: 0;
   padding: 0 2px 2px;
+  background-color: var(--chat-composer-surface, var(--bg));
 }
 
 .maid-atelier-preview__draft {
