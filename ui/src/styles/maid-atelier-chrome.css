@@ -18,11 +18,16 @@
 }
 
 .maid-atelier-progress--strip {
+  align-items: baseline;
   margin: 0 0 2px;
   padding: 2px 8px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
   border-radius: 0;
   background: transparent;
+}
+
+.maid-atelier-progress--strip > :is(.maid-atelier-progress__lamp, .maid-atelier-progress__check) {
+  align-self: center;
 }
 
 /* The strip is the last footer child. Row 1 parks the goal against the editor. */
@@ -45,7 +50,7 @@
   grid-column: 1 / -1;
   grid-row: 1;
   margin: 0;
-  padding: 1px 2px 3px;
+  padding: 0 2px;
 }
 
 .maid-atelier-progress__lamp {
@@ -271,6 +276,8 @@
 }
 
 .maid-atelier-room-wrap {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+
   flex: none;
   margin: 0 12px 6px;
 }
@@ -291,10 +298,11 @@
 .maid-atelier-room__face {
   display: grid;
   place-items: center;
+  box-sizing: border-box;
   width: 24px;
   height: 24px;
   padding: 0;
-  border: 0;
+  border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
   overflow: hidden;
   object-fit: cover;
@@ -313,7 +321,7 @@
 .maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face {
   width: 20px;
   height: 20px;
-  box-shadow: 0 0 0 2px var(--bg);
+  box-shadow: 0 0 0 1px var(--bg);
   font-size: 9px;
 }
 
@@ -392,8 +400,10 @@
 }
 
 .maid-atelier-room__candidate img {
+  box-sizing: border-box;
   width: 22px;
   height: 22px;
+  border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
   object-fit: cover;
 }
@@ -450,10 +460,17 @@
 }
 
 .maid-atelier-avatar-menu {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+
+  /* Stay in the chat column. A fixed or stretched panel paints over the reader title. */
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  align-self: flex-start;
   width: min(232px, 100%);
+  max-width: 100%;
   margin: 0 8px 6px;
   padding: 8px;
   border-radius: var(--radius-lg);
@@ -507,8 +524,11 @@
 }
 
 .maid-atelier-avatar-menu__portrait {
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
   overflow: hidden;
   background: transparent;
@@ -516,12 +536,14 @@
 
 .maid-atelier-avatar-menu__portrait img {
   display: block;
-  width: 36px;
-  height: 36px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
 .maid-atelier-mention-menu {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+
   position: absolute;
   bottom: calc(100% + 10px);
   left: 0;
@@ -576,6 +598,8 @@
 }
 
 .maid-atelier-mention {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -587,19 +611,31 @@
   color: var(--text);
   font: inherit;
   font-weight: 650;
-  line-height: 1.4;
-  vertical-align: baseline;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .maid-atelier-mention__face {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
+  border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--accent) 24%, var(--bg));
   object-fit: cover;
   font-size: 11px;
+}
+
+:root[data-theme-id="maid"] .agent-chat__composer-trail .maid-atelier-mention-chips {
+  align-items: center;
+  margin: 0;
+}
+
+:root[data-theme-id="maid"] .agent-chat__composer-trail .maid-atelier-mention {
+  height: var(--chat-composer-chip-height, 30px);
+  padding-block: 0;
 }

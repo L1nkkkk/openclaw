@@ -272,20 +272,6 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
           <Show when={scene() === "mention"}>
             <MaidMentionPicker agents={mentionAgents()} activeIndex={0} />
           </Show>
-          <Show
-            when={
-              scene() === "mentioned"
-                ? mentionAgents().find((agent) => agent.id === "notes")
-                : undefined
-            }
-          >
-            {(agent) => (
-              <div class="maid-atelier-mention-chips">
-                <MaidMentionChip agent={agent()} />
-              </div>
-            )}
-          </Show>
-          <MaidAtelierProgress placement="strip" card={PREVIEW_CARD} activeRun={true} />
           <div class={["maid-atelier-preview__draft", { "is-filled": mentioning() }]}>
             {scene() === "mention"
               ? "@"
@@ -295,8 +281,20 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
                   ? "Message the group…"
                   : "Message Harper…"}
           </div>
+          <MaidAtelierProgress placement="strip" card={PREVIEW_CARD} activeRun={true} />
           <div class="maid-atelier-preview__composer-bar">
-            <span class="maid-atelier-preview__model">gemini-3.1-flash-lite</span>
+            <div class="maid-atelier-preview__composer-lead">
+              <Show
+                when={
+                  scene() === "mentioned"
+                    ? mentionAgents().find((agent) => agent.id === "notes")
+                    : undefined
+                }
+              >
+                {(agent) => <MaidMentionChip agent={agent()} />}
+              </Show>
+              <span class="maid-atelier-preview__model">gemini-3.1-flash-lite</span>
+            </div>
             <button type="button" class="maid-atelier-preview__send">
               Send
             </button>

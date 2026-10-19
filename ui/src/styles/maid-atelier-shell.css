@@ -1,6 +1,10 @@
 /* Maid atelier shell. The sidebar lamps stay as they are. These rules only
    quiet the chat column and turn the existing file preview into a reader. */
 
+:root[data-theme-id="maid"] {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+}
+
 :root[data-theme-id="maid"] .chat-pane__header {
   min-height: 42px;
   background: transparent;
@@ -23,6 +27,14 @@
   display: grid;
   width: 24px;
   height: 24px;
+}
+
+:root[data-theme-id="maid"] .chat-group :is(img.chat-avatar, .chat-avatar-slot > .chat-avatar) {
+  box-sizing: border-box;
+  border: 1px solid var(--maid-avatar-stroke);
+  border-radius: var(--radius-full);
+  /* The shell superellipse flattens a full radius into a squircle. Faces stay circles. */
+  corner-shape: round;
 }
 
 :root[data-theme-id="maid"] .chat-group.chat-group--with-footer > .chat-group-footer {
@@ -112,8 +124,16 @@
   background: var(--bg);
 }
 
+:root[data-theme-id="maid"] .sidebar-region [data-region-header="side"] {
+  position: relative;
+  z-index: 4;
+  background: var(--bg);
+}
+
 :root[data-theme-id="maid"] .side-panel__header {
-  background: transparent;
+  position: relative;
+  z-index: 4;
+  background: var(--bg);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
 }
 
@@ -128,12 +148,15 @@
 
 :root[data-theme-id="maid"] .sidebar-file-view__path-bar,
 :root[data-theme-id="maid"] .sidebar-markdown-shell__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 8px 16px 0;
   border: 0;
-  background: transparent;
+  background: var(--bg);
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path-field {
@@ -143,7 +166,7 @@
 }
 
 :root[data-theme-id="maid"] .sidebar-file-view__path {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--muted) 88%, var(--bg));
   font-family: var(--font-body);
   font-size: 12px;
   text-align: start;
@@ -199,8 +222,8 @@
   box-shadow: none;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 14.5px;
-  line-height: 1.62;
+  font-size: 14px;
+  line-height: 1.55;
 }
 
 :root[data-theme-id="maid"] .sidebar-markdown-reader::before {
@@ -261,7 +284,6 @@
 
 @supports (corner-shape: superellipse(1.5)) {
   :root[data-theme-id="maid"] .chat-group .chat-bubble,
-  :root[data-theme-id="maid"] .chat-avatar,
   :root[data-theme-id="maid"] .agent-chat__input {
     corner-shape: superellipse(1.5);
   }

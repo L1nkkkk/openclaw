@@ -89,6 +89,19 @@ it("does not open the multi-agent picker in a private chat", () => {
   expect(view.container.querySelector("[data-maid-mention]")).toBeNull();
 });
 
+it("keeps the face panel in the chat column and off the reader title", () => {
+  const view = mountSolid(() => <MaidAtelierPreview scene="avatar" />);
+  flush();
+  const reader = view.container.querySelector("[data-maid-shot='reader']");
+  const menu = view.container.querySelector("[data-maid-avatar-menu='open']");
+  expect(reader?.querySelector("[data-maid-avatar-menu]")).toBeNull();
+  expect(menu?.closest("[data-maid-shot='center']")).not.toBeNull();
+  expect(reader?.querySelector(".sidebar-file-view__path")?.textContent).toContain(
+    "manuscript/chapter-07.md",
+  );
+  expect(reader?.querySelector("h1")?.textContent).toContain("The night market");
+});
+
 it("opens the face picker for an agent and stays labeled Sample", () => {
   const view = mountSolid(() => <MaidAtelierPreview scene="avatar" />);
   flush();
