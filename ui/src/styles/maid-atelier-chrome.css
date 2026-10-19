@@ -30,8 +30,14 @@
   align-self: center;
 }
 
-/* The strip is the last footer child. Row 1 parks the goal against the editor. */
+/* The strip is the last footer child. Row 1 parks the goal against the editor.
+   Narrow composers restyle this footer as one flex row and flatten the trail,
+   which lets @ chips shrink Goal and Process off that row. Keep the grid so
+   the strip stays a full line above the chips. */
 :root[data-theme-id="maid"] .agent-chat__composer-footer:has(> .maid-atelier-progress--strip) {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: center;
   row-gap: 2px;
   margin-bottom: 2px;
   padding-block: 2px;
@@ -43,12 +49,16 @@
 :root[data-theme-id="maid"]
   .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
   > .agent-chat__composer-trail {
+  display: flex;
   grid-row: 2;
 }
 
 :root[data-theme-id="maid"] .agent-chat__composer-footer > .maid-atelier-progress--strip {
   grid-column: 1 / -1;
   grid-row: 1;
+  flex: none;
+  width: 100%;
+  min-height: 16px;
   margin: 0;
   padding: 0 2px;
 }
