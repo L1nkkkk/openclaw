@@ -30,6 +30,7 @@ import { isInitialChatHistoryUnavailable } from "./chat-history-state.ts";
 import { resolveChatModelSetup } from "./chat-model-setup.ts";
 import { ChatPaneLayoutRender } from "./chat-pane-layout-render.ts";
 import { PaneBootLayout } from "./chat-pane-layout-view.tsx";
+import { maidChatPaneBindings } from "./chat-pane-mention.ts";
 import { createChatPaneRails } from "./chat-pane-rails.ts";
 import {
   createChatPaneQueuedEditProps,
@@ -46,15 +47,14 @@ import {
 } from "./chat-pane-sidebar-layout.ts";
 import {
   chatSubmitState,
+  createChatPaneChromeActions,
   createChatPaneSendActions,
   createChatPaneRunRecoveryActions,
-  dismissChatError,
   resolveChatPaneFollowUpMode,
   projectChatPaneTranscript,
 } from "./chat-pane-state.ts";
 import { ChatProviderReviewController } from "./chat-provider-review-controller.tsx";
 import { createChatQuestionActions } from "./chat-question-actions.ts";
-import { dismissRealtimeTalkError } from "./chat-realtime.ts";
 import { activeChatRunStartupStatus } from "./chat-run-startup.ts";
 import { chatSendPendingReason } from "./chat-send-support.ts";
 import { refreshChatCommands } from "./chat-state-refresh.ts";
@@ -368,6 +368,18 @@ export class ChatPaneRuntime extends ChatPaneLayoutRender {
       currentAgentId,
       !catalogKey && !sessionParticipationBlocked,
     );
+    const maid = maidChatPaneBindings({
+      nativeConversation,
+      gateway: this.context.gateway,
+      card: () => this.progressCard.card,
+      target: () => this.resolveChatReadTarget(),
+      state,
+      currentAgentId: currentAgentId ?? "",
+      userId: userPresentation.userId,
+      userName: userPresentation.userName,
+      session: selectedSession,
+      children: childRoster.subagentSessions,
+    });
     const props: ChatProps = {
       applicationContext: this.context,
       transcript: this.transcript,
@@ -592,11 +604,13 @@ export class ChatPaneRuntime extends ChatPaneLayoutRender {
       ...this.chatState.attachmentInputProps(state),
       cameraActive: this.conversationPresented,
       onRemoveAttachment: this.removeBrowserAnnotation,
+      onToggleProgressStep: maid.onToggleProgressStep,
       ...createChatPaneSendActions(state, {
         canSend: composerAvailability.canSend,
         modelRequiredReason,
         continueSession: catalogKey ? () => this.continueCatalogSession(catalogKey) : undefined,
         addSuggestion: suggestionViewer ? () => this.addCurrentSessionSuggestion() : undefined,
+        routeMention: maid.routeMention,
       }),
       ...createChatPaneRunRecoveryActions(state, {
         canSend: composerAvailability.canSend && !catalogKey && !suggestionViewer,
@@ -605,22 +619,7 @@ export class ChatPaneRuntime extends ChatPaneLayoutRender {
         latestFailedRunId: () =>
           chatFailureRunId(state.chatRunError, selectedChatSessionRow(state)),
       }),
-      onUseSystemDefaultMicrophone: state.realtimeTalkUseSystemDefault ?? undefined,
-      onToggleRealtimeTalk: () => (providerPaused ? undefined : void state.toggleRealtimeTalk()),
-      onToggleRealtimeCamera: () => void state.toggleRealtimeTalkCamera(),
-      onSwitchRealtimeCamera: () => void state.switchRealtimeTalkCamera(),
-      onDismissError: () => {
-        dismissChatError(state);
-        state.requestUpdate?.();
-      },
-      onDismissRealtimeTalkError: () => {
-        dismissRealtimeTalkError(state);
-        state.requestUpdate?.();
-      },
-      onDismissRealtimeTalkInputNotice: () => {
-        state.realtimeTalkInputNotice = null;
-        state.requestUpdate?.();
-      },
+      ...createChatPaneChromeActions(state, providerPaused),
       onAbort: sessionActionCallbacks.onAbort,
       onQueueRemove: state.removeQueuedMessage,
       onQueueRetry: providerPaused ? undefined : (id) => void state.retryQueuedChatMessage(id),

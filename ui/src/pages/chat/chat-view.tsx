@@ -497,6 +497,7 @@ function ChatContent(input: { props: ChatProps }) {
                     <MaidAtelierTaskLog
                       card={input.props.progressCard}
                       active={(input.props.messages?.length ?? 0) > 0}
+                      onToggleStep={input.props.onToggleProgressStep}
                     />
                     <Show when={frame().historyFailed && !frame().transcriptEmpty}>
                       {historyFailure(true)}

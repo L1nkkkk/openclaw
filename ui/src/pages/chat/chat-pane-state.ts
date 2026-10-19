@@ -8,6 +8,7 @@ import {
 } from "../../lib/chat/follow-up-mode.ts";
 import { currentDisplayRuntimeConfig } from "../../lib/config/config-state-model.ts";
 import { getChatHistoryLoadState } from "./chat-history-state.ts";
+import { dismissRealtimeTalkError } from "./chat-realtime.ts";
 import { chatSendPendingReason } from "./chat-send-support.ts";
 import type { ChatState } from "./chat-state-contract.ts";
 import type { ChatPageHost } from "./chat-state-host.ts";
@@ -52,6 +53,8 @@ export function createChatPaneSendActions(
     modelRequiredReason?: string | null;
     continueSession?: () => ReturnType<ChatProps["onSend"]>;
     addSuggestion?: () => ReturnType<ChatProps["onSend"]>;
+    /** Returns true when a Maid @mention owns this turn. */
+    routeMention?: () => boolean | Promise<boolean>;
   },
 ): Pick<ChatProps, "onSend" | "onPermissionRetry"> {
   return {
@@ -59,7 +62,7 @@ export function createChatPaneSendActions(
       options.canSend && !options.continueSession && !options.addSuggestion
         ? (message) => void state.handleSendChat(message)
         : undefined,
-    onSend: (followUpModeOverride, submissionAction) => {
+    onSend: async (followUpModeOverride, submissionAction) => {
       if (
         !options.canSend ||
         (options.modelRequiredReason &&
@@ -73,11 +76,47 @@ export function createChatPaneSendActions(
       if (options.addSuggestion) {
         return options.addSuggestion();
       }
+      if (options.routeMention && (await options.routeMention())) {
+        return;
+      }
       return state.handleSendChat(
         undefined,
         followUpModeOverride ? { followUpMode: followUpModeOverride } : undefined,
         submissionAction,
       );
+    },
+  };
+}
+
+export function createChatPaneChromeActions(
+  state: ChatPageHost,
+  providerPaused: boolean,
+): Pick<
+  ChatProps,
+  | "onUseSystemDefaultMicrophone"
+  | "onToggleRealtimeTalk"
+  | "onToggleRealtimeCamera"
+  | "onSwitchRealtimeCamera"
+  | "onDismissError"
+  | "onDismissRealtimeTalkError"
+  | "onDismissRealtimeTalkInputNotice"
+> {
+  return {
+    onUseSystemDefaultMicrophone: state.realtimeTalkUseSystemDefault ?? undefined,
+    onToggleRealtimeTalk: () => (providerPaused ? undefined : void state.toggleRealtimeTalk()),
+    onToggleRealtimeCamera: () => void state.toggleRealtimeTalkCamera(),
+    onSwitchRealtimeCamera: () => void state.switchRealtimeTalkCamera(),
+    onDismissError: () => {
+      dismissChatError(state);
+      state.requestUpdate?.();
+    },
+    onDismissRealtimeTalkError: () => {
+      dismissRealtimeTalkError(state);
+      state.requestUpdate?.();
+    },
+    onDismissRealtimeTalkInputNotice: () => {
+      state.realtimeTalkInputNotice = null;
+      state.requestUpdate?.();
     },
   };
 }

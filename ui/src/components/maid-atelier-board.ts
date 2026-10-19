@@ -269,6 +269,8 @@ export type MaidChecklistItem = {
   hold?: "blocked" | "pending";
   /** Manuscript session row. Opening it selects this session. */
   sessionKey?: string;
+  /** Progress-card step. Present only when the queue is that card's plan. */
+  stepIndex?: number;
 };
 
 const MINUTE_MS = 60_000;
@@ -327,30 +329,46 @@ function refineFor(label: string, done: boolean): boolean {
   return !done && (maidManuscriptFile(label) || /\brefine\b/i.test(label));
 }
 
+/** Completed returns to pending. Pending and in-progress become completed. */
+export function maidToggledProgressPlan(
+  steps: readonly { step: string; status: "pending" | "in_progress" | "completed" }[],
+  index: number,
+): { step: string; status: "pending" | "in_progress" | "completed" }[] | null {
+  if (!steps[index]) {
+    return null;
+  }
+  return steps.map((step, stepIndex) => ({
+    step: step.step,
+    status:
+      stepIndex === index ? (step.status === "completed" ? "pending" : "completed") : step.status,
+  }));
+}
+
 export function maidChecklistModel(input: {
   steps?: readonly { step: string; status: "pending" | "in_progress" | "completed" }[] | null;
   markdown?: string | null;
   sessions?: readonly MaidSessionFact[];
 }): { sample: boolean; log: string; items: readonly MaidChecklistItem[] } {
   const log = maidLogLine(input.markdown);
-  const steps = (input.steps ?? []).filter((step) => step.step.trim().length > 0);
-  if (steps.length > 0) {
-    return {
+  const items: MaidChecklistItem[] = [];
+  for (const [index, step] of (input.steps ?? []).entries()) {
+    const label = step.step.trim();
+    if (!label) {
+      continue;
+    }
+    const done = step.status === "completed";
+    items.push({
+      id: `step:${index}:${label}`,
+      stepIndex: index,
+      label,
+      done,
+      refine: refineFor(label, done),
       sample: false,
-      log,
-      items: steps.map((step, index) => {
-        const label = step.step.trim();
-        const done = step.status === "completed";
-        return {
-          id: `step:${index}:${label}`,
-          label,
-          done,
-          refine: refineFor(label, done),
-          sample: false,
-          at: null,
-        };
-      }),
-    };
+      at: null,
+    });
+  }
+  if (items.length > 0) {
+    return { sample: false, log, items };
   }
   const files = (input.sessions ?? [])
     .filter((session) => !session.archived)

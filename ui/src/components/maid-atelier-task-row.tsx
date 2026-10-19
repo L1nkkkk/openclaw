@@ -49,10 +49,12 @@ export function MaidTaskRow(props: {
   done: () => ReadonlySet<string>;
   onOpenSession: (key: string) => void;
   onToggleTask: (id: string) => void;
+  onToggleStep?: (index: number) => void;
 }) {
   const localOnly = () => props.item.sample;
   const checked = () => (localOnly() ? taskChecked(props.done, props.item) : props.item.done);
   const sessionKey = () => props.item.sessionKey;
+  const stepIndex = () => props.item.stepIndex;
   const kind = () => (sessionKey() ? "session" : localOnly() ? "sample" : "step");
   const when = () => {
     if (props.item.at && props.item.at > 0) {
@@ -63,7 +65,7 @@ export function MaidTaskRow(props: {
   };
   return (
     <Show
-      when={sessionKey() || localOnly()}
+      when={sessionKey() || localOnly() || stepIndex() !== undefined}
       fallback={
         <div
           class="maid-atelier-agents__task"
@@ -79,8 +81,8 @@ export function MaidTaskRow(props: {
         class="maid-atelier-agents__task"
         data-maid-task={kind()}
         data-maid-done={checked() ? "true" : "false"}
-        role={localOnly() ? "checkbox" : undefined}
-        aria-checked={localOnly() ? (checked() ? "true" : "false") : undefined}
+        role={sessionKey() ? undefined : "checkbox"}
+        aria-checked={sessionKey() ? undefined : checked() ? "true" : "false"}
         onClick={() => {
           const key = sessionKey();
           if (key) {
@@ -89,6 +91,11 @@ export function MaidTaskRow(props: {
           }
           if (props.item.sample) {
             props.onToggleTask(props.item.id);
+            return;
+          }
+          const index = stepIndex();
+          if (index !== undefined) {
+            props.onToggleStep?.(index);
           }
         }}
       >

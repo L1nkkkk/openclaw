@@ -17,11 +17,17 @@ export function MaidAtelierTaskLog(props: {
   card?: Pick<ProgressCard, "markdown" | "steps"> | null;
   /** An empty welcome thread stays blank. A thread with messages says No log. */
   active?: boolean;
+  /** Writes the progress card. Without it, a preview click only flips local memory. */
+  onToggleStep?: (index: number) => void;
 }): JSX.Element {
   const maid = useMaidTheme();
   return (
     <Show when={maid()}>
-      <MaidAtelierTaskLogLive card={props.card} active={props.active} />
+      <MaidAtelierTaskLogLive
+        card={props.card}
+        active={props.active}
+        onToggleStep={props.onToggleStep}
+      />
     </Show>
   );
 }
@@ -29,6 +35,7 @@ export function MaidAtelierTaskLog(props: {
 function MaidAtelierTaskLogLive(props: {
   card?: Pick<ProgressCard, "markdown" | "steps"> | null;
   active?: boolean;
+  onToggleStep?: (index: number) => void;
 }) {
   const model = createMemo(() =>
     maidChecklistModel({
@@ -56,23 +63,35 @@ function MaidAtelierTaskLogLive(props: {
         <Show when={model().items.length > 0}>
           <ul class="maid-atelier-log__list">
             <For each={model().items}>
-              {(item) => (
-                <li>
-                  <button
-                    type="button"
-                    class="maid-atelier-log__item"
-                    role="checkbox"
-                    aria-checked={checked(flipped, item) ? "true" : "false"}
-                    onClick={() => toggle(item.id)}
-                  >
-                    <span class="maid-atelier-log__check" aria-hidden="true" />
-                    <span class="maid-atelier-log__label">{item.label}</span>
-                    <Show when={item.refine}>
-                      <span class="maid-atelier-log__refine">{t("agentsHome.maidRefine")}</span>
-                    </Show>
-                  </button>
-                </li>
-              )}
+              {(item) => {
+                const live = () => props.onToggleStep !== undefined;
+                const marked = () => (live() ? item.done : checked(flipped, item));
+                return (
+                  <li>
+                    <button
+                      type="button"
+                      class="maid-atelier-log__item"
+                      role="checkbox"
+                      aria-checked={marked() ? "true" : "false"}
+                      onClick={() => {
+                        if (live()) {
+                          if (item.stepIndex !== undefined) {
+                            props.onToggleStep?.(item.stepIndex);
+                          }
+                          return;
+                        }
+                        toggle(item.id);
+                      }}
+                    >
+                      <span class="maid-atelier-log__check" aria-hidden="true" />
+                      <span class="maid-atelier-log__label">{item.label}</span>
+                      <Show when={item.refine}>
+                        <span class="maid-atelier-log__refine">{t("agentsHome.maidRefine")}</span>
+                      </Show>
+                    </button>
+                  </li>
+                );
+              }}
             </For>
           </ul>
         </Show>

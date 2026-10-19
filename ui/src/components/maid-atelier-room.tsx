@@ -97,13 +97,15 @@ export function MaidAtelierRoom(props: {
         <button
           type="button"
           class="maid-atelier-room__pull"
+          data-maid-pull="draft"
           disabled={props.candidates.length === 0}
           aria-expanded={shown() ? "true" : "false"}
           aria-label={t(
             props.candidates.length === 0
               ? "agentsHome.maidRoomPullEmpty"
-              : "agentsHome.maidRoomPull",
+              : "agentsHome.maidRoomPullHint",
           )}
+          title={props.candidates.length === 0 ? undefined : t("agentsHome.maidRoomPullHint")}
           onClick={() => {
             if (props.candidates.length > 0) {
               setOpen((value) => !value);
@@ -120,6 +122,7 @@ export function MaidAtelierRoom(props: {
       />
       <Show when={shown() && props.candidates.length > 0}>
         <div class="maid-atelier-room__menu" data-maid-room-menu="open" role="group">
+          <p class="maid-atelier-room__pull-note">{t("agentsHome.maidRoomPullHint")}</p>
           <For each={props.candidates}>
             {(agent) => (
               <button

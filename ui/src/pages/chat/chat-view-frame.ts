@@ -124,6 +124,8 @@ export type ChatProps = Omit<
       resolution: SessionSuggestionResolution,
     ) => void;
     detailsEnabled?: boolean;
+    /** Persists a Maid work-queue step on the session progress card. */
+    onToggleProgressStep?: (index: number) => void;
   };
 
 // The view frame refreshes on each pane render and the chat-item cache keys the queue by

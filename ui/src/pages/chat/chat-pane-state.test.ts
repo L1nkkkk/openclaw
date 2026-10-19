@@ -8,6 +8,7 @@ import {
   applySelectedSessionProjection,
   SessionParticipationTracker,
   createChatPaneRunRecoveryActions,
+  createChatPaneSendActions,
 } from "./chat-pane-state.ts";
 
 function projectionState(): Parameters<typeof applySelectedSessionProjection>[0] {
@@ -18,6 +19,30 @@ function projectionState(): Parameters<typeof applySelectedSessionProjection>[0]
     selectedChatSessionIncognito: true,
   };
 }
+
+describe("createChatPaneSendActions", () => {
+  it("lets a claimed mention skip the current session send", async () => {
+    const handleSendChat = vi.fn(async () => true);
+    const routeMention = vi.fn(async () => true);
+    const actions = createChatPaneSendActions(
+      { chatAttachments: [], chatMessage: "@Notes look", handleSendChat },
+      { canSend: true, routeMention },
+    );
+    await actions.onSend();
+    expect(routeMention).toHaveBeenCalledOnce();
+    expect(handleSendChat).not.toHaveBeenCalled();
+  });
+
+  it("sends on this session when the mention route does not claim the turn", async () => {
+    const handleSendChat = vi.fn(async () => true);
+    const actions = createChatPaneSendActions(
+      { chatAttachments: [], chatMessage: "hello", handleSendChat },
+      { canSend: true, routeMention: async () => false },
+    );
+    await actions.onSend();
+    expect(handleSendChat).toHaveBeenCalledOnce();
+  });
+});
 
 describe("applySelectedSessionProjection", () => {
   it.each([
