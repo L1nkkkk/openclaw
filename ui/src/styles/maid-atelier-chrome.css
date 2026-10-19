@@ -22,6 +22,7 @@
   margin: 0 0 2px;
   padding: 2px 8px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
+  border-inline-start: 2px solid var(--maid-goal-accent, var(--info));
   border-radius: 0;
   background: transparent;
 }
@@ -149,8 +150,8 @@
     background-image: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--info) 55%, transparent) 46%,
-      color-mix(in srgb, var(--info) 55%, transparent) 54%,
+      color-mix(in srgb, var(--maid-goal-accent, var(--info)) 55%, transparent) 46%,
+      color-mix(in srgb, var(--maid-goal-accent, var(--info)) 55%, transparent) 54%,
       transparent
     );
     background-repeat: no-repeat;
@@ -518,11 +519,20 @@
   align-self: flex-start;
   width: min(232px, 100%);
   max-width: 100%;
+  min-height: 0;
   margin: 0 8px 6px;
   padding: 8px;
+  overflow: auto;
   border-radius: var(--radius-lg);
-  background: var(--chat-composer-surface, var(--popover));
+  background: var(--popover);
   color: var(--text);
+}
+
+/* A short sidebar or chat column scrolls the portraits. The label stays put. */
+.maid-atelier-agents > .maid-atelier-avatar-menu,
+.maid-atelier-room-wrap > .maid-atelier-avatar-menu {
+  flex: 0 1 auto;
+  max-height: min(240px, 46%);
 }
 
 .maid-atelier-avatar-menu--inline {
@@ -531,6 +541,10 @@
 }
 
 .maid-atelier-avatar-menu__title {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background: var(--popover);
   color: var(--text-strong);
   font-size: 13px;
   font-weight: 650;

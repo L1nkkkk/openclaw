@@ -55,7 +55,7 @@ function SampleChatRow(props: {
         <MaidPresence tone={props.tone} label={props.name} />
       </span>
       <div class="chat-group-messages">
-        <div class="chat-bubble">
+        <div class={["chat-bubble", { "chat-bubble--mention": Boolean(props.agents?.length) }]}>
           <Show when={props.agents?.length} fallback={props.text}>
             <MaidMentionText text={props.text} agents={props.agents ?? []} />
           </Show>

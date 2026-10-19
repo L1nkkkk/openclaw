@@ -1,11 +1,13 @@
 /* Presence badge. The core is a solid disc with a dark 1.5px outline so the
    pip stays separate from a light anime face. The ping is a sibling behind it:
    only the ping scales and fades. The core opacity never animates.
-   Motion is one slow bloom (2.5s attention, 2.8s working), well under 3 Hz. */
+   Motion is one slow bloom (2.5s attention, 2.8s working), well under 3 Hz.
+   The ring is one step past the previous 58% black mix so amber busy and mint
+   idle stay readable. Pending and blocked fills are unchanged. */
 
 .maid-presence {
   --maid-presence: var(--muted);
-  --maid-presence-ring: color-mix(in srgb, black 58%, var(--bg));
+  --maid-presence-ring: color-mix(in srgb, black 74%, var(--bg));
   position: relative;
   z-index: 1;
   display: inline-block;

@@ -211,6 +211,7 @@ export function prepareGroupedMessage(
       ? "chat-bubble--activity-only"
       : "",
     opts.isStreaming ? "streaming" : "",
+    humanMentions?.length ? "chat-bubble--mention" : "",
   ];
 
   // Suppress bubbles with no visible content, including relocated tool cards.

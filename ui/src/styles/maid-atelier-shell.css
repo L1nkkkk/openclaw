@@ -3,6 +3,8 @@
 
 :root[data-theme-id="maid"] {
   --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+  /* Working Goal hairline. The reader's current chapter uses the same mark. */
+  --maid-goal-accent: var(--info);
 }
 
 :root[data-theme-id="maid"] .chat-pane__header {
@@ -95,6 +97,11 @@
   background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
   font-size: 14px;
   line-height: 1.5;
+}
+
+/* @-mentioned bubbles. One step lighter than the accent wash, still a hairline. */
+[data-theme-id="maid"] .chat-bubble--mention {
+  border-inline-start: 2px solid color-mix(in srgb, white 24%, var(--accent));
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
@@ -241,6 +248,12 @@
   line-height: 1.15;
 }
 
+/* The open file's first heading is the current chapter. Same color as the Goal strip. */
+[data-theme-id="maid"] .sidebar-markdown-reader.sidebar-markdown > :is(h1, h2):first-child {
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid var(--maid-goal-accent);
+}
+
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(h2) {
   margin-bottom: 0.4em;
   color: var(--text-strong);
@@ -253,6 +266,14 @@
 :root[data-theme-id="maid"] .sidebar-markdown-reader:where(.sidebar-markdown) :where(p) {
   margin-bottom: 0.68em;
   color: var(--text);
+}
+
+/* The conversation fade sits at z-index 2. The room title and the open face
+   drawer stay above it. The wrap does not leave the chat column. */
+[data-theme-id="maid"] .maid-atelier-room-wrap {
+  position: relative;
+  z-index: 3;
+  background: var(--bg);
 }
 
 .maid-atelier-chat__avatar {
