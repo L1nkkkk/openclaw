@@ -97,9 +97,9 @@ standalone connection behavior. This setting does not affect `pnpm ui:build`.
 
 ### Maid Atelier
 
-Choose **Settings → Appearance → Maid Atelier** and set the color mode to **Dark**. The shell stays on the charcoal base. Workstation cards are the agent rows under Maids. A selected row is the current agent. Working status is amber. Idle and online status are mint.
+Choose **Settings → Appearance → Maid Atelier** and set the color mode to **Dark**. The shell is the Control UI workstation: Search and the shortcut row, collapsible session groups, and a profile strip pinned to the bottom of the sidebar. Rows use a small circular portrait, a calm status dot, and a relative time. The center column is the agent header, the chapter checklist, the thread, and a Goal strip against the composer. The right column is the full-height Markdown reader.
 
-Click the portrait on a row, the profile strip, or a face in the room header. That opens the wardrobe drawer on the right. **Upload a picture** uses the existing profile or agent image save. **Atelier portraits** replace the face with a bundled portrait. **Close** dismisses the drawer. The row label still opens the session.
+Click a portrait on a row, the profile strip, or a face in the room header. That opens a compact face panel in place. **Upload a picture** uses the existing profile or agent image save. **Atelier portraits** replace the face with a bundled portrait. **Close** dismisses the panel. The row label still opens the session.
 
 In a group room, type `@` in the composer to mention an agent already in the room. The mention is draft text. A private room does not open that picker.
 

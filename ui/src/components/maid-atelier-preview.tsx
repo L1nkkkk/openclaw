@@ -45,10 +45,7 @@ function SampleChatRow(props: {
 }) {
   return (
     <div class={`chat-group ${props.side} chat-group--with-footer`} data-maid-speaker={props.name}>
-      <span
-        class="chat-avatar-slot maid-atelier-chat__avatar"
-        data-maid-mark={props.name.slice(0, 1)}
-      >
+      <span class="chat-avatar-slot maid-atelier-chat__avatar">
         <img
           class={`chat-avatar ${props.side}`}
           data-maid-face={props.portraitId}
@@ -288,6 +285,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               </div>
             )}
           </Show>
+          <MaidAtelierProgress placement="strip" card={PREVIEW_CARD} activeRun={true} />
           <div class={["maid-atelier-preview__draft", { "is-filled": mentioning() }]}>
             {scene() === "mention"
               ? "@"
@@ -303,7 +301,6 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
               Send
             </button>
           </div>
-          <MaidAtelierProgress placement="strip" card={PREVIEW_CARD} activeRun={true} />
         </div>
       </div>
       <aside class="maid-atelier-preview__reader" data-maid-shot="reader">

@@ -26,11 +26,9 @@ export function MaidAvatarPicker(props: {
       class={["maid-atelier-avatar-menu", { "maid-atelier-avatar-menu--inline": props.inline }]}
       data-maid-avatar-menu="open"
       data-maid-avatar-target={props.subject.id}
-      data-maid-drawer="wardrobe"
       role="group"
       aria-label={t("agentsHome.maidAvatarTitle")}
     >
-      <div class="maid-atelier-avatar-menu__kicker">{t("agentsHome.maidAvatarDrawer")}</div>
       <div class="maid-atelier-avatar-menu__title">
         {t("agentsHome.maidAvatarChange", { name: props.subject.name })}
       </div>
@@ -64,7 +62,6 @@ export function MaidAvatarPicker(props: {
           }
         }}
       />
-      <div class="maid-atelier-avatar-menu__rod" aria-hidden="true" />
       <div class="maid-atelier-avatar-menu__portraits">
         <For each={MAID_PORTRAIT_SRCS}>
           {(src) => (

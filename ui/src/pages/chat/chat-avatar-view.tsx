@@ -234,17 +234,11 @@ function AgentAvatar(props: {
             />
           }
         >
-          <span class="chat-avatar-slot" data-maid-mark={props.name.slice(0, 1)}>
-            <img class="chat-avatar assistant" src={maidPortraitSrc(props.id)} alt="" />
-          </span>
+          <img class="chat-avatar assistant" src={maidPortraitSrc(props.id)} alt="" />
         </Show>
       }
     >
-      <span
-        ref={identityAvatarState(view)}
-        class="chat-avatar-slot"
-        data-maid-mark={maid() ? props.name.slice(0, 1) : undefined}
-      >
+      <span ref={identityAvatarState(view)} class="chat-avatar-slot">
         <IdentityAvatarImage
           view={view()}
           fallbackSelector=".chat-avatar-slot"

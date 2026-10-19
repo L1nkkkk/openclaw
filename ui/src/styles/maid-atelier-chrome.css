@@ -18,11 +18,34 @@
 }
 
 .maid-atelier-progress--strip {
-  margin: 2px 2px 0;
-  padding: 7px 10px 5px;
-  border-top: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
+  margin: 0 0 2px;
+  padding: 2px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 48%, transparent);
   border-radius: 0;
   background: transparent;
+}
+
+/* The strip is the last footer child. Row 1 parks the goal against the editor. */
+:root[data-theme-id="maid"] .agent-chat__composer-footer:has(> .maid-atelier-progress--strip) {
+  row-gap: 2px;
+  margin-bottom: 2px;
+  padding-block: 2px;
+}
+
+:root[data-theme-id="maid"]
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
+  > .agent-chat__composer-lead,
+:root[data-theme-id="maid"]
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
+  > .agent-chat__composer-trail {
+  grid-row: 2;
+}
+
+:root[data-theme-id="maid"] .agent-chat__composer-footer > .maid-atelier-progress--strip {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0;
+  padding: 1px 2px 3px;
 }
 
 .maid-atelier-progress__lamp {
@@ -37,7 +60,7 @@
 }
 
 .maid-atelier-progress[data-tone="working"] .maid-atelier-progress__status {
-  color: var(--maid-amber, var(--info));
+  color: var(--info);
 }
 
 .maid-atelier-progress[data-tone="completed"] .maid-atelier-progress__status {
@@ -97,8 +120,8 @@
     background-image: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--maid-amber, var(--info)) 55%, transparent) 46%,
-      color-mix(in srgb, var(--maid-amber, var(--info)) 55%, transparent) 54%,
+      color-mix(in srgb, var(--info) 55%, transparent) 46%,
+      color-mix(in srgb, var(--info) 55%, transparent) 54%,
       transparent
     );
     background-repeat: no-repeat;
@@ -266,48 +289,19 @@
 }
 
 .maid-atelier-room__face {
-  position: relative;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   padding: 0;
-  border: 1px solid var(--maid-gold, var(--border-strong));
-  border-radius: 0;
+  border: 0;
+  border-radius: var(--radius-full);
   overflow: hidden;
   object-fit: cover;
-  background: var(--bg-elevated);
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
   color: var(--text-strong);
   font-size: 12px;
   font-weight: 700;
-  clip-path: polygon(
-    4px 0,
-    calc(100% - 4px) 0,
-    100% 4px,
-    100% calc(100% - 4px),
-    calc(100% - 4px) 100%,
-    4px 100%,
-    0 calc(100% - 4px),
-    0 4px
-  );
-}
-
-.maid-atelier-room__face[data-maid-mark]::after {
-  content: attr(data-maid-mark);
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  inset-inline-end: 0;
-  display: grid;
-  place-items: center;
-  width: 11px;
-  height: 11px;
-  background: var(--maid-gold, var(--accent-2));
-  color: var(--bg);
-  font-size: 7px;
-  font-weight: 700;
-  line-height: 1;
-  pointer-events: none;
 }
 
 .maid-atelier-room__face img {
@@ -317,13 +311,14 @@
 }
 
 .maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face {
-  width: 26px;
-  height: 26px;
-  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 0 2px var(--bg);
+  font-size: 9px;
 }
 
 .maid-atelier-room[data-maid-room="group"] .maid-atelier-room__face + .maid-atelier-room__face {
-  margin-inline-start: -8px;
+  margin-inline-start: -6px;
 }
 
 .maid-atelier-room__copy {
@@ -361,8 +356,8 @@
   padding: 0 10px;
   border: 0;
   border-radius: var(--radius-full);
-  background: var(--maid-gold, var(--accent-2));
-  color: var(--bg);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  color: var(--text);
   font-size: 11px;
   font-weight: 650;
 }
@@ -399,27 +394,13 @@
 .maid-atelier-room__candidate img {
   width: 22px;
   height: 22px;
-  border: 1px solid var(--maid-gold, var(--border-strong));
-  border-radius: 0;
+  border-radius: var(--radius-full);
   object-fit: cover;
-  clip-path: polygon(
-    3px 0,
-    calc(100% - 3px) 0,
-    100% 3px,
-    100% calc(100% - 3px),
-    calc(100% - 3px) 100%,
-    3px 100%,
-    0 calc(100% - 3px),
-    0 3px
-  );
 }
 
-.maid-atelier-room__candidate:hover {
-  background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
-}
-
+.maid-atelier-room__candidate:hover,
 .maid-atelier-room__pull:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--maid-gold, var(--accent-2)) 86%, var(--text-strong));
+  background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
 }
 
 .maid-atelier-room__pull:focus-visible,
@@ -458,6 +439,7 @@
   .maid-atelier-room__menu,
   .maid-atelier-mention-menu,
   .maid-atelier-mention,
+  .maid-atelier-avatar-menu,
   :root[data-theme-id="maid"] .chat-composer-model-control {
     corner-shape: superellipse(1.5);
   }
@@ -468,46 +450,20 @@
 }
 
 .maid-atelier-avatar-menu {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-end: 0;
-  z-index: 80;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: min(300px, 100%);
-  margin: 0;
-  padding: 16px 14px 18px;
-  overflow: auto;
-  border: 0;
-  border-inline-start: 1px solid
-    color-mix(in srgb, var(--maid-gold, var(--border)) 70%, var(--border));
-  border-radius: 0;
-  background: var(--bg);
+  gap: 6px;
+  width: min(232px, 100%);
+  margin: 0 8px 6px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background: var(--chat-composer-surface, var(--popover));
   color: var(--text);
-  box-shadow: var(--shadow-lg);
 }
 
 .maid-atelier-avatar-menu--inline {
-  position: fixed;
-}
-
-.maid-atelier-avatar-menu__kicker {
-  color: var(--maid-gold, var(--accent-2));
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.maid-atelier-avatar-menu__rod {
-  height: 3px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(
-    90deg,
-    var(--maid-gold, var(--accent-2)),
-    var(--maid-blush, var(--accent))
-  );
+  position: relative;
+  z-index: 3;
 }
 
 .maid-atelier-avatar-menu__title {
@@ -546,32 +502,22 @@
 
 .maid-atelier-avatar-menu__portraits {
   display: grid;
-  grid-template-columns: repeat(4, 48px);
-  gap: 6px;
+  grid-template-columns: repeat(4, 36px);
+  gap: 4px;
 }
 
 .maid-atelier-avatar-menu__portrait {
   padding: 0;
-  border: 1px solid var(--maid-gold, var(--border-strong));
-  border-radius: 0;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: var(--radius-full);
   overflow: hidden;
   background: transparent;
-  clip-path: polygon(
-    6px 0,
-    calc(100% - 6px) 0,
-    100% 6px,
-    100% calc(100% - 6px),
-    calc(100% - 6px) 100%,
-    6px 100%,
-    0 calc(100% - 6px),
-    0 6px
-  );
 }
 
 .maid-atelier-avatar-menu__portrait img {
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   object-fit: cover;
 }
 
@@ -637,17 +583,12 @@
   padding: 1px 8px 1px 1px;
   border: 0;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 28%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--maid-gold, var(--accent-2)) 75%, transparent);
-  color: var(--text-strong);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
   font: inherit;
   font-weight: 650;
   line-height: 1.4;
   vertical-align: baseline;
-}
-
-.chat-bubble .maid-atelier-mention {
-  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 36%, var(--bg-elevated));
 }
 
 .maid-atelier-mention__face {
@@ -657,18 +598,8 @@
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
-  border-radius: 0;
-  background: color-mix(in srgb, var(--maid-gold, var(--accent-2)) 24%, var(--bg));
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 24%, var(--bg));
   object-fit: cover;
   font-size: 11px;
-  clip-path: polygon(
-    3px 0,
-    calc(100% - 3px) 0,
-    100% 3px,
-    100% calc(100% - 3px),
-    calc(100% - 3px) 100%,
-    3px 100%,
-    0 calc(100% - 3px),
-    0 3px
-  );
 }

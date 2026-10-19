@@ -204,40 +204,34 @@ function MaidAgentRow(props: {
       <span
         class="maid-atelier-agents__avatar"
         data-maid-avatar-edit={props.onEditAvatar ? props.row.id : undefined}
-        data-maid-mark={props.row.kind === "agent" ? props.row.name.slice(0, 1) : undefined}
       >
         <Show
-          when={props.row.kind === "agent"}
-          fallback={<MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />}
+          when={props.faceSrc || props.row.avatar}
+          fallback={
+            <img
+              class="maid-atelier-agents__portrait"
+              src={maidPortraitSrc(props.row.faceId || props.row.id)}
+              alt=""
+            />
+          }
         >
           <Show
-            when={props.faceSrc || props.row.avatar}
+            when={props.faceSrc}
             fallback={
-              <img
-                class="maid-atelier-agents__portrait"
-                src={maidPortraitSrc(props.row.id)}
-                alt=""
+              <AgentIdentityAvatar
+                agent={{
+                  id: props.row.faceId || props.row.id,
+                  name: props.row.name,
+                  avatar: props.row.avatar,
+                  textAvatar: props.row.textAvatar,
+                }}
               />
             }
           >
-            <Show
-              when={props.faceSrc}
-              fallback={
-                <AgentIdentityAvatar
-                  agent={{
-                    id: props.row.id,
-                    name: props.row.name,
-                    avatar: props.row.avatar,
-                    textAvatar: props.row.textAvatar,
-                  }}
-                />
-              }
-            >
-              <img class="maid-atelier-agents__portrait" src={props.faceSrc ?? ""} alt="" />
-            </Show>
+            <img class="maid-atelier-agents__portrait" src={props.faceSrc ?? ""} alt="" />
           </Show>
-          <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
         </Show>
+        <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
       </span>
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">
@@ -253,11 +247,6 @@ function MaidAgentRow(props: {
         </span>
       </span>
       <span class="maid-atelier-agents__aside">
-        <Show when={props.row.kind === "agent"}>
-          <span class="maid-atelier-agents__plate" data-maid-tone={tone()}>
-            {t(STATUS_KEYS[tone()])}
-          </span>
-        </Show>
         <Show when={props.row.unreadCount > 0}>
           <span class="maid-atelier-agents__unread">
             {t("agentsHome.maidUnread", { count: String(props.row.unreadCount) })}
@@ -450,7 +439,7 @@ export function MaidAtelierBoard(props: {
 function ProfileFace(props: { profile: MaidProfileModel }) {
   return (
     <>
-      <span class="maid-atelier-agents__avatar" data-maid-mark={props.profile.name.slice(0, 1)}>
+      <span class="maid-atelier-agents__avatar">
         <Show
           when={props.profile.avatarUrl}
           fallback={

@@ -66,11 +66,7 @@ export function MaidAtelierRoom(props: {
                 <Show
                   when={props.onCommit}
                   fallback={
-                    <span
-                      class="maid-atelier-room__face"
-                      data-maid-member={member.id}
-                      data-maid-mark={member.name.slice(0, 1)}
-                    >
+                    <span class="maid-atelier-room__face" data-maid-member={member.id}>
                       {face()}
                     </span>
                   }
@@ -79,7 +75,6 @@ export function MaidAtelierRoom(props: {
                     type="button"
                     class="maid-atelier-room__face"
                     data-maid-member={member.id}
-                    data-maid-mark={member.name.slice(0, 1)}
                     aria-label={t("agentsHome.maidAvatarChange", { name: member.name })}
                     onClick={() => setEditing(member.id)}
                   >

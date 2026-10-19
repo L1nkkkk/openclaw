@@ -14,49 +14,15 @@
 }
 
 :root[data-theme-id="maid"] .chat-group {
-  --chat-turn-gap: 14px;
-  --chat-avatar-column: 32px;
+  --chat-turn-gap: 10px;
+  --chat-avatar-column: 24px;
   --chat-avatar-gap: 8px;
 }
 
 :root[data-theme-id="maid"] .chat-group :is(.chat-avatar, .chat-avatar-slot) {
   display: grid;
-  width: 32px;
-  height: 32px;
-}
-
-:root[data-theme-id="maid"] .chat-group .chat-avatar {
-  border: 1px solid var(--maid-gold, var(--border-strong));
-  border-radius: 0;
-  clip-path: polygon(
-    4px 0,
-    calc(100% - 4px) 0,
-    100% 4px,
-    100% calc(100% - 4px),
-    calc(100% - 4px) 100%,
-    4px 100%,
-    0 calc(100% - 4px),
-    0 4px
-  );
-}
-
-:root[data-theme-id="maid"] .chat-avatar-slot[data-maid-mark]::after {
-  content: attr(data-maid-mark);
-  position: absolute;
-  z-index: 2;
-  top: -4px;
-  inset-inline-end: -4px;
-  display: grid;
-  place-items: center;
-  width: 10px;
-  height: 10px;
-  background: var(--maid-gold, var(--accent-2));
-  color: var(--bg);
-  font-size: 7px;
-  font-weight: 700;
-  line-height: 1;
-  pointer-events: none;
-  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  width: 24px;
+  height: 24px;
 }
 
 :root[data-theme-id="maid"] .chat-group.chat-group--with-footer > .chat-group-footer {
@@ -101,34 +67,22 @@
   pointer-events: auto;
 }
 
-:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell),
-:root[data-theme-id="maid"] .chat-group.user .chat-bubble {
+:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell) {
   padding: 8px 12px;
-  border: 1px solid color-mix(in srgb, var(--maid-gold, var(--border)) 46%, transparent);
-  border-radius: 0;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  color: var(--text);
   font-size: 14px;
   line-height: 1.5;
-  clip-path: polygon(
-    8px 0,
-    calc(100% - 8px) 0,
-    100% 8px,
-    100% calc(100% - 8px),
-    calc(100% - 8px) 100%,
-    8px 100%,
-    0 calc(100% - 8px),
-    0 8px
-  );
-}
-
-:root[data-theme-id="maid"] .chat-group.assistant .chat-bubble:not(.chat-bubble--tool-shell) {
-  border-inline-start: 3px solid var(--maid-gold, var(--accent-2));
-  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
-  color: var(--text);
 }
 
 :root[data-theme-id="maid"] .chat-group.user .chat-bubble {
-  border-inline-start: 3px solid var(--maid-blush, var(--accent));
-  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--maid-blush, var(--accent)));
+  border: 0;
+  border-radius: var(--radius-xl);
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, var(--accent));
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 :root[data-theme-id="maid"] .agent-chat__input {
@@ -141,7 +95,7 @@
 }
 
 :root[data-theme-id="maid"] .agent-chat__input:focus-within {
-  border-color: color-mix(in srgb, var(--maid-gold, var(--ring)) 62%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -238,7 +192,7 @@
 :root[data-theme-id="maid"] .sidebar-markdown-reader {
   max-width: 62ch;
   margin: 0;
-  padding: 18px 28px 72px;
+  padding: 14px 22px 48px;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -289,13 +243,13 @@
 
 .maid-atelier-chat__avatar {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 .chat-avatar-slot.maid-atelier-chat__avatar > img.chat-avatar {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 .chat-avatar-slot.maid-atelier-chat__avatar > .maid-presence {
@@ -306,6 +260,8 @@
 }
 
 @supports (corner-shape: superellipse(1.5)) {
+  :root[data-theme-id="maid"] .chat-group .chat-bubble,
+  :root[data-theme-id="maid"] .chat-avatar,
   :root[data-theme-id="maid"] .agent-chat__input {
     corner-shape: superellipse(1.5);
   }

@@ -69,7 +69,6 @@ const enAgentsHome = {
     maidMentionMenu: "Agents in this group",
     maidMentionRemove: "Remove {name}",
     maidAvatarChange: "Change {name}'s face",
-    maidAvatarDrawer: "Wardrobe",
     maidAvatarTitle: "Change face",
     maidAvatarUpload: "Upload a picture",
     maidAvatarPortraits: "Atelier portraits",

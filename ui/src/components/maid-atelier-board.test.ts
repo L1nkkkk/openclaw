@@ -106,6 +106,8 @@ describe("buildMaidBoard", () => {
       activeNow: true,
       preview: "The night market",
       sessionKey: "agent:harper:chapter",
+      faceId: "harper",
+      avatar: null,
     });
     expect(board.some((section) => section.id === "agent:notes")).toBe(false);
   });

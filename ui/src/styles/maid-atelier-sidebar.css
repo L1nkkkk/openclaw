@@ -29,10 +29,10 @@
 .maid-atelier-nav__item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  min-height: 28px;
-  padding: 2px 8px;
+  min-height: 26px;
+  padding: 1px 8px;
   border: 0;
   border-radius: var(--radius-lg);
   background: transparent;
@@ -68,10 +68,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin: 10px 8px 2px;
-  padding-top: 8px;
+  margin: 6px 8px 1px;
+  padding-top: 6px;
   border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
-  color: color-mix(in srgb, var(--maid-gold, var(--muted)) 78%, var(--muted));
+  color: var(--muted);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -148,12 +148,12 @@
 .maid-atelier-agents__row,
 .maid-atelier-agents__task {
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto;
-  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 6px;
   align-items: center;
   width: 100%;
-  min-height: 36px;
-  padding: 4px 8px;
+  min-height: 28px;
+  padding: 1px 8px;
   border: 0;
   border-radius: var(--radius-xl);
   background: transparent;
@@ -168,40 +168,12 @@
   background: color-mix(in srgb, var(--bg-hover) 78%, var(--accent));
 }
 
-.maid-atelier-agents__row[data-maid-kind="agent"] {
-  width: calc(100% - 12px);
-  margin: 2px 6px;
-  border: 1px solid color-mix(in srgb, var(--maid-gold, var(--border)) 42%, var(--border));
-  border-radius: 0;
-  background: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
-  clip-path: polygon(
-    8px 0,
-    calc(100% - 8px) 0,
-    100% 8px,
-    100% calc(100% - 8px),
-    calc(100% - 8px) 100%,
-    8px 100%,
-    0 calc(100% - 8px),
-    0 8px
-  );
-}
-
-.maid-atelier-agents__row[data-maid-kind="agent"]:hover {
-  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 12%, var(--bg-hover));
-}
-
 .maid-atelier-agents__row[aria-current="true"] {
   background: color-mix(in srgb, var(--bg-hover) 58%, var(--accent));
 }
 
-.maid-atelier-agents__row[data-maid-kind="agent"][aria-current="true"],
-.maid-atelier-agents__row[data-maid-kind="agent"][aria-current="true"]:hover {
-  border-color: color-mix(
-    in srgb,
-    var(--maid-blush, var(--accent)) 72%,
-    var(--maid-gold, var(--border))
-  );
-  background: color-mix(in srgb, var(--maid-blush, var(--accent)) 18%, var(--bg-elevated));
+.maid-atelier-agents__row[aria-current="true"]:hover {
+  background: color-mix(in srgb, var(--bg-hover) 42%, var(--accent));
 }
 
 .maid-atelier-agents__row:focus-visible,
@@ -214,118 +186,37 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 .maid-atelier-agents__avatar :is(img, .identity-avatar, .identity-avatar--agent),
 .maid-atelier-agents__portrait {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   object-fit: cover;
   border-radius: var(--radius-full);
   background: var(--bg-hover);
   color: var(--text-strong);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-}
-
-.maid-atelier-agents__row[data-maid-kind="agent"]
-  .maid-atelier-agents__avatar
-  :is(img, .identity-avatar, .identity-avatar--agent),
-.maid-atelier-profile
-  .maid-atelier-agents__avatar
-  :is(img, .identity-avatar, .identity-avatar--agent) {
-  border: 1px solid var(--maid-gold, var(--border-strong));
-  border-radius: 0;
-  clip-path: polygon(
-    4px 0,
-    calc(100% - 4px) 0,
-    100% 4px,
-    100% calc(100% - 4px),
-    calc(100% - 4px) 100%,
-    4px 100%,
-    0 calc(100% - 4px),
-    0 4px
-  );
-}
-
-.maid-atelier-agents__row[data-maid-kind="agent"]
-  .maid-atelier-agents__avatar[data-maid-mark]::after,
-.maid-atelier-profile .maid-atelier-agents__avatar[data-maid-mark]::after {
-  content: attr(data-maid-mark);
-  position: absolute;
-  z-index: 2;
-  top: -4px;
-  inset-inline-end: -4px;
-  display: grid;
-  place-items: center;
-  width: 10px;
-  height: 10px;
-  background: var(--maid-gold, var(--accent-2));
-  color: var(--bg);
-  font-size: 7px;
-  font-weight: 700;
-  line-height: 1;
-  pointer-events: none;
-  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
-}
-
-.maid-atelier-agents__plate {
-  max-width: 100%;
-  padding: 1px 6px;
-  overflow: hidden;
-  border-radius: var(--radius-full);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.maid-atelier-agents__plate[data-maid-tone="busy"] {
-  background: var(--maid-amber, var(--warn));
-  color: var(--bg);
-}
-
-.maid-atelier-agents__plate[data-maid-tone="idle"] {
-  background: color-mix(in srgb, var(--maid-mint, var(--ok)) 16%, transparent);
-  color: var(--maid-mint, var(--ok));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--maid-mint, var(--ok)) 70%, transparent);
-}
-
-.maid-atelier-agents__plate[data-maid-tone="success"] {
-  background: var(--maid-mint, var(--ok));
-  color: var(--bg);
-}
-
-.maid-atelier-agents__plate[data-maid-tone="attention"] {
-  color: var(--danger);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--danger) 55%, transparent);
 }
 
 .maid-atelier-agents__avatar > .maid-presence {
   position: absolute;
   right: -1px;
   bottom: -1px;
-  z-index: 2;
+  width: 8px;
+  height: 8px;
+}
+
+.maid-atelier-agents__avatar > .maid-presence .maid-presence__core {
+  border-width: 1.5px;
 }
 
 .maid-atelier-agents__row[data-maid-kind="session"] {
-  grid-template-columns: 14px minmax(0, 1fr) auto;
-  min-height: 32px;
-  padding-block: 2px;
-}
-
-.maid-atelier-agents__row[data-maid-kind="session"] .maid-atelier-agents__avatar {
-  width: 14px;
-  height: 14px;
-}
-
-.maid-atelier-agents__row[data-maid-kind="session"] .maid-atelier-agents__avatar > .maid-presence {
-  position: static;
+  min-height: 26px;
+  padding-block: 0;
 }
 
 .maid-atelier-agents__copy,
@@ -352,9 +243,9 @@
   min-width: 0;
   overflow: hidden;
   color: var(--text);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -379,8 +270,8 @@
 .maid-atelier-agents__activity {
   overflow: hidden;
   color: var(--muted-strong);
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 11px;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -531,10 +422,10 @@ button.maid-atelier-profile {
   z-index: 1;
   display: grid;
   flex: none;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   gap: 8px;
   align-items: center;
-  padding: 10px 8px 8px;
+  padding: 6px 8px;
   border-top: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
   background: var(--bg);
 }
@@ -609,8 +500,8 @@ button.maid-atelier-profile {
 .maid-atelier-preview__composer {
   position: relative;
   z-index: 2;
-  margin: 0 16px 14px;
-  padding: 10px 12px 4px;
+  margin: 0 12px 8px;
+  padding: 2px 10px 2px;
 }
 
 .maid-atelier-preview__draft {
@@ -651,10 +542,9 @@ button.maid-atelier-profile {
 @supports (corner-shape: superellipse(1.5)) {
   .maid-atelier-agents,
   .maid-atelier-nav__item,
-  .maid-atelier-agents__row:not([data-maid-kind="agent"]),
+  .maid-atelier-agents__row,
   .maid-atelier-agents__task,
   .maid-atelier-agents__refine,
-  .maid-atelier-agents__plate,
   .maid-atelier-profile,
   .maid-atelier-preview__send {
     corner-shape: superellipse(1.5);

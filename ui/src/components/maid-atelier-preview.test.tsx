@@ -38,17 +38,10 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(text).toContain("Source");
   expect(view.container.querySelector("[aria-label='Copy path']")).not.toBeNull();
   expect(view.container.querySelector("[data-maid-fixture='density']")).not.toBeNull();
+  const session = view.container.querySelector("[data-maid-kind='session']");
+  expect(session?.querySelector(".maid-atelier-agents__portrait")).not.toBeNull();
+  expect(session?.querySelector(".maid-presence")).not.toBeNull();
   expect(view.container.querySelectorAll("[data-maid-nav]")).toHaveLength(7);
-  expect(
-    view.container
-      .querySelector("[data-maid-agent='harper'] .maid-atelier-agents__plate")
-      ?.getAttribute("data-maid-tone"),
-  ).toBe("busy");
-  expect(
-    view.container
-      .querySelector("[data-maid-agent='notes'] .maid-atelier-agents__plate")
-      ?.getAttribute("data-maid-tone"),
-  ).toBe("idle");
 });
 
 it("renders a private chat with only the user and the main agent", () => {
@@ -104,12 +97,12 @@ it("opens the face picker for an agent and stays labeled Sample", () => {
   expect(center?.querySelector("[data-maid-avatar-target='harper']")).not.toBeNull();
   expect(center?.querySelector("[data-maid-avatar-atelier='true']")).not.toBeNull();
   expect(center?.querySelectorAll("[data-maid-avatar-portrait]")).toHaveLength(8);
-  expect(center?.querySelector("[data-maid-drawer='wardrobe']")).not.toBeNull();
-  expect(center?.textContent).toContain("Wardrobe");
   expect(center?.textContent).toContain("Change Harper's face");
   expect(center?.textContent).toContain("Upload a picture");
   expect(center?.textContent).toContain("Sample");
   expect(center?.querySelector("[data-maid-room='group']")).not.toBeNull();
+  expect(view.container.textContent).not.toContain("Wardrobe");
+  expect(view.container.querySelector(".maid-atelier-agents__plate")).toBeNull();
 });
 
 it("shows a replaced agent face in the room and the thread", () => {

@@ -39,7 +39,7 @@
 }
 
 .maid-presence[data-tone="busy"] {
-  --maid-presence: var(--maid-amber, var(--info));
+  --maid-presence: var(--info);
 }
 
 .maid-presence[data-tone="busy"] .maid-presence__core {
@@ -55,7 +55,7 @@
 }
 
 .maid-presence[data-tone="success"] {
-  --maid-presence: var(--maid-mint, var(--ok));
+  --maid-presence: var(--ok);
 }
 
 .maid-presence[data-tone="success"] .maid-presence__core {
@@ -66,7 +66,7 @@
 
 /* Dim flat core. The ring stays opaque so the badge does not wash out. */
 .maid-presence[data-tone="idle"] {
-  --maid-presence: var(--maid-mint, var(--ok));
+  --maid-presence: color-mix(in srgb, var(--muted) 58%, var(--bg-elevated));
 }
 
 .maid-presence[data-tone="idle"] .maid-presence__core {

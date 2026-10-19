@@ -92,6 +92,8 @@ export type MaidBoardRow = {
   role: string;
   spaces: number;
   sessionKey?: string;
+  /** Owning maid id for a session row, so the face matches that maid. */
+  faceId?: string;
   chief: boolean;
   marked: boolean;
   status?: string;
@@ -141,17 +143,19 @@ function sessionRow(
   agents: ReadonlyMap<string, MaidAgentFact>,
 ): MaidBoardRow {
   const status = session.status ?? undefined;
+  const owner = agents.get(session.agentId);
   return {
     kind: "session",
     id: session.key,
     name: sessionTitle(session),
-    avatar: null,
-    textAvatar: null,
+    avatar: owner?.avatar ?? null,
+    textAvatar: owner?.textAvatar ?? null,
     activeNow: status === "running" || status === "queued",
     unreadCount: 0,
     lastActiveAt: session.updatedAt ?? 0,
     preview: session.lastMessagePreview?.trim() ?? "",
-    role: agents.get(session.agentId)?.name ?? "",
+    role: owner?.name ?? "",
+    faceId: session.agentId,
     spaces: 0,
     sessionKey: session.key,
     chief: false,
