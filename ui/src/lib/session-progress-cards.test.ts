@@ -659,6 +659,86 @@ describe("session progress card Gateway response boundary", () => {
     },
   );
 
+  it("replaces plan steps without clearing markdown, and ignores a slower put", async () => {
+    const { gateway, request } = createGateway();
+    const card = {
+      ...createProgressCard(1),
+      revision: 3,
+      steps: [
+        { step: "lint", status: "pending" as const },
+        { step: "ship", status: "in_progress" as const },
+      ],
+    };
+    request.mockResolvedValueOnce({ card });
+    const { store } = watchCards(gateway);
+    const displayed = await store.load(target);
+    if (!displayed) {
+      throw new Error("Expected the progress card");
+    }
+    const completed = {
+      ...card,
+      revision: 4,
+      steps: [
+        { step: "lint", status: "completed" as const },
+        { step: "ship", status: "in_progress" as const },
+      ],
+    };
+    const restored = {
+      ...card,
+      revision: 5,
+      steps: [
+        { step: "lint", status: "pending" as const },
+        { step: "ship", status: "in_progress" as const },
+      ],
+    };
+    const first = createDeferred<{ card: typeof completed }>();
+    const second = createDeferred<{ card: typeof restored }>();
+    request.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    const firstWrite = store.replace(target, displayed, completed.steps);
+    const mid = store.get(target);
+    if (!mid) {
+      throw new Error("Expected the optimistic plan");
+    }
+    expect(mid.steps).toEqual(completed.steps);
+    expect(mid.markdown).toBe(card.markdown);
+    const secondWrite = store.replace(target, mid, restored.steps);
+    second.resolve({ card: restored });
+    await expect(secondWrite).resolves.toBe(true);
+    first.resolve({ card: completed });
+    await expect(firstWrite).resolves.toBe(true);
+    expect(store.get(target)).toEqual(restored);
+    expect(request).toHaveBeenCalledWith("progressCard.put", {
+      sessionKey,
+      markdown: card.markdown,
+      plan: completed.steps,
+    });
+    expect(request).toHaveBeenCalledWith("progressCard.put", {
+      sessionKey,
+      markdown: card.markdown,
+      plan: restored.steps,
+    });
+  });
+
+  it("restores the progress card when the latest step write fails", async () => {
+    const { gateway, request } = createGateway();
+    const card = {
+      ...createProgressCard(1),
+      steps: [{ step: "lint", status: "pending" as const }],
+    };
+    request.mockResolvedValueOnce({ card }).mockRejectedValueOnce(new Error("put failed"));
+    const { store } = watchCards(gateway);
+    const displayed = await store.load(target);
+    if (!displayed) {
+      throw new Error("Expected the progress card");
+    }
+    request.mockResolvedValueOnce({ card });
+    await expect(
+      store.replace(target, displayed, [{ step: "lint", status: "completed" }]),
+    ).resolves.toBe(false);
+    await expect(store.load(target)).resolves.toEqual(card);
+    expect(store.get(target)).toEqual(card);
+  });
+
   it("refreshes a retained watch through replacement and same-client Gateway reconnects", async () => {
     stubGatewayStoreTestGlobals();
     const { gateway, current } = createGatewayStoreTestStore();

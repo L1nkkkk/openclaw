@@ -1,7 +1,7 @@
 /**
- * Group @mentions name an agent already in the room. The token is ordinary
- * draft text. chat.send records human profile mentions, not an agent route,
- * so the session agent reads @Name and this does not open a separate turn.
+ * Group @mentions name an agent already in the room. The token stays ordinary
+ * draft text. Sending that draft routes the turn; see maid-atelier-mention-route.
+ * chat.send still records human profile mentions, not an agent route.
  */
 
 export type MaidMentionAgent = {

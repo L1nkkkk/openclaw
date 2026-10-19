@@ -11,6 +11,7 @@ import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
 import { sessionProgressCardsForGateway } from "../lib/session-progress-cards.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
+import { showToast } from "../lib/toast.ts";
 import { MaidAvatarEditor } from "./maid-atelier-avatar-picker.tsx";
 import { commitMaidAvatar } from "./maid-atelier-avatar-save.ts";
 import type { MaidAvatarChoice, MaidAvatarSubject } from "./maid-atelier-avatar.ts";
@@ -18,6 +19,7 @@ import {
   buildMaidBoard,
   MAID_NAV,
   maidOpenSessionQueue,
+  maidToggledProgressPlan,
   type MaidAgentFact,
   type MaidBoardRow,
   type MaidBoardSection,
@@ -286,6 +288,7 @@ export function MaidAtelierBoard(props: {
   navDisabled?: (item: MaidNavItem) => boolean;
   done: () => ReadonlySet<string>;
   onToggleTask: (id: string) => void;
+  onToggleStep?: (index: number) => void;
   faces?: Readonly<Record<string, string>>;
   onCommit?: (subject: MaidAvatarSubject, choice: MaidAvatarChoice) => Promise<string | null>;
 }): JSX.Element {
@@ -391,6 +394,7 @@ export function MaidAtelierBoard(props: {
                 done={props.done}
                 onOpenSession={props.onOpenSession}
                 onToggleTask={props.onToggleTask}
+                onToggleStep={props.onToggleStep}
               />
             )}
           </For>
@@ -634,6 +638,24 @@ function MaidRoster(props: {
       navDisabled={(item) => navDisabled(props.host, item)}
       done={() => NO_LOCAL_CHECKS}
       onToggleTask={() => undefined}
+      onToggleStep={(index) => {
+        const current = progress();
+        const card = current.card.read().card;
+        const steps = card?.steps;
+        if (!card || !steps) {
+          showToast({ message: t("agentsHome.maidTaskToggleFailed") });
+          return;
+        }
+        const plan = maidToggledProgressPlan(steps, index);
+        if (!plan) {
+          return;
+        }
+        void current.store.replace({ sessionKey: routeKey().read() }, card, plan).then((saved) => {
+          if (!saved) {
+            showToast({ message: t("agentsHome.maidTaskToggleFailed") });
+          }
+        });
+      }}
     />
   );
 }

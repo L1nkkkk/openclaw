@@ -4,6 +4,7 @@ import {
   MAID_SAMPLE_FILES,
   buildMaidBoard,
   maidChecklistModel,
+  maidToggledProgressPlan,
   maidDensitySections,
   maidManuscriptFile,
   maidOpenSessionQueue,
@@ -170,9 +171,9 @@ describe("maid checklist", () => {
       sample: false,
       log: "Pass",
       items: [
-        { label: "ch03_dawn-wind.md", done: true, refine: false },
-        { label: "ch07_mud-and-whispers.md", done: false, refine: true },
-        { label: "Refine the close", done: false, refine: true },
+        { label: "ch03_dawn-wind.md", done: true, refine: false, stepIndex: 0 },
+        { label: "ch07_mud-and-whispers.md", done: false, refine: true, stepIndex: 1 },
+        { label: "Refine the close", done: false, refine: true, stepIndex: 2 },
       ],
     });
     expect(
@@ -257,6 +258,30 @@ describe("maid checklist", () => {
         ],
       }).items[0]?.sessionKey,
     ).toBe("agent:harper:ch04");
+    expect(
+      maidToggledProgressPlan(
+        [
+          { step: "lint", status: "completed" },
+          { step: "ship", status: "in_progress" },
+          { step: "wait", status: "pending" },
+        ],
+        0,
+      ),
+    ).toEqual([
+      { step: "lint", status: "pending" },
+      { step: "ship", status: "in_progress" },
+      { step: "wait", status: "pending" },
+    ]);
+    expect(
+      maidToggledProgressPlan(
+        [
+          { step: "lint", status: "pending" },
+          { step: "ship", status: "in_progress" },
+        ],
+        1,
+      )?.[1],
+    ).toEqual({ step: "ship", status: "completed" });
+    expect(maidToggledProgressPlan([{ step: "lint", status: "pending" }], 3)).toBeNull();
     expect(maidChecklistModel({}).sample).toBe(false);
     expect(maidChecklistModel({})).toEqual({ sample: false, log: "", items: [] });
     expect(MAID_SAMPLE_FILES.map((item) => [item.id, item.hold ?? null])).toEqual([

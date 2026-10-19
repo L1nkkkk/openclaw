@@ -3,7 +3,11 @@ import { afterEach, expect, it } from "vitest";
 import { cleanupSolid, mountSolid } from "../test-helpers/mount-solid.ts";
 import { flush } from "../test-helpers/solid-settle.ts";
 import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
-import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
+import {
+  MAID_SAMPLE_FILES,
+  maidDensitySections,
+  maidToggledProgressPlan,
+} from "./maid-atelier-board.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidAtelierPreview } from "./maid-atelier-preview.tsx";
 import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
@@ -42,7 +46,14 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(text).not.toContain("Chapter");
   expect(text).not.toContain("volume");
   expect(text).toContain("Group · 3");
-  expect(text).toContain("Pull in");
+  expect(text).toContain("Draft line");
+  expect(text).not.toContain("Pull in");
+  expect(
+    view.container.querySelector(".maid-atelier-room__pull")?.getAttribute("data-maid-pull"),
+  ).toBe("draft");
+  expect(view.container.querySelector(".maid-atelier-room__pull")?.getAttribute("title")).toContain(
+    "does not invite",
+  );
   expect(text).toContain("Harper");
   expect(text).toContain("Notes");
   expect(text).toContain("Mori");
@@ -405,6 +416,95 @@ it("lists real other agents to pull in, and stays labeled Sample", () => {
   notes?.click();
   flush();
   expect(pulled).toBe("Notes");
+  expect(view.container.textContent).toContain("does not invite");
   expect(view.container.textContent).toContain("Sample");
   expect(view.container.textContent).toContain("Archive");
+});
+
+it("checks a progress step from the work queue and follows the card", () => {
+  const toggled: number[] = [];
+  const StepHarness = () => {
+    const [done, setDone] = createSignal(true);
+    return (
+      <MaidAtelierBoard
+        sections={[]}
+        tasks={{
+          sample: false,
+          items: [
+            {
+              id: "step:0:Outline",
+              stepIndex: 0,
+              label: "Outline",
+              done: done(),
+              refine: false,
+              sample: false,
+              at: null,
+            },
+          ],
+        }}
+        profile={{ name: "Mori", status: "Online", portraitId: "mori", online: true }}
+        currentId=""
+        currentSessionKey=""
+        onOpenAgent={() => undefined}
+        onOpenSession={() => undefined}
+        onNav={() => undefined}
+        done={() => new Set()}
+        onToggleTask={() => undefined}
+        onToggleStep={(index) => {
+          toggled.push(index);
+          setDone(false);
+        }}
+      />
+    );
+  };
+  const view = mountSolid(() => <StepHarness />);
+  flush();
+  const step = () => view.container.querySelector<HTMLButtonElement>("[data-maid-task='step']");
+  expect(step()?.tagName).toBe("BUTTON");
+  expect(step()?.getAttribute("aria-checked")).toBe("true");
+  step()?.click();
+  flush();
+  expect(toggled).toEqual([0]);
+  expect(step()?.getAttribute("aria-checked")).toBe("false");
+});
+
+it("writes a chat work-queue step through the card instead of local memory", () => {
+  document.documentElement.dataset.themeId = "maid";
+  const toggled: number[] = [];
+  const LogHarness = () => {
+    const [card, setCard] = createSignal({
+      markdown: "Queue",
+      steps: [
+        { step: "lint", status: "pending" as const },
+        { step: "ship", status: "completed" as const },
+      ],
+    });
+    return (
+      <MaidAtelierTaskLog
+        card={card()}
+        active
+        onToggleStep={(index) => {
+          toggled.push(index);
+          const current = card();
+          const plan = maidToggledProgressPlan(current.steps, index);
+          if (plan) {
+            setCard({ markdown: current.markdown, steps: plan });
+          }
+        }}
+      />
+    );
+  };
+  const view = mountSolid(() => <LogHarness />);
+  flush();
+  const boxes = () => view.container.querySelectorAll<HTMLButtonElement>("[role='checkbox']");
+  expect(boxes()[0]?.getAttribute("aria-checked")).toBe("false");
+  expect(boxes()[1]?.getAttribute("aria-checked")).toBe("true");
+  boxes()[0]?.click();
+  flush();
+  expect(toggled).toEqual([0]);
+  expect(boxes()[0]?.getAttribute("aria-checked")).toBe("true");
+  boxes()[1]?.click();
+  flush();
+  expect(toggled).toEqual([0, 1]);
+  expect(boxes()[1]?.getAttribute("aria-checked")).toBe("false");
 });

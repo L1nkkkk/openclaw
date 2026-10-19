@@ -47,6 +47,8 @@ type ProgressCardEntry = {
   error?: SessionProgressCardLoadError;
   load?: Promise<ProgressCard | null>;
   refresh?: ProgressCardRefresh;
+  /** Latest step write. A slower put must not replace a newer plan. */
+  write?: number;
 };
 
 type SessionProgressCardLoadError = "access-denied" | "unavailable";
@@ -67,6 +69,12 @@ export type SessionProgressCardStore = {
   invalidate: (target: ProgressCardGetParams) => void;
   load: (target: ProgressCardGetParams) => Promise<ProgressCard | null>;
   dismiss: (target: ProgressCardGetParams, card: ProgressCard) => Promise<boolean>;
+  /** Replaces the plan. Resends markdown so a step edit does not clear the note. */
+  replace: (
+    target: ProgressCardGetParams,
+    card: ProgressCard,
+    plan: readonly ProgressCardStep[],
+  ) => Promise<boolean>;
   refresh: (target: ProgressCardGetParams, card: ProgressCard) => void;
   getRefreshState: (target: ProgressCardGetParams) => SessionProgressCardRefreshState | undefined;
   get: (target: ProgressCardGetParams) => ProgressCard | null | undefined;
@@ -629,6 +637,61 @@ export function sessionProgressCardsForGateway(
         notify();
       }
       return dismissed;
+    },
+    replace: async (target, basis, plan) => {
+      const client = gateway.snapshot.client;
+      if (!available() || !client) {
+        return false;
+      }
+      const resolved = resolveTarget(target);
+      const entry = entries.get(resolved.key);
+      const previous = entry?.card;
+      if (!entry || !previous || previous !== basis) {
+        return false;
+      }
+      const generation = (entry.write ?? 0) + 1;
+      entry.write = generation;
+      entry.card = {
+        sessionKey: previous.sessionKey,
+        revision: previous.revision,
+        updatedAt: previous.updatedAt,
+        ...(previous.markdown !== undefined ? { markdown: previous.markdown } : {}),
+        steps: plan.map((step) => ({ step: step.step, status: step.status })),
+      };
+      notify();
+      const current = () =>
+        entries.get(resolved.key) === entry &&
+        gateway.snapshot.client === client &&
+        entry.write === generation;
+      try {
+        const result = await client.request<ProgressCardPutResult>("progressCard.put", {
+          ...progressCardRequestTarget(entry.target),
+          ...(previous.markdown !== undefined ? { markdown: previous.markdown } : {}),
+          plan: plan.map((step) => ({ step: step.step, status: step.status })),
+        });
+        if (!current()) {
+          return true;
+        }
+        const resultCard = parseProgressCard(result, entry.wireKey);
+        if (!resultCard) {
+          throw new Error("Progress card update returned no card");
+        }
+        entry.card = resultCard;
+        acceptLifetime(resolved.key, entry.target, resultCard);
+        entry.dirty = false;
+        delete entry.error;
+        remember(resolved.key, entry);
+        notify();
+        return true;
+      } catch (error: unknown) {
+        if (!current()) {
+          return true;
+        }
+        entry.card = previous;
+        recordRequestError(entry, error);
+        void load(entry.target).catch(() => undefined);
+        return false;
+      }
     },
     get: (target) => {
       syncLifetimeScope();
