@@ -381,44 +381,49 @@ export function MaidAtelierBoard(props: {
           count={props.tasks.items.length}
           sample={props.tasks.sample}
         />
-        <For each={props.tasks.items}>
-          {(item) => {
-            const checked = () => taskChecked(props.done, item);
-            const when = () => {
-              if (item.at && item.at > 0) {
-                return formatRelativeTimestamp(item.at);
-              }
-              const age = MAID_SAMPLE_FILE_AGE_MS[item.id];
-              return age ? formatRelativeTimestamp(Date.now() - age) : "";
-            };
-            return (
-              <button
-                type="button"
-                class="maid-atelier-agents__task"
-                role="checkbox"
-                aria-checked={checked() ? "true" : "false"}
-                onClick={() => props.onToggleTask(item.id)}
-              >
-                <span class="maid-atelier-agents__check" aria-hidden="true" />
-                <span class="maid-atelier-agents__task-copy">
-                  <span class="maid-atelier-agents__task-label">{item.label}</span>
-                  <Show when={!checked() ? item.hold : undefined}>
-                    {(hold) => (
-                      <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
-                        <MaidPresence tone={hold()} label={toneLabel(hold())} />
-                        {toneLabel(hold())}
-                      </span>
-                    )}
-                  </Show>
-                  <Show when={item.refine}>
-                    <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
-                  </Show>
-                </span>
-                <span class="maid-atelier-agents__task-time">{when()}</span>
-              </button>
-            );
-          }}
-        </For>
+        <Show
+          when={props.tasks.items.length > 0}
+          fallback={<p class="maid-atelier-agents__empty">{t("agentsHome.maidTaskLogSample")}</p>}
+        >
+          <For each={props.tasks.items}>
+            {(item) => {
+              const checked = () => taskChecked(props.done, item);
+              const when = () => {
+                if (item.at && item.at > 0) {
+                  return formatRelativeTimestamp(item.at);
+                }
+                const age = MAID_SAMPLE_FILE_AGE_MS[item.id];
+                return age ? formatRelativeTimestamp(Date.now() - age) : "";
+              };
+              return (
+                <button
+                  type="button"
+                  class="maid-atelier-agents__task"
+                  role="checkbox"
+                  aria-checked={checked() ? "true" : "false"}
+                  onClick={() => props.onToggleTask(item.id)}
+                >
+                  <span class="maid-atelier-agents__check" aria-hidden="true" />
+                  <span class="maid-atelier-agents__task-copy">
+                    <span class="maid-atelier-agents__task-label">{item.label}</span>
+                    <Show when={!checked() ? item.hold : undefined}>
+                      {(hold) => (
+                        <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
+                          <MaidPresence tone={hold()} label={toneLabel(hold())} />
+                          {toneLabel(hold())}
+                        </span>
+                      )}
+                    </Show>
+                    <Show when={item.refine}>
+                      <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
+                    </Show>
+                  </span>
+                  <span class="maid-atelier-agents__task-time">{when()}</span>
+                </button>
+              );
+            }}
+          </For>
+        </Show>
       </div>
       <MaidAvatarEditor
         subject={editing()}

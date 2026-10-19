@@ -54,6 +54,9 @@
 }
 
 :root[data-theme-id="maid"] .agent-chat__composer-footer > .maid-atelier-progress--strip {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 4;
   grid-column: 1 / -1;
   grid-row: 1;
   flex: none;
@@ -61,6 +64,25 @@
   min-height: 16px;
   margin: 0;
   padding: 0 2px;
+  background-color: var(--chat-composer-surface, var(--bg));
+}
+
+/* The toolbar container query is less specific than the grid above. Repeat it
+   on the toolbar class so a later sheet cannot flatten Goal and Process onto
+   the chip row when @ expands. */
+:root[data-theme-id="maid"]
+  .agent-chat__input--mobile-toolbar
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip) {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+}
+
+:root[data-theme-id="maid"]
+  .agent-chat__input--mobile-toolbar
+  .agent-chat__composer-footer:has(> .maid-atelier-progress--strip)
+  > .agent-chat__composer-trail {
+  display: flex;
+  grid-row: 2;
 }
 
 .maid-atelier-progress__lamp {
@@ -106,15 +128,6 @@
   height: 14px;
 }
 
-.maid-atelier-progress__sample {
-  flex: none;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
 .maid-atelier-progress__fraction {
   flex: none;
   margin-left: auto;
@@ -122,6 +135,7 @@
   font-size: 11px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -270,15 +284,6 @@
   border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--warn) 16%, transparent);
   color: var(--warn);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.maid-atelier-log__sample {
-  margin-inline-start: 6px;
-  color: var(--muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -467,6 +472,38 @@
 
 .agent-chat__input:has(> .maid-atelier-mention-menu) {
   z-index: 25;
+}
+
+/* The menu is absolute to the input, so it opens on top of the goal card that
+   sits just above that input. Drop the input's containing block while @ is
+   open and the menu anchors to the shell, above both the goal card and the
+   progress strip. Short landscape otherwise sticks the people menu inside the
+   input and pushes that strip off the row. */
+:root[data-theme-id="maid"]
+  .agent-chat__composer-shell:has(
+    > .agent-chat__input > :is(.maid-atelier-mention-menu, .mention-menu)
+  )
+  > .chat-footer__context {
+  position: relative;
+  z-index: 40;
+}
+
+:root[data-theme-id="maid"]
+  .agent-chat__composer-shell:has(
+    > .agent-chat__input > :is(.maid-atelier-mention-menu, .mention-menu)
+  )
+  > .agent-chat__input {
+  position: static;
+}
+
+@media (max-width: 932px) and (max-height: 500px) and (orientation: landscape) {
+  :root[data-theme-id="maid"] .agent-chat__composer-shell > .agent-chat__input > .mention-menu {
+    position: absolute;
+    top: auto;
+    bottom: calc(100% + 10px);
+    flex: none;
+    margin-bottom: 0;
+  }
 }
 
 .maid-atelier-avatar-menu {

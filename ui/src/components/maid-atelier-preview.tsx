@@ -155,7 +155,7 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
   }
   return (
     <div class="maid-atelier-preview" data-maid-fixture="density">
-      <p class="maid-atelier-preview__note">Sample. These names are not live sessions.</p>
+      <p class="maid-atelier-preview__note">Fixture. These names are not live sessions.</p>
       <aside class="maid-atelier-preview__sidebar" data-maid-shot="sidebar">
         <MaidAtelierBoard
           sections={sections}
@@ -186,7 +186,6 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             <MaidAtelierRoom
               room={room().room}
               candidates={room().candidates}
-              sample
               menuPinned={scene() === "invite"}
               avatarPinned={avatarSubject()}
               portrait={(member) => {
@@ -198,9 +197,8 @@ export function MaidAtelierPreview(props: { scene?: MaidAtelierPreviewScene }): 
             />
           )}
         </Show>
-        <div class="maid-atelier-preview__thread" data-maid-chat="sample">
+        <div class="maid-atelier-preview__thread" data-maid-chat="fixture">
           <MaidAtelierTaskLog card={PREVIEW_CARD} active={true} />
-          <p class="maid-atelier-chat__sample">{t("agentsHome.maidProgressSample")}</p>
           <SampleChatRow
             side="assistant"
             name="Harper"

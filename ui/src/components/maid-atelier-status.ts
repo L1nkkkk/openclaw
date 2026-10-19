@@ -2,7 +2,7 @@ import { truncateUtf16Safe } from "@openclaw/normalization-core/utf16-slice";
 
 export type MaidTone = "busy" | "idle" | "success" | "attention" | "blocked" | "pending";
 export type MaidProgressTone = "working" | "idle" | "completed" | "attention";
-export type MaidProgressSource = "progress" | "goal" | "session" | "sample";
+export type MaidProgressSource = "progress" | "goal" | "session" | "empty";
 
 const BUSY_STATUSES = new Set(["running", "queued"]);
 const ATTENTION_STATUSES = new Set(["failed", "timeout", "interrupted", "killed"]);
@@ -187,7 +187,7 @@ export function readMaidGoal(session: object | null | undefined): MaidGoalFacts 
 
 /**
  * Prefer a real progress card, then the session goal, then the session title.
- * The sample stand-in is only for a maid composer that has none of those.
+ * None of those is an empty strip: no invented fraction and no Sample badge.
  */
 export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel {
   const steps = (facts.steps ?? []).filter((step) => step.step.trim().length > 0);
@@ -254,7 +254,7 @@ export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel
       total: 1,
     };
   }
-  return { source: "sample", target: "", tone: "working", completed: 4, total: 5 };
+  return { source: "empty", target: "", tone: "idle", completed: 0, total: 0 };
 }
 
 function progressTone(

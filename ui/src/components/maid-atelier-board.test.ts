@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   MAID_NAV,
+  MAID_SAMPLE_FILES,
   buildMaidBoard,
   maidChecklistModel,
   maidDensitySections,
@@ -154,7 +155,7 @@ describe("maid checklist", () => {
     expect(maidManuscriptFile("notes.txt")).toBe(false);
   });
 
-  it("prefers progress steps, then real chapter titles, then a labeled sample", () => {
+  it("prefers progress steps, then real chapter titles, and leaves an empty queue unlabeled", () => {
     expect(
       maidChecklistModel({
         markdown: "# Pass\nLeave the ending alone.",
@@ -192,8 +193,9 @@ describe("maid checklist", () => {
         ],
       }).items.map((item) => item.label),
     ).toEqual(["ch04_in-the-dark.md"]);
-    expect(maidChecklistModel({}).sample).toBe(true);
-    expect(maidChecklistModel({}).items.map((item) => [item.id, item.hold ?? null])).toEqual([
+    expect(maidChecklistModel({}).sample).toBe(false);
+    expect(maidChecklistModel({})).toEqual({ sample: false, log: "", items: [] });
+    expect(MAID_SAMPLE_FILES.map((item) => [item.id, item.hold ?? null])).toEqual([
       ["lint", null],
       ["typecheck", null],
       ["approval", "pending"],
