@@ -151,6 +151,8 @@ it("shows a composed @mention chip without the picker", () => {
   const center = view.container.querySelector("[data-maid-shot='center']");
   expect(center?.querySelector("[data-maid-mention-menu]")).toBeNull();
   expect(center?.querySelector("[data-maid-mention='notes']")).not.toBeNull();
+  expect(center?.querySelectorAll(".chat-bubble--mention")).toHaveLength(1);
+  expect(center?.querySelector(".chat-bubble--mention .maid-atelier-mention")).not.toBeNull();
   expect(center?.textContent).toContain("review the diff.");
   expect(center?.textContent).not.toContain("Sample");
 });
@@ -160,6 +162,7 @@ it("does not open the multi-agent picker in a private chat", () => {
   flush();
   expect(view.container.querySelector("[data-maid-mention-menu]")).toBeNull();
   expect(view.container.querySelector("[data-maid-mention]")).toBeNull();
+  expect(view.container.querySelector(".chat-bubble--mention")).toBeNull();
 });
 
 it("keeps the face panel in the chat column and off the reader title", () => {
@@ -180,6 +183,15 @@ it("opens the face picker for an agent without a Sample badge", () => {
   flush();
   const center = view.container.querySelector("[data-maid-shot='center']");
   expect(center?.querySelector("[data-maid-avatar-menu='open']")).not.toBeNull();
+  expect(center?.querySelector(".maid-atelier-room__title")?.textContent).toContain("deploy check");
+  expect(center?.querySelector(".maid-atelier-avatar-menu__title")?.textContent).toContain(
+    "Change Harper's face",
+  );
+  expect(
+    center
+      ?.querySelector(".maid-atelier-avatar-menu")
+      ?.contains(center.querySelector(".maid-atelier-room__title")),
+  ).toBe(false);
   expect(center?.querySelector("[data-maid-avatar-target='harper']")).not.toBeNull();
   expect(center?.querySelector("[data-maid-avatar-atelier='true']")).not.toBeNull();
   expect(center?.querySelectorAll("[data-maid-avatar-portrait]")).toHaveLength(8);
