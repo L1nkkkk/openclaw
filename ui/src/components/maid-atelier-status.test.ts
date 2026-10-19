@@ -111,7 +111,7 @@ describe("maid progress", () => {
     ).toBe("completed");
   });
 
-  it("prefers a goal over the session title", () => {
+  it("prefers a goal over the session title without inventing a fraction", () => {
     expect(
       resolveMaidProgress({
         goal: { objective: "Finish the rewrite", status: "complete", lastStatusNote: "Volume 1" },
@@ -121,18 +121,31 @@ describe("maid progress", () => {
       source: "goal",
       target: "Volume 1",
       tone: "completed",
-      completed: 1,
-      total: 1,
+      completed: 0,
+      total: 0,
     });
   });
 
   it("falls back to the session title, then an empty strip", () => {
-    expect(resolveMaidProgress({ title: "Harper", sessionStatus: "done" })).toMatchObject({
+    expect(resolveMaidProgress({ markdown: "# Pass\nLeave the ending." })).toMatchObject({
+      source: "progress",
+      target: "Pass",
+      completed: 0,
+      total: 0,
+    });
+    expect(
+      resolveMaidProgress({ title: "ch07_mud-and-whispers.md", sessionStatus: "done" }),
+    ).toMatchObject({
       source: "session",
-      target: "Harper",
+      target: "ch07_mud-and-whispers.md",
       tone: "completed",
-      completed: 1,
-      total: 1,
+      completed: 0,
+      total: 0,
+    });
+    expect(resolveMaidProgress({ title: "Harper", sessionStatus: "running" })).toMatchObject({
+      source: "session",
+      completed: 0,
+      total: 0,
     });
     expect(resolveMaidProgress({})).toEqual({
       source: "empty",

@@ -6,6 +6,7 @@ import {
   maidChecklistModel,
   maidDensitySections,
   maidManuscriptFile,
+  maidOpenSessionQueue,
   type MaidAgentFact,
   type MaidSessionFact,
 } from "./maid-atelier-board.ts";
@@ -193,6 +194,69 @@ describe("maid checklist", () => {
         ],
       }).items.map((item) => item.label),
     ).toEqual(["ch04_in-the-dark.md"]);
+    expect(
+      maidChecklistModel({
+        sessions: [
+          session({
+            key: "agent:harper:ch04",
+            agentId: "harper",
+            displayName: "ch04_in-the-dark.md",
+            status: "done",
+            updatedAt: 2,
+          }),
+        ],
+      }).items[0],
+    ).toMatchObject({
+      sessionKey: "agent:harper:ch04",
+      label: "ch04_in-the-dark.md",
+      done: true,
+    });
+    expect(
+      maidOpenSessionQueue({
+        openSessionKey: "agent:harper:main",
+        cardReadable: true,
+        card: {
+          steps: [{ step: "Rewrite the close", status: "pending" }],
+        },
+        sessions: [
+          session({
+            key: "agent:harper:ch04",
+            agentId: "harper",
+            displayName: "ch04_in-the-dark.md",
+            updatedAt: 2,
+          }),
+        ],
+      }).items.map((item) => item.label),
+    ).toEqual(["Rewrite the close"]);
+    expect(
+      maidOpenSessionQueue({
+        openSessionKey: "agent:harper:main",
+        cardReadable: true,
+        sessions: [
+          session({
+            key: "agent:harper:ch04",
+            agentId: "harper",
+            displayName: "ch04_in-the-dark.md",
+            updatedAt: 2,
+          }),
+        ],
+      }).items,
+    ).toEqual([]);
+    expect(
+      maidOpenSessionQueue({
+        openSessionKey: "agent:harper:main",
+        cardReadable: true,
+        card: null,
+        sessions: [
+          session({
+            key: "agent:harper:ch04",
+            agentId: "harper",
+            displayName: "ch04_in-the-dark.md",
+            updatedAt: 2,
+          }),
+        ],
+      }).items[0]?.sessionKey,
+    ).toBe("agent:harper:ch04");
     expect(maidChecklistModel({}).sample).toBe(false);
     expect(maidChecklistModel({})).toEqual({ sample: false, log: "", items: [] });
     expect(MAID_SAMPLE_FILES.map((item) => [item.id, item.hold ?? null])).toEqual([

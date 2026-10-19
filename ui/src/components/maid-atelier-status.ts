@@ -187,6 +187,7 @@ export function readMaidGoal(session: object | null | undefined): MaidGoalFacts 
 
 /**
  * Prefer a real progress card, then the session goal, then the session title.
+ * A process fraction exists only when that card has steps.
  * None of those is an empty strip: no invented fraction and no Sample badge.
  */
 export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel {
@@ -217,7 +218,7 @@ export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel
       target: markdown,
       tone: progressTone(false, facts.activeRun === true, facts.sessionStatus),
       completed: 0,
-      total: 1,
+      total: 0,
     };
   }
   const goal = facts.goal;
@@ -234,8 +235,8 @@ export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel
           : goal.status === "active" || facts.activeRun
             ? "working"
             : "idle",
-      completed: done ? 1 : 0,
-      total: 1,
+      completed: 0,
+      total: 0,
     };
   }
   const title = facts.title?.trim() ?? "";
@@ -250,8 +251,8 @@ export function resolveMaidProgress(facts: MaidProgressFacts): MaidProgressModel
           (facts.sessionStatus ? BUSY_STATUSES.has(facts.sessionStatus) : false),
         facts.sessionStatus,
       ),
-      completed: done ? 1 : 0,
-      total: 1,
+      completed: 0,
+      total: 0,
     };
   }
   return { source: "empty", target: "", tone: "idle", completed: 0, total: 0 };

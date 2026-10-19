@@ -267,6 +267,8 @@ export type MaidChecklistItem = {
   at: number | null;
   /** Sample queue only. Live steps do not invent a hold. */
   hold?: "blocked" | "pending";
+  /** Manuscript session row. Opening it selects this session. */
+  sessionKey?: string;
 };
 
 const MINUTE_MS = 60_000;
@@ -366,6 +368,7 @@ export function maidChecklistModel(input: {
         const done = row.session.status === "done";
         return {
           id: row.session.key,
+          sessionKey: row.session.key,
           label: row.label,
           done,
           refine: refineFor(row.label, done),
@@ -380,6 +383,34 @@ export function maidChecklistModel(input: {
     log,
     items: [],
   };
+}
+
+type MaidQueueCard = {
+  markdown?: string | null;
+  steps?: readonly { step: string; status: "pending" | "in_progress" | "completed" }[] | null;
+};
+
+/**
+ * The open session's progress card owns the queue. Manuscript titles fill in
+ * only after that read settles without steps, or when no session is open.
+ */
+export function maidOpenSessionQueue(input: {
+  openSessionKey: string;
+  card?: MaidQueueCard | null;
+  cardError?: boolean;
+  cardReadable: boolean;
+  sessions?: readonly MaidSessionFact[];
+}): { sample: boolean; log: string; items: readonly MaidChecklistItem[] } {
+  const waiting =
+    input.openSessionKey.trim().length > 0 &&
+    input.cardReadable &&
+    input.card === undefined &&
+    input.cardError !== true;
+  return maidChecklistModel({
+    steps: input.card?.steps,
+    markdown: input.card?.markdown,
+    sessions: waiting ? [] : input.sessions,
+  });
 }
 
 function fixtureRow(
