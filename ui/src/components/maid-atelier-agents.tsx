@@ -69,6 +69,8 @@ const STATUS_KEYS = {
   attention: "agentsHome.maidStatusAttention",
   success: "agentsHome.maidStatusDone",
   idle: "agentsHome.maidStatusIdle",
+  blocked: "agentsHome.maidStatusBlocked",
+  pending: "agentsHome.maidStatusPending",
 } as const satisfies Record<MaidTone, string>;
 
 const ACTIVITY_KEYS = {
@@ -76,6 +78,8 @@ const ACTIVITY_KEYS = {
   attention: "agentsHome.maidActivityUnread",
   success: "agentsHome.maidActivityDone",
   idle: "agentsHome.noMessage",
+  blocked: "agentsHome.maidActivityBlocked",
+  pending: "agentsHome.maidActivityPending",
 } as const satisfies Record<MaidTone, string>;
 
 export type MaidProfileModel = {
@@ -86,8 +90,12 @@ export type MaidProfileModel = {
   online: boolean;
 };
 
+function toneLabel(tone: MaidTone): string {
+  return t(STATUS_KEYS[tone]);
+}
+
 function roleLine(row: MaidBoardRow, tone: MaidTone): string {
-  const status = t(STATUS_KEYS[tone]);
+  const status = toneLabel(tone);
   if (row.kind === "session") {
     return row.preview ? maidClip(row.preview) : status;
   }
@@ -165,6 +173,7 @@ function MaidAgentRow(props: {
       status: props.row.status,
       failed: props.row.failed,
     });
+  const label = () => toneLabel(tone());
   const role = () => roleLine(props.row, tone());
   const activity = () => activityLine(props.row, tone());
   const detail = () => {
@@ -231,7 +240,7 @@ function MaidAgentRow(props: {
             <img class="maid-atelier-agents__portrait" src={props.faceSrc ?? ""} alt="" />
           </Show>
         </Show>
-        <MaidPresence tone={tone()} label={t(STATUS_KEYS[tone()])} />
+        <MaidPresence tone={tone()} label={label()} />
       </span>
       <span class="maid-atelier-agents__copy">
         <span class="maid-atelier-agents__title">
@@ -393,6 +402,14 @@ export function MaidAtelierBoard(props: {
                 <span class="maid-atelier-agents__check" aria-hidden="true" />
                 <span class="maid-atelier-agents__task-copy">
                   <span class="maid-atelier-agents__task-label">{item.label}</span>
+                  <Show when={!checked() ? item.hold : undefined}>
+                    {(hold) => (
+                      <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
+                        <MaidPresence tone={hold()} label={toneLabel(hold())} />
+                        {toneLabel(hold())}
+                      </span>
+                    )}
+                  </Show>
                   <Show when={item.refine}>
                     <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
                   </Show>

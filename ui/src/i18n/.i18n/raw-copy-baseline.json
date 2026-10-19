@@ -188,42 +188,35 @@
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "CESC"
+      "text": "approval"
     },
     {
       "count": 1,
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "ch03_dawn-wind.md"
+      "text": "Catalog"
     },
     {
       "count": 1,
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "ch04_in-the-dark.md"
+      "text": "deploy"
     },
     {
       "count": 1,
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "ch07_mud-and-whispers.md"
+      "text": "Desk"
     },
     {
       "count": 1,
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "HP"
-    },
-    {
-      "count": 1,
-      "kind": "object-property",
-      "name": "label",
-      "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "IFM"
+      "text": "Field"
     },
     {
       "count": 1,
@@ -237,14 +230,28 @@
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "SCP"
+      "text": "lint"
     },
     {
       "count": 1,
       "kind": "object-property",
       "name": "label",
       "path": "ui/src/components/maid-atelier-board.ts",
-      "text": "Sides"
+      "text": "Ops"
+    },
+    {
+      "count": 1,
+      "kind": "object-property",
+      "name": "label",
+      "path": "ui/src/components/maid-atelier-board.ts",
+      "text": "Queue"
+    },
+    {
+      "count": 1,
+      "kind": "object-property",
+      "name": "label",
+      "path": "ui/src/components/maid-atelier-board.ts",
+      "text": "typecheck"
     },
     {
       "count": 1,
@@ -258,35 +265,28 @@
       "kind": "html-attribute",
       "name": "title",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "manuscript/chapter-07.md"
+      "text": "logs/gateway.log"
     },
     {
       "count": 1,
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "After the checkpoint"
+      "text": "approval: pending"
     },
     {
       "count": 1,
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "By the time the last lamp took, the page was shorter and the night was not. Harper slid the draft back across the wood. “Keep the ending,” the note said. She already had."
+      "text": "desk / deploy check"
     },
     {
       "count": 1,
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "Chief Maid read the note twice. The ending stayed where it was. Everything before it could still move: the first paragraph, the title, the line about the lamps."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "Density fixture for the maid atelier. These project names are not live sessions."
+      "text": "gateway log"
     },
     {
       "count": 1,
@@ -300,28 +300,14 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "Harper counted the open files the way the boy counted coins: three still warm, one already filed, and the last page left face down. Chief Maid did not ask for that page. The note under the folded chapter said the same thing it had said at dusk."
+      "text": "last: lint passed"
     },
     {
       "count": 1,
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "keep the crossed-out sentence in the margin."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "manuscript / Chapter seven"
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "manuscript/chapter-07.md"
+      "text": "logs/gateway.log"
     },
     {
       "count": 1,
@@ -342,7 +328,14 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "Outside, the row went dark from the far end inward. The wood kept the heat of the pans. She slid the draft back, set her hand on the untouched ending, and waited for the next instruction to be shorter than the one before it."
+      "text": "review the diff."
+    },
+    {
+      "count": 1,
+      "kind": "html-text",
+      "name": "text",
+      "path": "ui/src/components/maid-atelier-preview.tsx",
+      "text": "Sample. These names are not live sessions."
     },
     {
       "count": 1,
@@ -356,13 +349,6 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "She crossed out the sentence that explained the trick and left the smell of sugar and iron. A boy at the next table counted coins into a tin. Nobody looked up when the chapter changed hands."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
       "text": "Source"
     },
     {
@@ -370,35 +356,7 @@
       "kind": "html-text",
       "name": "text",
       "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "The market kept its own hours. When the row went dark, the only thing still bright was the margin she had refused to touch."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "The night market"
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "The stall lights came on one row at a time. Harper waited at the last table, a marked-up chapter folded under one hand, and listened to the oil pop in the pans."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "The title lost two words and gained a lamp. The first paragraph stopped explaining who had arrived and let the oil do it. A crossed-out line about the trick stayed in the margin, smaller than the sentence it used to be."
-    },
-    {
-      "count": 1,
-      "kind": "html-text",
-      "name": "text",
-      "path": "ui/src/components/maid-atelier-preview.tsx",
-      "text": "What still moved"
+      "text": "status: running"
     },
     {
       "count": 1,

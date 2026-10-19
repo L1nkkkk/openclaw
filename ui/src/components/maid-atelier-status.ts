@@ -1,12 +1,27 @@
 import { truncateUtf16Safe } from "@openclaw/normalization-core/utf16-slice";
 
-export type MaidTone = "busy" | "idle" | "success" | "attention";
+export type MaidTone = "busy" | "idle" | "success" | "attention" | "blocked" | "pending";
 export type MaidProgressTone = "working" | "idle" | "completed" | "attention";
 export type MaidProgressSource = "progress" | "goal" | "session" | "sample";
 
 const BUSY_STATUSES = new Set(["running", "queued"]);
 const ATTENTION_STATUSES = new Set(["failed", "timeout", "interrupted", "killed"]);
 const GOAL_ATTENTION = new Set(["blocked", "paused", "usage_limited", "budget_limited"]);
+const PENDING_APPROVAL_STATUSES = new Set(["pending_approval", "pending-approval"]);
+
+/** Pending approval and blocked are separate presences. Neither is a busy run. */
+export function maidPresenceHold(status: string | undefined): "blocked" | "pending" | null {
+  if (!status) {
+    return null;
+  }
+  if (PENDING_APPROVAL_STATUSES.has(status)) {
+    return "pending";
+  }
+  if (status === "blocked") {
+    return "blocked";
+  }
+  return null;
+}
 
 export type MaidSessionSource = {
   key: string;
@@ -61,6 +76,10 @@ export function maidTone(input: {
   status?: string;
   failed?: boolean;
 }): MaidTone {
+  const hold = maidPresenceHold(input.status);
+  if (hold) {
+    return hold;
+  }
   if (input.activeNow || (input.status ? BUSY_STATUSES.has(input.status) : false)) {
     return "busy";
   }

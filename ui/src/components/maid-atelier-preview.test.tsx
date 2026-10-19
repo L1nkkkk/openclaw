@@ -5,7 +5,9 @@ import { MaidAtelierBoard } from "./maid-atelier-agents.tsx";
 import { MAID_SAMPLE_FILES, maidDensitySections } from "./maid-atelier-board.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidAtelierPreview } from "./maid-atelier-preview.tsx";
+import { MaidAtelierProgress } from "./maid-atelier-progress.tsx";
 import { MaidAtelierRoom } from "./maid-atelier-room.tsx";
+import { MaidAtelierTaskLog } from "./maid-atelier-task-log.tsx";
 
 afterEach(() => {
   cleanupSolid();
@@ -13,20 +15,30 @@ afterEach(() => {
   delete document.documentElement.dataset.theme;
 });
 
+function rowTone(root: ParentNode, name: string): string | null {
+  const row = [...root.querySelectorAll<HTMLElement>("[data-maid-tone]")].find(
+    (entry) => entry.querySelector(".maid-atelier-agents__name")?.textContent === name,
+  );
+  return row?.getAttribute("data-maid-tone") ?? null;
+}
+
 it("renders the density fixture as sidebar, checklist, and reader", () => {
   const view = mountSolid(() => <MaidAtelierPreview />);
   flush();
   const text = view.container.textContent ?? "";
   expect(text).toContain("Search");
   expect(text).toContain("New Maid");
-  expect(text).toContain("SCP");
-  expect(text).toContain("IFM");
-  expect(text).toContain("Sides");
+  expect(text).toContain("Ops");
+  expect(text).toContain("Field");
+  expect(text).toContain("Queue");
   expect(text).toContain("5 spaces");
-  expect(text).toContain("Refine");
-  expect(text).toContain("ch07_mud-and-whispers.md");
+  expect(text).toContain("Pending");
+  expect(text).toContain("Blocked");
   expect(text).toContain("Goal");
   expect(text).toContain("Sample");
+  expect(text).not.toContain("night market");
+  expect(text).not.toContain("Chapter");
+  expect(text).not.toContain("volume");
   expect(text).toContain("Group · 3");
   expect(text).toContain("Pull in");
   expect(text).toContain("Harper");
@@ -34,7 +46,33 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(text).toContain("Mori");
   expect(view.container.querySelector("[data-maid-room='group']")).not.toBeNull();
   expect(view.container.querySelectorAll("[data-maid-chat='sample'] .chat-avatar")).toHaveLength(5);
-  expect(text).toContain("The night market");
+  expect(text).toContain("gateway log");
+  expect(rowTone(view.container, "gateway log")).toBe("busy");
+  expect(rowTone(view.container, "config diff")).toBe("pending");
+  expect(rowTone(view.container, "release cut")).toBe("blocked");
+  expect(
+    view.container
+      .querySelector("[data-maid-tone='busy'] .maid-presence")
+      ?.getAttribute("data-tone"),
+  ).toBe("busy");
+  expect(
+    view.container
+      .querySelector("[data-maid-tone='blocked'] .maid-presence")
+      ?.getAttribute("data-tone"),
+  ).toBe("blocked");
+  expect(view.container.querySelector("[data-maid-hold='pending']")?.textContent).toContain(
+    "Pending",
+  );
+  expect(
+    view.container
+      .querySelector("[data-maid-hold='pending'] .maid-presence")
+      ?.getAttribute("data-tone"),
+  ).toBe("pending");
+  expect(
+    view.container
+      .querySelector("[data-maid-hold='blocked'] .maid-presence")
+      ?.getAttribute("data-tone"),
+  ).toBe("blocked");
   expect(text).toContain("Source");
   expect(view.container.querySelector("[aria-label='Copy path']")).not.toBeNull();
   expect(view.container.querySelector("[data-maid-fixture='density']")).not.toBeNull();
@@ -42,6 +80,23 @@ it("renders the density fixture as sidebar, checklist, and reader", () => {
   expect(session?.querySelector(".maid-atelier-agents__portrait")).not.toBeNull();
   expect(session?.querySelector(".maid-presence")).not.toBeNull();
   expect(view.container.querySelectorAll("[data-maid-nav]")).toHaveLength(7);
+});
+
+it("uses a short sample goal and log instead of a narrated objective", () => {
+  document.documentElement.dataset.themeId = "maid";
+  const progress = mountSolid(() => <MaidAtelierProgress placement="strip" />);
+  flush();
+  const goal = progress.container.textContent ?? "";
+  expect(goal).toContain("No goal");
+  expect(goal).toContain("Sample");
+  expect(goal).not.toContain("rewrite");
+  cleanupSolid();
+  const log = mountSolid(() => <MaidAtelierTaskLog active />);
+  flush();
+  const line = log.container.textContent ?? "";
+  expect(line).toContain("No log.");
+  expect(line).toContain("Sample");
+  expect(line).not.toContain("Chapter");
 });
 
 it("renders a private chat with only the user and the main agent", () => {
@@ -86,7 +141,7 @@ it("shows a composed @mention chip without the picker", () => {
   const center = view.container.querySelector("[data-maid-shot='center']");
   expect(center?.querySelector("[data-maid-mention-menu]")).toBeNull();
   expect(center?.querySelector("[data-maid-mention='notes']")).not.toBeNull();
-  expect(center?.textContent).toContain("keep the crossed-out sentence in the margin.");
+  expect(center?.textContent).toContain("review the diff.");
   expect(center?.textContent).toContain("Sample");
 });
 
@@ -105,9 +160,9 @@ it("keeps the face panel in the chat column and off the reader title", () => {
   expect(reader?.querySelector("[data-maid-avatar-menu]")).toBeNull();
   expect(menu?.closest("[data-maid-shot='center']")).not.toBeNull();
   expect(reader?.querySelector(".sidebar-file-view__path")?.textContent).toContain(
-    "manuscript/chapter-07.md",
+    "logs/gateway.log",
   );
-  expect(reader?.querySelector("h1")?.textContent).toContain("The night market");
+  expect(reader?.querySelector("h1")?.textContent).toContain("gateway log");
 });
 
 it("opens the face picker for an agent and stays labeled Sample", () => {

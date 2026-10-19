@@ -193,7 +193,12 @@ describe("maid checklist", () => {
       }).items.map((item) => item.label),
     ).toEqual(["ch04_in-the-dark.md"]);
     expect(maidChecklistModel({}).sample).toBe(true);
-    expect(maidChecklistModel({}).items.map((item) => item.id)).toEqual(["ch03", "ch04", "ch07"]);
+    expect(maidChecklistModel({}).items.map((item) => [item.id, item.hold ?? null])).toEqual([
+      ["lint", null],
+      ["typecheck", null],
+      ["approval", "pending"],
+      ["deploy", "blocked"],
+    ]);
   });
 });
 
@@ -201,18 +206,26 @@ describe("maid density fixture", () => {
   it("fills the reference groups without being a live board", () => {
     const sections = maidDensitySections(1_700_000_000_000);
     expect(sections.map((section) => section.label)).toEqual([
-      "SCP",
-      "HP",
-      "IFM",
-      "CESC",
-      "Sides",
+      "Ops",
+      "Desk",
+      "Field",
+      "Catalog",
+      "Queue",
       "Independent Maids",
     ]);
     expect(sections.every((section) => section.sample)).toBe(true);
-    expect(sections.find((section) => section.id === "hp")?.rows[0]).toMatchObject({
+    expect(sections.find((section) => section.id === "desk")?.rows[0]).toMatchObject({
       name: "Harper",
       spaces: 5,
       chief: true,
+    });
+    expect(sections.find((section) => section.id === "ops")?.rows[1]).toMatchObject({
+      name: "config diff",
+      status: "pending_approval",
+    });
+    expect(sections.find((section) => section.id === "queue")?.rows[0]).toMatchObject({
+      name: "release cut",
+      status: "blocked",
     });
   });
 });

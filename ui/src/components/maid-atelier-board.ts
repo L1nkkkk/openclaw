@@ -265,41 +265,40 @@ export type MaidChecklistItem = {
   refine: boolean;
   sample: boolean;
   at: number | null;
+  /** Sample queue only. Live steps do not invent a hold. */
+  hold?: "blocked" | "pending";
 };
 
 const MINUTE_MS = 60_000;
 
 export const MAID_SAMPLE_FILES: readonly MaidChecklistItem[] = [
+  { id: "lint", label: "lint", done: true, refine: false, sample: true, at: null },
+  { id: "typecheck", label: "typecheck", done: true, refine: false, sample: true, at: null },
   {
-    id: "ch03",
-    label: "ch03_dawn-wind.md",
-    done: true,
+    id: "approval",
+    label: "approval",
+    done: false,
     refine: false,
     sample: true,
     at: null,
+    hold: "pending",
   },
   {
-    id: "ch04",
-    label: "ch04_in-the-dark.md",
+    id: "deploy",
+    label: "deploy",
     done: false,
-    refine: true,
+    refine: false,
     sample: true,
     at: null,
-  },
-  {
-    id: "ch07",
-    label: "ch07_mud-and-whispers.md",
-    done: false,
-    refine: true,
-    sample: true,
-    at: null,
+    hold: "blocked",
   },
 ];
 
 export const MAID_SAMPLE_FILE_AGE_MS: Readonly<Record<string, number>> = {
-  ch03: 18 * MINUTE_MS,
-  ch04: 2 * 60 * MINUTE_MS,
-  ch07: 26 * MINUTE_MS,
+  lint: 18 * MINUTE_MS,
+  typecheck: 2 * 60 * MINUTE_MS,
+  approval: 26 * MINUTE_MS,
+  deploy: 40 * MINUTE_MS,
 };
 
 export function maidManuscriptFile(label: string): boolean {
@@ -404,21 +403,21 @@ function fixtureRow(
   };
 }
 
-/** Screenshot density only. Live boards never invent these project names. */
+/** Screenshot density only. Live boards never invent these session names. */
 export function maidDensitySections(now: number): MaidBoardSection[] {
   const minute = (count: number) => now - count * MINUTE_MS;
   return [
     {
-      id: "scp",
-      label: "SCP",
+      id: "ops",
+      label: "Ops",
       sample: true,
       rows: [
         fixtureRow(
           {
-            id: "scp-log",
+            id: "gateway-log",
             kind: "session",
-            name: "Site log",
-            preview: "Seal the north stair and file the morning count",
+            name: "gateway log",
+            preview: "Tail quiet",
             activeNow: true,
             lastActiveAt: minute(4),
             status: "running",
@@ -427,19 +426,20 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
         ),
         fixtureRow(
           {
-            id: "scp-notes",
+            id: "config-diff",
             kind: "session",
-            name: "Containment notes",
-            preview: "Waiting on the second signature",
+            name: "config diff",
+            preview: "Pending approval",
             lastActiveAt: minute(48),
+            status: "pending_approval",
           },
           now,
         ),
       ],
     },
     {
-      id: "hp",
-      label: "HP",
+      id: "desk",
+      label: "Desk",
       sample: true,
       rows: [
         fixtureRow(
@@ -451,7 +451,7 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
             chief: true,
             marked: true,
             spaces: 5,
-            preview: "Reading the chapter draft",
+            preview: "Reviewing the queue",
             activeNow: true,
             lastActiveAt: minute(2),
             status: "running",
@@ -460,21 +460,21 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
         ),
         fixtureRow(
           {
-            id: "chapter-seven",
+            id: "deploy-check",
             kind: "session",
-            name: "Chapter seven",
-            preview: "The night market, ending left in place",
+            name: "deploy check",
+            preview: "Build green",
             lastActiveAt: minute(12),
-            sessionKey: "fixture:chapter-seven",
+            sessionKey: "fixture:deploy-check",
           },
           now,
         ),
         fixtureRow(
           {
-            id: "volume-notes",
+            id: "plugin-notes",
             kind: "session",
-            name: "Volume notes",
-            preview: "Four passes in, one still open",
+            name: "plugin notes",
+            preview: "Two checks open",
             lastActiveAt: minute(90),
           },
           now,
@@ -482,17 +482,17 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
       ],
     },
     {
-      id: "ifm",
-      label: "IFM",
+      id: "field",
+      label: "Field",
       sample: true,
       rows: [
         fixtureRow(
           {
-            id: "ifm-field",
+            id: "field-agent",
             kind: "agent",
             name: "Field",
             spaces: 2,
-            preview: "Indexing the margin stack",
+            preview: "Indexing logs",
             lastActiveAt: minute(15),
           },
           now,
@@ -500,16 +500,16 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
       ],
     },
     {
-      id: "cesc",
-      label: "CESC",
+      id: "catalog",
+      label: "Catalog",
       sample: true,
       rows: [
         fixtureRow(
           {
-            id: "cesc-catalog",
+            id: "catalog-pass",
             kind: "session",
-            name: "Catalog pass",
-            preview: "Idle until the next crate",
+            name: "catalog pass",
+            preview: "Idle",
             lastActiveAt: minute(180),
           },
           now,
@@ -517,19 +517,30 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
       ],
     },
     {
-      id: "sides",
-      label: "Sides",
+      id: "queue",
+      label: "Queue",
       sample: true,
       rows: [
         fixtureRow(
           {
-            id: "sides-margin",
+            id: "release-cut",
             kind: "session",
-            name: "Margin draft",
-            preview: "Needs a quieter close",
+            name: "release cut",
+            preview: "Blocked",
+            status: "blocked",
+            lastActiveAt: minute(35),
+          },
+          now,
+        ),
+        fixtureRow(
+          {
+            id: "run-failed",
+            kind: "session",
+            name: "run failed",
+            preview: "Exit 1",
             failed: true,
             status: "failed",
-            lastActiveAt: minute(35),
+            lastActiveAt: minute(20),
           },
           now,
         ),
@@ -558,7 +569,7 @@ export function maidDensitySections(now: number): MaidBoardSection[] {
             kind: "agent",
             name: "Archive",
             role: "Keeper",
-            preview: "Filed the previous draft",
+            preview: "Last run finished",
             spaces: 3,
             lastActiveAt: minute(140),
             status: "done",
