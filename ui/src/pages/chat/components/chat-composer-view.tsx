@@ -317,21 +317,6 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                   </>
                 )}
                 <GoalComposerMode controller={context.goalComposer} />
-                <MaidMentionDraftChips
-                  text={context.visibleDraft}
-                  agents={props.maidGroupAgents}
-                  onRemove={(token) => {
-                    const current = props.getDraft?.() ?? props.draft;
-                    const next = removeMaidMention(current, token);
-                    const mentions = props.getMentions?.() ?? props.mentions ?? [];
-                    commitComposerDraft(
-                      props,
-                      next,
-                      mentions.length ? updateHumanMentions(current, next, mentions) : undefined,
-                    );
-                    context.requestUpdate();
-                  }}
-                />
                 <SelectedHumanMentions
                   text={context.visibleDraft}
                   mentions={props.mentions}
@@ -526,6 +511,21 @@ export function renderChatComposerView(context: ChatComposerViewContext) {
                   {composerLeadControl}
                 </div>
                 <div class="agent-chat__composer-trail">
+                  <MaidMentionDraftChips
+                    text={context.visibleDraft}
+                    agents={props.maidGroupAgents}
+                    onRemove={(token) => {
+                      const current = props.getDraft?.() ?? props.draft;
+                      const next = removeMaidMention(current, token);
+                      const mentions = props.getMentions?.() ?? props.mentions ?? [];
+                      commitComposerDraft(
+                        props,
+                        next,
+                        mentions.length ? updateHumanMentions(current, next, mentions) : undefined,
+                      );
+                      context.requestUpdate();
+                    }}
+                  />
                   <div class="agent-chat__composer-meta agent-chat__composer-context">
                     <ContextNotice
                       session={activeSession()}

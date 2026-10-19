@@ -1,4 +1,6 @@
 .maid-atelier-agents {
+  --maid-avatar-stroke: color-mix(in srgb, var(--border-strong) 72%, transparent);
+
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -169,11 +171,12 @@
 }
 
 .maid-atelier-agents__row[aria-current="true"] {
-  background: color-mix(in srgb, var(--bg-hover) 58%, var(--accent));
+  /* Half-step under the previous 42% accent wash, still a step above row hover. */
+  background: color-mix(in srgb, var(--bg-hover) 72%, var(--accent));
 }
 
 .maid-atelier-agents__row[aria-current="true"]:hover {
-  background: color-mix(in srgb, var(--bg-hover) 42%, var(--accent));
+  background: color-mix(in srgb, var(--bg-hover) 64%, var(--accent));
 }
 
 .maid-atelier-agents__row:focus-visible,
@@ -192,9 +195,11 @@
 
 .maid-atelier-agents__avatar :is(img, .identity-avatar, .identity-avatar--agent),
 .maid-atelier-agents__portrait {
+  box-sizing: border-box;
   width: 22px;
   height: 22px;
   object-fit: cover;
+  border: 1px solid var(--maid-avatar-stroke);
   border-radius: var(--radius-full);
   background: var(--bg-hover);
   color: var(--text-strong);
@@ -208,10 +213,6 @@
   bottom: -1px;
   width: 8px;
   height: 8px;
-}
-
-.maid-atelier-agents__avatar > .maid-presence .maid-presence__core {
-  border-width: 1.5px;
 }
 
 .maid-atelier-agents__row[data-maid-kind="session"] {
@@ -472,14 +473,19 @@ button.maid-atelier-profile {
 }
 
 .maid-atelier-preview__reader {
+  position: relative;
+  z-index: 2;
   border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
 .maid-atelier-preview__center {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  overflow: clip;
   background: var(--bg);
 }
 
@@ -504,8 +510,13 @@ button.maid-atelier-profile {
   padding: 2px 10px 2px;
 }
 
+.maid-atelier-preview__composer > .maid-atelier-progress--strip {
+  margin: 0;
+  padding: 0 2px 2px;
+}
+
 .maid-atelier-preview__draft {
-  min-height: 36px;
+  min-height: 32px;
   color: var(--muted);
   font-size: 14px;
 }
@@ -514,18 +525,35 @@ button.maid-atelier-profile {
   color: var(--text);
 }
 
+.maid-atelier-preview__composer-lead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .maid-atelier-preview__composer-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .maid-atelier-preview__model {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding-inline: 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
   color: var(--muted);
   font-size: 11px;
   font-weight: 600;
+}
+
+.maid-atelier-preview__composer-bar .maid-atelier-mention {
+  height: 26px;
 }
 
 .maid-atelier-preview__send {

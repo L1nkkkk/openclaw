@@ -1,11 +1,11 @@
-/* Presence badge. The core is a solid 12px disc with a 2px surface ring
-   so it reads as cut out of the avatar. The ping is a sibling behind it:
+/* Presence badge. The core is a solid disc with a dark 1.5px outline so the
+   pip stays separate from a light anime face. The ping is a sibling behind it:
    only the ping scales and fades. The core opacity never animates.
    Motion is one slow bloom (2.5s attention, 2.8s working), well under 3 Hz. */
 
 .maid-presence {
   --maid-presence: var(--muted);
-  --maid-presence-ring: var(--bg-elevated);
+  --maid-presence-ring: color-mix(in srgb, black 58%, var(--bg));
   position: relative;
   z-index: 1;
   display: inline-block;
@@ -30,7 +30,7 @@
 
 .maid-presence__core {
   box-sizing: border-box;
-  border: 2px solid var(--maid-presence-ring);
+  border: 1.5px solid var(--maid-presence-ring);
   background: var(--maid-presence);
   transition:
     background-color 180ms ease-out,
