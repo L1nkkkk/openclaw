@@ -1,13 +1,15 @@
 import type { JSX } from "@solidjs/web";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show, untrack } from "solid-js";
 import type { ApplicationContext } from "../app/context.ts";
 import { gatewayPresentationScope } from "../app/gateway-presentation-scope.ts";
 import { registerAgentsHomeEnglish } from "../i18n/locales/en-agents-home.ts";
 import { rosterActivityStore } from "../lib/agents/roster-activity-store.ts";
 import { formatRelativeTimestamp } from "../lib/format.ts";
 import { projectAgents } from "../lib/reactive/domain-capabilities.ts";
+import { projectProgressCard } from "../lib/reactive/domain-keyed.ts";
 import { registerEnglishCatalog, t } from "../lib/reactive/i18n.ts";
 import { projectSource } from "../lib/reactive/projection.ts";
+import { sessionProgressCardsForGateway } from "../lib/session-progress-cards.ts";
 import { resolveUiSessionRowAgentId } from "../lib/sessions/session-key.ts";
 import { MaidAvatarEditor } from "./maid-atelier-avatar-picker.tsx";
 import { commitMaidAvatar } from "./maid-atelier-avatar-save.ts";
@@ -15,8 +17,7 @@ import type { MaidAvatarChoice, MaidAvatarSubject } from "./maid-atelier-avatar.
 import {
   buildMaidBoard,
   MAID_NAV,
-  MAID_SAMPLE_FILE_AGE_MS,
-  maidChecklistModel,
+  maidOpenSessionQueue,
   type MaidAgentFact,
   type MaidBoardRow,
   type MaidBoardSection,
@@ -29,6 +30,7 @@ import { maidPortraitUrl } from "./maid-atelier-chat.ts";
 import { maidPortraitSrc } from "./maid-atelier-portraits.ts";
 import { MaidPresence } from "./maid-atelier-presence.tsx";
 import { maidClip, maidIdentityTheme, maidTone, type MaidTone } from "./maid-atelier-status.ts";
+import { MaidTaskRow } from "./maid-atelier-task-row.tsx";
 import { useMaidTheme } from "./maid-atelier-theme.ts";
 import { Icon } from "./solid/icon.tsx";
 import { AgentIdentityAvatar } from "./solid/identity-avatar.tsx";
@@ -270,10 +272,7 @@ function MaidAgentRow(props: {
   );
 }
 
-/** Ids in the set are local flips. The source row stays the unchecked baseline. */
-function taskChecked(flipped: () => ReadonlySet<string>, item: MaidChecklistItem): boolean {
-  return flipped().has(item.id) !== item.done;
-}
+const NO_LOCAL_CHECKS: ReadonlySet<string> = new Set();
 
 export function MaidAtelierBoard(props: {
   sections: readonly MaidBoardSection[];
@@ -386,42 +385,14 @@ export function MaidAtelierBoard(props: {
           fallback={<p class="maid-atelier-agents__empty">{t("agentsHome.maidTaskLogSample")}</p>}
         >
           <For each={props.tasks.items}>
-            {(item) => {
-              const checked = () => taskChecked(props.done, item);
-              const when = () => {
-                if (item.at && item.at > 0) {
-                  return formatRelativeTimestamp(item.at);
-                }
-                const age = MAID_SAMPLE_FILE_AGE_MS[item.id];
-                return age ? formatRelativeTimestamp(Date.now() - age) : "";
-              };
-              return (
-                <button
-                  type="button"
-                  class="maid-atelier-agents__task"
-                  role="checkbox"
-                  aria-checked={checked() ? "true" : "false"}
-                  onClick={() => props.onToggleTask(item.id)}
-                >
-                  <span class="maid-atelier-agents__check" aria-hidden="true" />
-                  <span class="maid-atelier-agents__task-copy">
-                    <span class="maid-atelier-agents__task-label">{item.label}</span>
-                    <Show when={!checked() ? item.hold : undefined}>
-                      {(hold) => (
-                        <span class="maid-atelier-agents__hold" data-maid-hold={hold()}>
-                          <MaidPresence tone={hold()} label={toneLabel(hold())} />
-                          {toneLabel(hold())}
-                        </span>
-                      )}
-                    </Show>
-                    <Show when={item.refine}>
-                      <span class="maid-atelier-agents__refine">{t("agentsHome.maidRefine")}</span>
-                    </Show>
-                  </span>
-                  <span class="maid-atelier-agents__task-time">{when()}</span>
-                </button>
-              );
-            }}
+            {(item) => (
+              <MaidTaskRow
+                item={item}
+                done={props.done}
+                onOpenSession={props.onOpenSession}
+                onToggleTask={props.onToggleTask}
+              />
+            )}
           </For>
         </Show>
       </div>
@@ -561,8 +532,6 @@ function MaidRoster(props: {
   context: MaidContext;
   host: MaidAtelierHost;
   currentId: () => string;
-  done: () => ReadonlySet<string>;
-  onToggleTask: (id: string) => void;
 }) {
   const roster = createMemo(() =>
     projectSource(rosterActivityStore(props.context), {
@@ -572,6 +541,39 @@ function MaidRoster(props: {
     }),
   );
   const agents = createMemo(() => projectAgents(props.context.agents));
+  const routeKey = createMemo(() =>
+    projectSource(props.host, {
+      read: (host) => host.getRouteSessionKey?.() ?? "",
+      subscribe: (host, notify) => host.subscribe(notify),
+      equality: (previous, next) => previous === next,
+    }),
+  );
+  // Same progress-card store the chat task log reads for this session.
+  const progress = createMemo(() => {
+    const store = sessionProgressCardsForGateway(props.context.gateway);
+    return {
+      store,
+      card: projectProgressCard({
+        store,
+        target: { sessionKey: untrack(() => routeKey().read()) },
+      }),
+    };
+  });
+  let watchedKey = untrack(() => routeKey().read());
+  createEffect(
+    () => routeKey().read(),
+    (sessionKey) => {
+      if (sessionKey === watchedKey) {
+        return;
+      }
+      watchedKey = sessionKey;
+      const current = progress();
+      current.card.replaceSource({
+        store: current.store,
+        target: { sessionKey },
+      });
+    },
+  );
   const facts = createMemo(() => {
     const list = agents().read().agentsList;
     const cards = roster().read().cards;
@@ -587,9 +589,17 @@ function MaidRoster(props: {
       role: card.role,
     }));
     const sessions = sessionFacts(roster().read().result?.sessions ?? [], list?.defaultId ?? "");
+    const cardState = progress().card.read();
+    const gateway = props.context.gateway.snapshot;
     return {
       sections: buildMaidBoard(agentFacts, sessions, list?.defaultId ?? null),
-      tasks: maidChecklistModel({ sessions }),
+      tasks: maidOpenSessionQueue({
+        openSessionKey: routeKey().read(),
+        card: cardState.card,
+        cardError: cardState.error !== undefined,
+        cardReadable: gateway.phase === "connected" && gateway.client !== null,
+        sessions,
+      }),
     };
   });
   const profile = createMemo((): MaidProfileModel => {
@@ -616,14 +626,14 @@ function MaidRoster(props: {
       tasks={facts().tasks}
       profile={profile()}
       currentId={props.currentId()}
-      currentSessionKey={props.host.getRouteSessionKey?.() ?? ""}
+      currentSessionKey={routeKey().read()}
       onCommit={(subject, choice) => commitMaidAvatar(props.context, subject, choice)}
       onOpenAgent={openAgent}
       onOpenSession={(key) => props.host.selectSession?.(key)}
       onNav={(item) => runNav(props.host, item)}
       navDisabled={(item) => navDisabled(props.host, item)}
-      done={props.done}
-      onToggleTask={props.onToggleTask}
+      done={() => NO_LOCAL_CHECKS}
+      onToggleTask={() => undefined}
     />
   );
 }
@@ -638,14 +648,6 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
   );
   const context = createMemo(() => host().read().sessionDataContext);
   const currentId = () => host().read().expandedAgentId();
-  const [done, setDone] = createSignal<ReadonlySet<string>>(new Set());
-  const toggleTask = (id: string) => {
-    const next = new Set(done());
-    if (!next.delete(id)) {
-      next.add(id);
-    }
-    setDone(next);
-  };
   const emptyProfile = (): MaidProfileModel => ({
     name: t("nav.owner"),
     status: t("agentsHome.maidProfileOffline"),
@@ -659,7 +661,7 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
       fallback={
         <MaidAtelierBoard
           sections={[]}
-          tasks={maidChecklistModel({})}
+          tasks={maidOpenSessionQueue({ openSessionKey: "", cardReadable: false })}
           profile={emptyProfile()}
           currentId={currentId()}
           currentSessionKey=""
@@ -667,20 +669,12 @@ function MaidAtelierAgentsLive(props: { host: MaidAtelierHost }) {
           onOpenSession={() => undefined}
           onNav={(item) => runNav(host().read(), item)}
           navDisabled={(item) => navDisabled(host().read(), item)}
-          done={done}
-          onToggleTask={toggleTask}
+          done={() => NO_LOCAL_CHECKS}
+          onToggleTask={() => undefined}
         />
       }
     >
-      {(current) => (
-        <MaidRoster
-          context={current}
-          host={host().read()}
-          currentId={currentId}
-          done={done}
-          onToggleTask={toggleTask}
-        />
-      )}
+      {(current) => <MaidRoster context={current} host={host().read()} currentId={currentId} />}
     </Show>
   );
 }

@@ -117,7 +117,7 @@ function MaidAtelierProgressLive(props: {
           <Icon name="check" />
         </span>
       </Show>
-      <Show when={model().total > 0}>
+      <Show when={model().source === "progress" && model().total > 0}>
         <span class="maid-atelier-progress__fraction">
           {props.placement === "strip"
             ? t("agentsHome.maidProgressProcess", {

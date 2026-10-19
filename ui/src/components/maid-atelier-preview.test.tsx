@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import { afterEach, expect, it } from "vitest";
 import { cleanupSolid, mountSolid } from "../test-helpers/mount-solid.ts";
 import { flush } from "../test-helpers/solid-settle.ts";
@@ -248,6 +249,106 @@ it("opens the face picker from a sidebar portrait and the profile strip", () => 
   flush();
   expect(view.container.querySelector("[data-maid-avatar-target='mori']")).not.toBeNull();
   expect(view.container.textContent).toContain("A saved picture stays until you choose another.");
+});
+
+it("opens a manuscript work-queue row and leaves progress steps read-only", () => {
+  const opened: string[] = [];
+  const toggled: string[] = [];
+  const view = mountSolid(() => {
+    const [done, setDone] = createSignal<ReadonlySet<string>>(new Set());
+    return (
+      <MaidAtelierBoard
+        sections={[]}
+        tasks={{
+          sample: false,
+          items: [
+            {
+              id: "agent:harper:ch07",
+              sessionKey: "agent:harper:ch07",
+              label: "ch07_mud-and-whispers.md",
+              done: false,
+              refine: true,
+              sample: false,
+              at: null,
+            },
+            {
+              id: "step:0:Outline",
+              label: "Outline",
+              done: true,
+              refine: false,
+              sample: false,
+              at: null,
+            },
+            {
+              id: "lint",
+              label: "lint",
+              done: false,
+              refine: false,
+              sample: true,
+              at: null,
+            },
+          ],
+        }}
+        profile={{ name: "Mori", status: "Online", portraitId: "mori", online: true }}
+        currentId=""
+        currentSessionKey=""
+        onOpenAgent={() => undefined}
+        onOpenSession={(key) => {
+          opened.push(key);
+        }}
+        onNav={() => undefined}
+        done={done}
+        onToggleTask={(id) => {
+          toggled.push(id);
+          const next = new Set(done());
+          next.add(id);
+          setDone(next);
+        }}
+      />
+    );
+  });
+  flush();
+  const session = view.container.querySelector<HTMLButtonElement>("[data-maid-task='session']");
+  expect(session?.textContent).toContain("ch07_mud-and-whispers.md");
+  expect(session?.getAttribute("role")).not.toBe("checkbox");
+  session?.click();
+  flush();
+  expect(opened).toEqual(["agent:harper:ch07"]);
+  expect(toggled).toEqual([]);
+  const step = view.container.querySelector<HTMLElement>("[data-maid-task='step']");
+  expect(step?.tagName).toBe("DIV");
+  expect(step?.getAttribute("data-maid-done")).toBe("true");
+  step?.click();
+  flush();
+  expect(toggled).toEqual([]);
+  const sample = view.container.querySelector<HTMLButtonElement>("[data-maid-task='sample']");
+  expect(sample?.getAttribute("aria-checked")).toBe("false");
+  sample?.click();
+  flush();
+  expect(toggled).toEqual(["lint"]);
+  expect(sample?.getAttribute("data-maid-done")).toBe("true");
+});
+
+it("hides the process fraction for a bare session title", () => {
+  document.documentElement.dataset.themeId = "maid";
+  const view = mountSolid(() => (
+    <MaidAtelierProgress
+      placement="strip"
+      title="ch07_mud-and-whispers.md"
+      session={{
+        key: "agent:harper:ch07",
+        displayName: "ch07_mud-and-whispers.md",
+        status: "done",
+      }}
+    />
+  ));
+  flush();
+  const text = view.container.textContent ?? "";
+  expect(view.container.querySelector("[data-source='session']")).not.toBeNull();
+  expect(text).toContain("ch07_mud-and-whispers.md");
+  expect(view.container.querySelector(".maid-atelier-progress__fraction")).toBeNull();
+  expect(text).not.toContain("Process");
+  expect(text).not.toContain("1/1");
 });
 
 it("opens the face picker from a room face", () => {
